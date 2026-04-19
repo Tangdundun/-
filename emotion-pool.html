@@ -121,25 +121,51 @@
       border-radius: 50%;
     }
 
-    /* 颜色叶片 */
+    /* 颜色叶片 - 树叶形状 */
     .color-leaf {
       position: absolute;
-      width: 50px;
-      height: 50px;
+      width: 44px;
+      height: 56px;
       left: 50%;
       top: 50%;
-      margin-left: -25px;
-      margin-top: -25px;
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      margin-left: -22px;
+      margin-top: -28px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.4s ease;
       opacity: 0.85;
     }
 
-    .color-leaf:hover {
-      transform: translate(var(--x), var(--y)) scale(1.15) !important;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    .color-leaf::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: currentColor;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .color-leaf::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 15%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 35%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+      border-radius: 2px;
+    }
+
+    .color-leaf:hover::before {
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+
+    /* 选中时的动画 */
+    @keyframes leaf-selected {
+      0% { transform: translate(var(--x), var(--y)) scale(1); }
+      50% { transform: translate(var(--x), var(--y)) scale(1.2); }
+      100% { transform: translate(var(--x), var(--y)) scale(1.15); }
     }
 
     /* 引导文案 */
@@ -498,7 +524,8 @@
       <button class="catch-btn" id="catchBtn" onclick="catchLeaf()">捞起一片</button>
 
       <div id="driftingLeaf"></div>
-      <div class="response-options" id="responseOptions">
+      <div style="text-align: center; font-size: 12px; color: #a89880; margin-bottom: 15px; font-style: italic;">你也可以留下想说的话</div>
+      <div class="response-options" id="responseOptions" style="display: flex; flex-wrap: wrap; justify-content: center;">
         <button class="response-btn" onclick="respondToLeaf('resonance')">🌙 共鸣</button>
         <button class="response-btn" onclick="respondToLeaf('comfort')">🤲 安慰</button>
         <button class="response-btn" onclick="respondToLeaf('witness')">👁️ 见证</button>
@@ -650,15 +677,16 @@
 
         const leaf = document.createElement('div');
         leaf.className = 'color-leaf';
-        leaf.style.backgroundColor = emo.color;
+        leaf.style.color = emo.color;
         leaf.style.setProperty('--x', x + 'px');
         leaf.style.setProperty('--y', y + 'px');
         leaf.style.setProperty('--rot', (i % 2 === 0 ? -10 : 10) + 'deg');
         leaf.dataset.id = emo.id;
+        leaf.title = emo.name + ' · ' + emo.desc;
 
         leaf.addEventListener('mouseenter', () => {
           if (!isDepositing && !selectedEmotion) {
-            document.getElementById('guideText').textContent = `这是${emo.name}的感觉`;
+            document.getElementById('guideText').textContent = emo.guide;
           }
         });
 
@@ -668,7 +696,10 @@
           }
         });
 
-        leaf.addEventListener('click', () => selectEmotion(emo, leaf));
+        leaf.addEventListener('click', () => {
+          playSelectSound();
+          selectEmotion(emo, leaf);
+        });
 
         wheel.appendChild(leaf);
       });
@@ -1215,24 +1246,53 @@
     function playWaterDropSound() {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // 柔和的水滴音效 - 更舒缓的频率和音量
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.3);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(800, audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.4);
+      } catch (e) {
+        console.log('Audio not supported');
+      }
+    }
+
+    function playSelectSound() {
+      // 选中树叶时的轻柔音效
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
 
-        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.15);
         osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(1100, audioCtx.currentTime + 0.05);
 
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
 
         osc.connect(gain);
         gain.connect(audioCtx.destination);
 
         osc.start();
         osc.stop(audioCtx.currentTime + 0.15);
-      } catch (e) {
-        console.log('Audio not supported');
-      }
+      } catch (e) {}
     }
 
     function createRipple(color) {
