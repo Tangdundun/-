@@ -248,6 +248,64 @@
       margin: 0 auto;
     }
 
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .filter-chip {
+      padding: 6px 12px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(201,184,160,0.3);
+      border-radius: 15px;
+      color: #8b7d6b;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .filter-chip:hover, .filter-chip.active {
+      background: rgba(201,184,160,0.3);
+      color: #5a5046;
+    }
+
+    .filter-chip .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    .catch-btn {
+      display: block;
+      width: 200px;
+      margin: 30px auto;
+      padding: 15px 30px;
+      background: linear-gradient(135deg, rgba(201,184,160,0.3), rgba(201,184,160,0.1));
+      border: 1px solid rgba(201,184,160,0.4);
+      border-radius: 30px;
+      color: #5a5046;
+      font-family: "Noto Serif SC", serif;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .catch-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(201,184,160,0.3);
+    }
+
+    .catch-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .drifting-leaf {
       padding: 30px;
       border-radius: 16px;
@@ -433,17 +491,45 @@
     <div class="page-desc">轻轻托住一片</div>
 
     <div class="drifting-container">
+      <div class="filter-bar" id="filterBar">
+        <div class="filter-chip active" data-filter="all"><span class="dot"></span>全部</div>
+      </div>
+
+      <button class="catch-btn" id="catchBtn" onclick="catchLeaf()">捞起一片</button>
+
       <div id="driftingLeaf"></div>
       <div class="response-options" id="responseOptions">
-        <button class="response-btn" onclick="respondToLeaf('resonance')">共鸣</button>
-        <button class="response-btn" onclick="respondToLeaf('comfort')">安慰</button>
-        <button class="response-btn" onclick="respondToLeaf('witness')">见证</button>
+        <button class="response-btn" onclick="respondToLeaf('resonance')">🌙 共鸣</button>
+        <button class="response-btn" onclick="respondToLeaf('comfort')">🤲 安慰</button>
+        <button class="response-btn" onclick="respondToLeaf('witness')">👁️ 见证</button>
+        <button class="response-btn" onclick="showNoteInput()">💌 字条</button>
+      </div>
+
+      <div class="note-input-section" id="noteInputSection" style="display: none; margin-top: 20px;">
+        <textarea class="write-area" id="noteArea" placeholder="写几句话，轻轻放下..." style="height: 80px;"></textarea>
+        <button class="submit-btn" onclick="sendNote()">放下字条</button>
+        <button class="response-btn" onclick="hideNoteInput()" style="margin-top: 10px;">取消</button>
       </div>
     </div>
   </div>
 
   <!-- 历史页面 -->
   <div class="page" id="history">
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-num" id="depositedCount2">0</div>
+        <div class="stat-label">已投落叶</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="caughtCount">0</div>
+        <div class="stat-label">捞起</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="heldCount2">0</div>
+        <div class="stat-label">托住</div>
+      </div>
+    </div>
+
     <h2>你的池水沉淀</h2>
     <div class="page-desc">时光在这里留下了什么</div>
 
@@ -452,7 +538,11 @@
 
     <div class="meditation-suggestion" id="meditationSuggestion"></div>
 
+    <h3 style="font-size: 1rem; color: #8b7d6b; margin: 30px 0 15px; text-align: center; font-weight: 400;">你的落叶</h3>
     <div class="timeline" id="timeline"></div>
+
+    <h3 style="font-size: 1rem; color: #8b7d6b; margin: 30px 0 15px; text-align: center; font-weight: 400;">相遇记录</h3>
+    <div class="timeline" id="encounters"></div>
   </div>
 
   <script>
@@ -497,8 +587,10 @@
     };
 
     let selectedEmotion = null;
-    let isDepositing = false;
+    let currentFilter = 'all';
+    let isCatching = false;
     let currentDriftingLeaf = null;
+    let isDepositing = false;
 
     // 初始化
     function init() {
@@ -705,23 +797,77 @@
 
     // ===== 认领页面 =====
     function initCatch() {
-      loadDriftingLeaf();
+      initFilterBar();
+      resetCatchUI();
+    }
+
+    function initFilterBar() {
+      const bar = document.getElementById('filterBar');
+      if (bar.children.length > 1) return;
+
+      const allChip = document.createElement('div');
+      allChip.className = 'filter-chip active';
+      allChip.dataset.filter = 'all';
+      allChip.innerHTML = '<span class="dot"></span>全部';
+      allChip.onclick = () => setFilter('all', allChip);
+      bar.appendChild(allChip);
+
+      EMOTION_DATA.emotions.forEach(emo => {
+        const chip = document.createElement('div');
+        chip.className = 'filter-chip';
+        chip.dataset.filter = emo.id;
+        chip.innerHTML = `<span class="dot" style="background:${emo.color}"></span>${emo.name}`;
+        chip.onclick = () => setFilter(emo.id, chip);
+        bar.appendChild(chip);
+      });
+    }
+
+    function setFilter(filterId, element) {
+      currentFilter = filterId;
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      element.classList.add('active');
+      resetCatchUI();
+    }
+
+    function resetCatchUI() {
+      document.getElementById('driftingLeaf').innerHTML = '<div class="empty-pool"><div style="font-size: 48px; margin-bottom: 20px;">🌊</div><p>点击"捞起一片"开始</p></div>';
+      document.getElementById('responseOptions').style.display = 'none';
+      document.getElementById('catchBtn').disabled = false;
+      document.getElementById('catchBtn').textContent = '捞起一片';
+    }
+
+    function catchLeaf() {
+      if (isCatching) return;
+      isCatching = true;
+      document.getElementById('catchBtn').disabled = true;
+      document.getElementById('catchBtn').textContent = '正在打捞...';
+
+      setTimeout(() => {
+        loadDriftingLeaf();
+        isCatching = false;
+      }, 800);
     }
 
     function loadDriftingLeaf() {
       const container = document.getElementById('driftingLeaf');
       const pool = JSON.parse(localStorage.getItem('emotionPool_leaves') || '[]');
 
-      const availableLeaves = pool.filter(l =>
+      let availableLeaves = pool.filter(l =>
         l.visibility === 'public' &&
         !currentUser.depositedLeaves.includes(l.id) &&
         (!l.responses || l.responses.length < 10) &&
         !currentUser.caughtLeaves.includes(l.id)
       );
 
+      if (currentFilter !== 'all') {
+        availableLeaves = availableLeaves.filter(l => l.emotionId === currentFilter);
+      }
+
       if (availableLeaves.length === 0) {
-        container.innerHTML = `<div class="empty-pool"><div style="font-size: 48px; margin-bottom: 20px;">～</div><p>此刻池水很静</p><p style="font-size: 14px; color: #a89880; margin-top: 10px;">过一会儿再来，会有新的落叶</p></div>`;
+        container.innerHTML = `<div class="empty-pool"><div style="font-size: 48px; margin-bottom: 20px;">～</div><p>没有找到${currentFilter === 'all' ? '' : EMOTION_DATA.emotions.find(e => e.id === currentFilter)?.name}漂叶</p><p style="font-size: 14px; color: #a89880; margin-top: 10px;">过一会儿再来，或换个颜色试试</p></div>`;
         document.getElementById('responseOptions').style.display = 'none';
+        document.getElementById('catchBtn').disabled = false;
+        document.getElementById('catchBtn').textContent = '再试一次';
         return;
       }
 
@@ -788,15 +934,65 @@
       document.getElementById('responseOptions').style.display = 'none';
 
       setTimeout(() => {
-        loadDriftingLeaf();
+        resetCatchUI();
+      }, 3000);
+    }
+
+    function showNoteInput() {
+      document.getElementById('responseOptions').style.display = 'none';
+      document.getElementById('noteInputSection').style.display = 'block';
+    }
+
+    function hideNoteInput() {
+      document.getElementById('noteInputSection').style.display = 'none';
+      document.getElementById('responseOptions').style.display = 'flex';
+    }
+
+    function sendNote() {
+      const note = document.getElementById('noteArea').value.trim();
+      if (!note) {
+        alert('请写点什么...');
+        return;
+      }
+
+      if (note.length > 50) {
+        alert('字条限50字以内，轻轻写下想说的话~');
+        return;
+      }
+
+      let pool = JSON.parse(localStorage.getItem('emotionPool_leaves') || '[]');
+      const leaf = pool.find(l => l.id === currentDriftingLeaf.id);
+      if (leaf) {
+        leaf.responses = leaf.responses || [];
+        leaf.responses.push({ type: 'note', content: note, timestamp: new Date().toISOString() });
+        localStorage.setItem('emotionPool_leaves', JSON.stringify(pool));
+      }
+
+      currentUser.responsesGiven++;
+      currentUser.heldLeaves++;
+      saveUserData();
+      updateStats();
+
+      document.getElementById('noteInputSection').style.display = 'none';
+      document.getElementById('driftingLeaf').innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+          <div style="font-size: 48px; margin-bottom: 20px;">💌</div>
+          <p style="color: #5a5046; font-style: italic;">字条已轻轻放下</p>
+          <p style="color: #a89880; font-size: 14px; margin-top: 10px;">对方会在"沉淀层"看到它</p>
+        </div>`;
+
+      setTimeout(() => {
+        resetCatchUI();
       }, 3000);
     }
 
     // ===== 历史页面 =====
     function initHistory() {
       renderTimeline();
+      renderEncounters();
       renderWeekChart();
       checkFrequentEmotions();
+      updateStats();
     }
 
     function renderTimeline() {
@@ -819,13 +1015,52 @@
         const depth = daysAgo > 30 ? '池底' : daysAgo > 7 ? '深处' : '水面';
 
         return `
-          <div class="timeline-item" style="opacity: ${opacity};">
+          <div class="timeline-item" onclick="showMeditationOption('${leaf.emotionId}')" style="cursor: pointer;">
             <div class="timeline-dot" style="background-color: ${leaf.emotionColor};"></div>
             <div class="timeline-content">
               <div class="timeline-emotion">${leaf.emotionName}, ${depth}</div>
               <div class="timeline-text">${escapeHtml(leaf.content)}</div>
               <div class="timeline-time">${formatTime(leaf.timestamp)}</div>
               ${leaf.responses && leaf.responses.length > 0 ? '<div style="margin-top: 8px; color: #a89880; font-size: 12px;">被托住 ' + leaf.responses.length + ' 次</div>' : ''}
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function renderEncounters() {
+      const container = document.getElementById('encounters');
+      const pool = JSON.parse(localStorage.getItem('emotionPool_leaves') || '[]');
+
+      const encounters = pool
+        .filter(l => l.responses && l.responses.length > 0)
+        .filter(l => currentUser.depositedLeaves.includes(l.id))
+        .flatMap(l => l.responses.map(r => ({ leaf: l, response: r })))
+        .sort((a, b) => new Date(b.response.timestamp) - new Date(a.response.timestamp));
+
+      if (encounters.length === 0) {
+        container.innerHTML = '<div class="empty-pool"><p>还没有相遇</p><p style="font-size: 14px; color: #a89880; margin-top: 10px;">去捞一片别人的落叶吧</p></div>';
+        return;
+      }
+
+      const responseTypes = {
+        'resonance': { icon: '🌙', text: '共鸣', desc: '与你感受着同样的颜色' },
+        'comfort': { icon: '🤲', text: '安慰', desc: '轻轻托住了你的落叶' },
+        'witness': { icon: '👁️', text: '见证', desc: '看见了你的那片落叶' },
+        'note': { icon: '💌', text: '字条', desc: '' }
+      };
+
+      container.innerHTML = encounters.map(enc => {
+        const type = responseTypes[enc.response.type] || responseTypes['witness'];
+        const noteContent = enc.response.content ? `<div style="margin-top: 8px; font-size: 14px; color: #5a5046; font-style: italic;">"${escapeHtml(enc.response.content)}"</div>` : '';
+
+        return `
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background-color: ${enc.leaf.emotionColor};"></div>
+            <div class="timeline-content">
+              <div class="timeline-emotion">${enc.leaf.emotionName} · ${type.icon} ${type.text}</div>
+              <div style="font-size: 12px; color: #a89880;">${type.desc}</div>
+              ${noteContent}
+              <div class="timeline-time">${formatTime(enc.response.timestamp)}</div>
             </div>
           </div>`;
       }).join('');
@@ -955,10 +1190,26 @@
       alert('即将进入冥想：' + meditation.name + '\n\n' + meditation.text + '\n\n（实际项目中这里跳转到冥想页面）');
     }
 
+    function showMeditationOption(emotionId) {
+      const meditation = EMOTION_DATA.meditationMap[emotionId];
+      const emo = EMOTION_DATA.emotions.find(e => e.id === emotionId);
+
+      if (confirm('这片' + emo.name + '最近常来，需要一次[' + meditation.name + ']冥想吗？\n\n' + meditation.text + '\n\n点击确定进入冥想，点击取消留在沉淀层')) {
+        goToMeditation(emotionId);
+      }
+    }
+
     // ===== 通用功能 =====
     function updateStats() {
-      document.getElementById('depositedCount').textContent = currentUser.depositedLeaves.length;
-      document.getElementById('heldCount').textContent = currentUser.heldLeaves || 0;
+      const deposited = currentUser.depositedLeaves.length;
+      const caught = currentUser.caughtLeaves ? currentUser.caughtLeaves.length : 0;
+      const held = currentUser.heldLeaves || 0;
+
+      document.getElementById('depositedCount').textContent = deposited;
+      document.getElementById('depositedCount2').textContent = deposited;
+      document.getElementById('caughtCount').textContent = caught;
+      document.getElementById('heldCount').textContent = held;
+      document.getElementById('heldCount2').textContent = held;
     }
 
     function playWaterDropSound() {
