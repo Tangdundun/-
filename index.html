@@ -36,33 +36,52 @@
       50% { transform: translate(30px, 20px) scale(1.02); }
     }
 
-    /* 背景中逼真的小鱼 */
-    .bg-fish {
+    /* 背景中逼真的橘色锦鲤 */
+    .bg-koi {
       position: absolute;
       z-index: 1;
-      opacity: 0.25;
+      opacity: 0.35;
     }
 
-    .bg-fish .fish-body {
-      width: 50px;
-      height: 28px;
-      background: linear-gradient(135deg, #b8a898 0%, #a89888 50%, #988878 100%);
+    .bg-koi .koi-body {
+      width: 60px;
+      height: 32px;
+      background: linear-gradient(145deg, #f58a40 0%, #e86a20 40%, #c84810 100%);
       border-radius: 55% 45% 50% 50% / 60% 55% 45% 40%;
       position: relative;
-      box-shadow: inset 0 -3px 8px rgba(0,0,0,0.15);
+      box-shadow:
+        0 0 20px rgba(245,138,64,0.4),
+        inset 0 -4px 10px rgba(180,60,20,0.3);
     }
 
-    .bg-fish .fish-eye {
+    /* 鳞片闪光 */
+    .bg-koi .koi-scales {
       position: absolute;
-      left: 8px;
+      top: 6px;
+      left: 12px;
+      width: 32px;
+      height: 20px;
+      background: repeating-conic-gradient(
+        from 0deg,
+        rgba(255,255,255,0.2) 0deg 15deg,
+        transparent 15deg 30deg
+      );
+      background-size: 8px 6px;
+    }
+
+    /* 眼睛 */
+    .bg-koi .koi-eye {
+      position: absolute;
+      left: 10px;
       top: 35%;
       width: 5px;
       height: 5px;
-      background: #222;
+      background: #1a1a1a;
       border-radius: 50%;
+      box-shadow: 0 0 2px rgba(0,0,0,0.5);
     }
 
-    .bg-fish .fish-eye::after {
+    .bg-koi .koi-eye::after {
       content: '';
       position: absolute;
       left: 1px;
@@ -73,55 +92,97 @@
       border-radius: 50%;
     }
 
-    .bg-fish .fish-tail {
+    /* 嘴巴 */
+    .bg-koi .koi-mouth {
       position: absolute;
-      right: -15px;
+      right: 2px;
+      top: 45%;
+      width: 4px;
+      height: 3px;
+      background: #c84810;
+      border-radius: 50%;
+    }
+
+    /* 尾巴 */
+    .bg-koi .koi-tail {
+      position: absolute;
+      right: -18px;
       top: 50%;
       transform: translateY(-50%);
-      width: 22px;
-      height: 26px;
-      background: linear-gradient(135deg, #b8a898, #a89888);
+      width: 28px;
+      height: 32px;
+      background: linear-gradient(145deg, #f58a40, #e86a20);
       border-radius: 20% 0 60% 20%;
       transform-origin: left center;
-      animation: tail-wag 0.8s ease-in-out infinite;
-    }
-
-    .bg-fish .fish-fin {
-      position: absolute;
-      width: 14px;
-      height: 10px;
-      background: #a89888;
-      border-radius: 50% 50% 30% 30%;
-    }
-
-    .bg-fish.fish1 { left: 8%; top: 15%; animation: swim-left 14s linear infinite; }
-    .bg-fish.fish1 .fish-body { animation: fish-swim 3s ease-in-out infinite; }
-
-    .bg-fish.fish2 { right: 10%; top: 65%; animation: swim-right 16s linear infinite; }
-    .bg-fish.fish2 .fish-body { animation: fish-swim 3.5s ease-in-out infinite 0.5s; }
-    .bg-fish.fish2 { transform: scaleX(-1); }
-
-    .bg-fish.fish3 { left: 25%; bottom: 12%; animation: swim-left 18s linear infinite 2s; }
-    .bg-fish.fish3 .fish-body { animation: fish-swim 4s ease-in-out infinite 1s; }
-
-    @keyframes swim-left {
-      0% { transform: translateX(-80px); }
-      100% { transform: translateX(calc(100vw + 80px)); }
-    }
-
-    @keyframes swim-right {
-      0% { transform: translateX(80px) scaleX(-1); }
-      100% { transform: translateX(calc(-100vw - 80px)) scaleX(-1); }
-    }
-
-    @keyframes fish-swim {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
+      animation: tail-wag 0.6s ease-in-out infinite;
     }
 
     @keyframes tail-wag {
       0%, 100% { transform: translateY(-50%) rotate(0deg); }
-      50% { transform: translateY(-50%) rotate(12deg); }
+      50% { transform: translateY(-50%) rotate(15deg); }
+    }
+
+    /* 鱼鳍 */
+    .bg-koi .koi-fin {
+      position: absolute;
+      background: linear-gradient(145deg, #e86a20, #c84810);
+      border-radius: 50% 50% 30% 30%;
+    }
+
+    .bg-koi .koi-fin.dorsal {
+      left: 25px;
+      top: -4px;
+      width: 16px;
+      height: 10px;
+    }
+
+    .bg-koi .koi-fin.pectoral {
+      left: 35px;
+      top: 22px;
+      width: 12px;
+      height: 8px;
+    }
+
+    /* 闪光点 */
+    .bg-koi .sparkle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0;
+      animation: sparkle 2s ease-in-out infinite;
+    }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 0; transform: scale(0.5); }
+      50% { opacity: 0.9; transform: scale(1.2); }
+    }
+
+    /* 游动动画 */
+    .bg-koi.koi1 { left: 5%; top: 12%; animation: swim-left 16s linear infinite; }
+    .bg-koi.koi1 .koi-body { animation: koi-swim 3s ease-in-out infinite; }
+
+    .bg-koi.koi2 { right: 8%; top: 60%; animation: swim-right 18s linear infinite; }
+    .bg-koi.koi2 { transform: scaleX(-1); }
+    .bg-koi.koi2 .koi-body { animation: koi-swim 3.5s ease-in-out infinite 0.5s; }
+
+    .bg-koi.koi3 { left: 20%; bottom: 10%; animation: swim-left 20s linear infinite 1s; }
+    .bg-koi.koi3 .koi-body { animation: koi-swim 4s ease-in-out infinite 1s; }
+
+    @keyframes swim-left {
+      0% { transform: translateX(-100px); }
+      100% { transform: translateX(calc(100vw + 100px)); }
+    }
+
+    @keyframes swim-right {
+      0% { transform: translateX(100px) scaleX(-1); }
+      100% { transform: translateX(calc(-100vw - 100px)) scaleX(-1); }
+    }
+
+    @keyframes koi-swim {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
     }
 
     /* 标题区 */
@@ -158,7 +219,7 @@
       z-index: 10;
     }
 
-    /* 超大荷叶 - 带褶皱纹理 */
+    /* 超大荷叶 */
     .lotus-leaf {
       position: absolute;
       left: 50%;
@@ -174,7 +235,6 @@
         inset 0 25px 50px rgba(90, 140, 90, 0.2);
       animation: leaf-breathe 10s ease-in-out infinite;
       z-index: 5;
-      overflow: visible;
     }
 
     @keyframes leaf-breathe {
@@ -182,21 +242,15 @@
       50% { transform: translate(-50%, -52%) scale(1.012); }
     }
 
-    /* 荷叶褶皱纹理 */
+    /* 荷叶褶皱 */
     .lotus-leaf::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      inset: 0;
       border-radius: inherit;
       background:
-        /* 径向褶皱 */
         radial-gradient(ellipse at 30% 25%, transparent 20%, rgba(0,0,0,0.03) 21%, transparent 22%) 0 0 / 60px 60px,
         radial-gradient(ellipse at 70% 60%, transparent 25%, rgba(0,0,0,0.04) 26%, transparent 27%) 0 0 / 80px 80px,
-        radial-gradient(ellipse at 50% 80%, transparent 30%, rgba(0,0,0,0.03) 31%, transparent 32%) 0 0 / 70px 70px,
-        /* 波浪边缘 */
         conic-gradient(from 0deg at 50% 50%, rgba(255,255,255,0.15) 0deg 3deg, transparent 3deg 8deg, rgba(255,255,255,0.1) 8deg 11deg, transparent 11deg 20deg);
       opacity: 0.8;
     }
@@ -219,17 +273,6 @@
     .vein:nth-child(5) { transform: translate(-50%, 0) rotate(122deg); }
     .vein:nth-child(6) { transform: translate(-50%, 0) rotate(152deg); height: 39%; }
 
-    /* 侧叶脉 */
-    .sub-vein {
-      position: absolute;
-      height: 1px;
-      background: linear-gradient(to right, rgba(255,255,255,0.35), transparent);
-      transform-origin: left center;
-    }
-
-    .sub-vein:nth-child(odd) { left: 50%; }
-    .sub-vein:nth-child(even) { left: 50%; transform: scaleX(-1); }
-
     /* 荷叶边缘光晕 */
     .leaf-glow {
       position: absolute;
@@ -240,15 +283,15 @@
       z-index: -1;
     }
 
-    /* 精致情绪树叶 */
+    /* 小荷叶形状的情绪树叶 */
     .emotion-leaf {
       position: absolute;
-      width: 52px;
-      height: 68px;
+      width: 48px;
+      height: 42px;
       left: 50%;
       top: 50%;
-      margin-left: -26px;
-      margin-top: -34px;
+      margin-left: -24px;
+      margin-top: -21px;
       cursor: pointer;
       transition: all 0.4s ease;
       z-index: 20;
@@ -258,45 +301,45 @@
     .emotion-leaf .leaf-body {
       width: 100%;
       height: 100%;
-      border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
       position: relative;
       box-shadow:
-        0 5px 18px rgba(0,0,0,0.18),
-        inset 0 -8px 20px rgba(0,0,0,0.12),
-        inset 0 6px 12px rgba(255,255,255,0.35);
+        0 4px 15px rgba(0,0,0,0.18),
+        inset 0 -6px 15px rgba(0,0,0,0.1),
+        inset 0 5px 10px rgba(255,255,255,0.35);
     }
 
-    /* 精致叶脉 */
+    /* 小荷叶叶脉 */
     .emotion-leaf .leaf-body::before {
       content: '';
       position: absolute;
-      top: 42%;
-      left: 12%;
-      width: 76%;
+      top: 40%;
+      left: 10%;
+      width: 80%;
       height: 2px;
-      background: linear-gradient(to right, rgba(255,255,255,0.5), rgba(255,255,255,0.15), transparent);
-      transform: rotate(-10deg);
+      background: linear-gradient(to right, rgba(255,255,255,0.5), rgba(255,255,255,0.1), transparent);
+      transform: rotate(-8deg);
     }
 
     .emotion-leaf .leaf-body::after {
       content: '';
       position: absolute;
-      top: 25%;
+      top: 22%;
       left: 50%;
       width: 1px;
-      height: 25%;
+      height: 22%;
       background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
     }
 
     .emotion-leaf:hover {
-      transform: scale(1.2);
+      transform: scale(1.22);
     }
 
     .emotion-leaf:hover .leaf-body {
       box-shadow:
-        0 10px 30px rgba(0,0,0,0.22),
-        inset 0 -8px 20px rgba(0,0,0,0.12),
-        inset 0 8px 15px rgba(255,255,255,0.4);
+        0 8px 25px rgba(0,0,0,0.22),
+        inset 0 -6px 15px rgba(0,0,0,0.1),
+        inset 0 6px 12px rgba(255,255,255,0.4);
     }
 
     .emotion-leaf.faded {
@@ -316,7 +359,7 @@
       50% { transform: translate(var(--x), var(--y)) translateY(-6px) rotate(var(--r)); }
     }
 
-    /* 精致渔网 */
+    /* 渔网 */
     .net {
       position: absolute;
       width: 110px;
@@ -397,7 +440,6 @@
         inset 0 -6px 18px rgba(160,60,20,0.35);
     }
 
-    /* 鳞片 */
     .koi-scales {
       position: absolute;
       top: 10px;
@@ -410,7 +452,6 @@
         transparent 10deg 20deg
       );
       background-size: 10px 8px;
-      border-radius: 30%;
     }
 
     .koi-head {
@@ -431,7 +472,6 @@
       height: 6px;
       background: #1a1a1a;
       border-radius: 50%;
-      box-shadow: 0 0 2px rgba(0,0,0,0.5);
     }
 
     .koi-eye::after {
@@ -522,12 +562,9 @@
       background: linear-gradient(180deg, #6a8a58 0%, #4a6a38 50%, #3a5a28 100%);
       border-radius: 52% 48% 50% 50% / 55% 52% 48% 45%;
       position: relative;
-      box-shadow:
-        0 0 25px rgba(70,100,50,0.45),
-        inset 0 -8px 20px rgba(0,0,0,0.2);
+      box-shadow: 0 0 25px rgba(70,100,50,0.45);
     }
 
-    /* 龟壳六边形纹理 */
     .turtle-shell::before {
       content: '';
       position: absolute;
@@ -537,8 +574,7 @@
       bottom: 12px;
       background:
         linear-gradient(30deg, transparent 47%, rgba(255,255,255,0.18) 48%, rgba(255,255,255,0.18) 52%, transparent 53%) 0 0 / 18px 12px,
-        linear-gradient(-30deg, transparent 47%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.15) 52%, transparent 53%) 0 0 / 14px 10px,
-        linear-gradient(90deg, transparent 48%, rgba(255,255,255,0.12) 49%, rgba(255,255,255,0.12) 51%, transparent 52%) 0 0 / 12px 12px;
+        linear-gradient(-30deg, transparent 47%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.15) 52%, transparent 53%) 0 0 / 14px 10px;
       border-radius: 50%;
       opacity: 0.7;
     }
@@ -673,27 +709,44 @@
 <body>
   <div class="water-bg"></div>
 
-  <!-- 逼真背景小鱼 -->
-  <div class="bg-fish fish1">
-    <div class="fish-body">
-      <div class="fish-eye"></div>
-      <div class="fish-fin"></div>
+  <!-- 背景橘色锦鲤 -->
+  <div class="bg-koi koi1">
+    <div class="koi-body">
+      <div class="koi-scales"></div>
+      <div class="koi-eye"></div>
+      <div class="koi-mouth"></div>
+      <div class="koi-fin dorsal"></div>
+      <div class="koi-fin pectoral"></div>
+      <div class="sparkle" style="left: 20px; top: 8px; animation-delay: 0s;"></div>
+      <div class="sparkle" style="left: 35px; top: 15px; animation-delay: 0.7s;"></div>
     </div>
-    <div class="fish-tail"></div>
+    <div class="koi-tail"></div>
   </div>
-  <div class="bg-fish fish2">
-    <div class="fish-body">
-      <div class="fish-eye"></div>
-      <div class="fish-fin"></div>
+
+  <div class="bg-koi koi2">
+    <div class="koi-body">
+      <div class="koi-scales"></div>
+      <div class="koi-eye"></div>
+      <div class="koi-mouth"></div>
+      <div class="koi-fin dorsal"></div>
+      <div class="koi-fin pectoral"></div>
+      <div class="sparkle" style="left: 20px; top: 8px; animation-delay: 0.3s;"></div>
+      <div class="sparkle" style="left: 35px; top: 15px; animation-delay: 1s;"></div>
     </div>
-    <div class="fish-tail"></div>
+    <div class="koi-tail"></div>
   </div>
-  <div class="bg-fish fish3">
-    <div class="fish-body">
-      <div class="fish-eye"></div>
-      <div class="fish-fin"></div>
+
+  <div class="bg-koi koi3">
+    <div class="koi-body">
+      <div class="koi-scales"></div>
+      <div class="koi-eye"></div>
+      <div class="koi-mouth"></div>
+      <div class="koi-fin dorsal"></div>
+      <div class="koi-fin pectoral"></div>
+      <div class="sparkle" style="left: 20px; top: 8px; animation-delay: 0.5s;"></div>
+      <div class="sparkle" style="left: 35px; top: 15px; animation-delay: 1.2s;"></div>
     </div>
-    <div class="fish-tail"></div>
+    <div class="koi-tail"></div>
   </div>
 
   <div class="title-area">
@@ -702,7 +755,7 @@
   </div>
 
   <div class="pond" id="pond">
-    <!-- 超大荷叶带褶皱 -->
+    <!-- 超大荷叶 -->
     <div class="lotus-leaf">
       <div class="leaf-glow"></div>
       <div class="vein"></div>
@@ -713,7 +766,7 @@
       <div class="vein"></div>
     </div>
 
-    <!-- 精致渔网 -->
+    <!-- 渔网 -->
     <div class="net" id="net">
       <svg viewBox="0 0 110 110">
         <circle cx="55" cy="55" r="50" fill="none" stroke="#9a8070" stroke-width="3" opacity="0.9"/>
@@ -770,17 +823,17 @@
     const eDesc = document.getElementById('eDesc');
     const lead = document.getElementById('lead');
 
-    const radius = 190;
+    const radius = 185;
     let selected = null;
     let isAnimating = false;
 
-    // 生成12片精致情绪树叶
+    // 生成12片小荷叶形状的情绪树叶
     emotions.forEach((emo, i) => {
       const angle = (i / 12) * 360 - 90;
       const rad = (angle * Math.PI) / 180;
       const x = Math.cos(rad) * radius;
       const y = Math.sin(rad) * radius;
-      const rotation = (i % 2 === 0 ? -6 : 6);
+      const rotation = (i % 2 === 0 ? -5 : 5);
 
       const leaf = document.createElement('div');
       leaf.className = 'emotion-leaf';
