@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>情绪池 - 情绪之境</title>
+  <title>情绪池 - 选色</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&display=swap');
 
@@ -11,10 +11,6 @@
 
     body {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       background: linear-gradient(180deg, #faf8f5 0%, #f0e8dc 30%, #e5ddd0 60%, #d8d0c4 100%);
       font-family: "Noto Serif SC", serif;
       color: #6b5d4f;
@@ -22,15 +18,15 @@
       position: relative;
     }
 
-    .water-ripple {
+    /* 水波背景 */
+    .water-bg {
       position: absolute;
-      width: 150%;
-      height: 150%;
-      top: -25%;
-      left: -25%;
-      background:
-        radial-gradient(ellipse 300px 150px at 30% 40%, rgba(232,224,212,0.4) 0%, transparent 60%),
-        radial-gradient(ellipse 400px 200px at 70% 60%, rgba(224,216,204,0.3) 0%, transparent 50%);
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+      background: radial-gradient(ellipse 300px 150px at 30% 40%, rgba(232,224,212,0.4) 0%, transparent 60%),
+                  radial-gradient(ellipse 400px 200px at 70% 60%, rgba(224,216,204,0.3) 0%, transparent 50%);
       animation: wave 10s ease-in-out infinite;
       pointer-events: none;
     }
@@ -40,129 +36,144 @@
       50% { transform: translate(30px, 20px) scale(1.02); }
     }
 
-    .ornament {
-      position: absolute;
-      top: 50px;
-      width: 180px;
-      height: 40px;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 40'%3E%3Cpath d='M90 5 Q70 20 90 35 Q110 20 90 5' fill='none' stroke='%23c9b8a0' stroke-width='1' opacity='0.4'/%3E%3Cpath d='M20 25 Q50 15 90 25 Q130 15 160 25' fill='none' stroke='%23c9b8a0' stroke-width='0.5' opacity='0.3'/%3E%3C/svg%3E") no-repeat center;
-      opacity: 0.6;
+    /* 标题区 */
+    .title-area {
+      text-align: center;
+      padding-top: 40px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 10;
     }
 
     h2 {
       font-weight: 300;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       letter-spacing: 0.2em;
       color: #5a5046;
-      margin-bottom: 15px;
-      position: relative;
-      z-index: 10;
+      margin-bottom: 8px;
     }
 
     .guide-text {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: #8b7d6b;
       font-style: italic;
-      margin-bottom: 50px;
-      height: 24px;
-      transition: all 0.3s ease;
-      position: relative;
-      z-index: 10;
-      font-weight: 300;
+      min-height: 20px;
+      transition: all 0.3s;
     }
 
+    /* 池塘 */
     .pond {
       position: relative;
       width: 420px;
       height: 420px;
+      margin: 0 auto;
       z-index: 10;
     }
 
-    .pond-depth {
+    /* 大荷叶 */
+    .lotus-leaf {
       position: absolute;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 160px;
-      height: 160px;
-      background: radial-gradient(circle, rgba(200,192,180,0.5) 0%, transparent 70%);
-      border-radius: 50%;
-      pointer-events: none;
+      width: 340px;
+      height: 340px;
+      background: radial-gradient(ellipse at 30% 30%, #b0d8b8 0%, #9cc89c 40%, #7ab87a 100%);
+      border-radius: 55% 45% 50% 50% / 60% 55% 45% 40%;
+      box-shadow: 0 8px 30px rgba(90, 140, 90, 0.3), inset 0 -20px 60px rgba(255,255,255,0.2);
+      animation: leaf-float 6s ease-in-out infinite;
+      z-index: 5;
     }
 
-    .leaf {
+    @keyframes leaf-float {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -52%) scale(1.01); }
+    }
+
+    /* 叶脉 */
+    .lotus-leaf::before {
+      content: '';
       position: absolute;
-      width: 64px;
-      height: 64px;
+      top: 50%;
+      left: 50%;
+      width: 60%;
+      height: 60%;
+      transform: translate(-50%, -50%);
+      background:
+        linear-gradient(0deg, transparent 48%, rgba(255,255,255,0.3) 49%, rgba(255,255,255,0.3) 51%, transparent 52%) 0 0 / 30px 30px,
+        linear-gradient(60deg, transparent 48%, rgba(255,255,255,0.2) 49%, rgba(255,255,255,0.2) 51%, transparent 52%) 0 0 / 20px 20px;
+      opacity: 0.5;
+    }
+
+    /* 荷叶边缘波浪 */
+    .lotus-leaf::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(ellipse at 70% 70%, transparent 60%, rgba(90,140,90,0.3) 100%);
+      filter: blur(3px);
+    }
+
+    /* 露珠 */
+    .dewdrop {
+      position: absolute;
+      width: 44px;
+      height: 44px;
       left: 50%;
       top: 50%;
-      margin-left: -32px;
-      margin-top: -32px;
+      margin-left: -22px;
+      margin-top: -22px;
+      border-radius: 50%;
       cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08), inset 0 -3px 12px rgba(255,255,255,0.4);
-      opacity: 0.88;
+      transition: all 0.3s ease;
       z-index: 20;
-      border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
-      animation: float 4s ease-in-out infinite;
+      animation: dew-float 3s ease-in-out infinite;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 -8px 15px rgba(0,0,0,0.1), inset 0 4px 8px rgba(255,255,255,0.5);
     }
 
-    .leaf::before {
-      content: "";
+    .dewdrop::before {
+      content: '';
       position: absolute;
-      top: 55%;
-      left: 20%;
-      right: 20%;
-      height: 1.5px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-      transform: rotate(-10deg);
+      top: 8px;
+      left: 8px;
+      width: 12px;
+      height: 8px;
+      background: rgba(255,255,255,0.8);
+      border-radius: 50%;
+      filter: blur(2px);
     }
 
-    .leaf::after {
-      content: "";
-      position: absolute;
-      top: 40%;
-      left: 30%;
-      width: 20%;
-      height: 1px;
-      background: rgba(255,255,255,0.3);
-      transform: rotate(30deg);
+    .dewdrop:hover {
+      transform: scale(1.15);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     }
 
-    @keyframes float {
-      0%, 100% { transform: translate(var(--x), var(--y)) rotate(var(--rot)) translateY(0); }
-      50% { transform: translate(var(--x), var(--y)) rotate(var(--rot)) translateY(-6px); }
-    }
-
-    .leaf:hover {
-      transform: translate(var(--x), var(--y)) rotate(var(--rot)) scale(1.12) !important;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-      opacity: 1;
-      filter: brightness(1.05);
-    }
-
-    .leaf.caught {
-      opacity: 0;
-      transform: translate(var(--x), var(--y)) scale(0.3) !important;
-      transition: all 0.6s ease;
-      pointer-events: none;
-    }
-
-    .leaf.faded {
+    .dewdrop.faded {
       opacity: 0.25;
-      transform: translate(var(--x), var(--y)) scale(0.85) !important;
-      filter: grayscale(0.3);
+      filter: grayscale(0.5);
+    }
+
+    .dewdrop.caught {
+      opacity: 0;
+      transform: scale(0.3);
       transition: all 0.5s ease;
     }
 
+    @keyframes dew-float {
+      0%, 100% { transform: translate(var(--x), var(--y)) translateY(0); }
+      50% { transform: translate(var(--x), var(--y)) translateY(-4px); }
+    }
+
+    /* 渔网 */
     .net {
       position: absolute;
-      width: 100px;
-      height: 100px;
+      width: 90px;
+      height: 90px;
       left: 50%;
       top: 50%;
-      margin-left: -50px;
-      margin-top: -50px;
+      margin-left: -45px;
+      margin-top: -45px;
       opacity: 0;
       pointer-events: none;
       z-index: 25;
@@ -173,12 +184,13 @@
       opacity: 0.9;
     }
 
-    .net-svg {
+    .net svg {
       width: 100%;
       height: 100%;
       filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
     }
 
+    /* 中央展示 */
     .display {
       position: absolute;
       left: 50%;
@@ -188,7 +200,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.6s ease;
-      width: 240px;
+      width: 200px;
       z-index: 15;
     }
 
@@ -197,29 +209,37 @@
       pointer-events: auto;
     }
 
-    .creature-area {
-      width: 120px;
-      height: 120px;
-      margin: 0 auto 20px;
+    /* 生物容器 */
+    .creature-home {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 15px;
       position: relative;
-      border-radius: 50%;
-      overflow: hidden;
     }
 
-    .koi {
-      width: 70px;
-      height: 40px;
-      background: linear-gradient(135deg, #f4a676 0%, #e89b6c 50%, #d48658 100%);
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    /* 锦鲤 */
+    .koi-container {
+      display: none;
+      width: 80px;
+      height: 45px;
       position: absolute;
-      left: 25px;
-      top: 40px;
-      box-shadow: 0 0 20px rgba(244,166,118,0.6), 0 0 40px rgba(232,155,108,0.3), inset 0 -2px 8px rgba(180,100,60,0.3);
-      animation: koi-swim 3s ease-in-out infinite;
+      left: 10px;
+      top: 28px;
     }
 
-    .koi::before {
-      content: "";
+    .koi-container.show { display: block; }
+
+    .koi-body {
+      width: 80px;
+      height: 40px;
+      background: linear-gradient(135deg, #f4a676, #e89b6c 50%, #d48658);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      box-shadow: 0 0 20px rgba(244,166,118,0.5);
+      position: relative;
+    }
+
+    .koi-body::before {
+      content: '';
       position: absolute;
       right: -18px;
       top: 50%;
@@ -228,186 +248,126 @@
       height: 32px;
       background: linear-gradient(135deg, #f4a676, #e89b6c);
       border-radius: 0 80% 80% 0;
-      opacity: 0.9;
-      animation: koi-tail 0.8s ease-in-out infinite;
-      box-shadow: 0 0 10px rgba(244,166,118,0.5);
     }
 
-    .koi::after {
-      content: "";
+    .koi-body::after {
+      content: '';
       position: absolute;
-      left: 12px;
-      top: 38%;
+      left: 15px;
+      top: 35%;
       width: 5px;
       height: 5px;
       background: rgba(255,255,255,0.9);
       border-radius: 50%;
-      box-shadow: 0 0 3px rgba(0,0,0,0.2);
     }
 
-    .koi-shine {
-      position: absolute;
-      width: 3px;
-      height: 3px;
-      background: white;
-      border-radius: 50%;
-      opacity: 0;
-      animation: shine 1.5s ease-in-out infinite;
+    .koi-container.swimming .koi-body {
+      animation: koi-swim 3s ease-in-out infinite;
     }
 
     @keyframes koi-swim {
       0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      25% { transform: translate(8px, -10px) rotate(-8deg); }
-      50% { transform: translate(0, -5px) rotate(0deg); }
-      75% { transform: translate(-8px, -10px) rotate(8deg); }
+      25% { transform: translate(10px, -8px) rotate(-5deg); }
+      50% { transform: translate(0, -4px) rotate(0deg); }
+      75% { transform: translate(-8px, -8px) rotate(5deg); }
     }
 
-    @keyframes koi-tail {
-      0%, 100% { transform: translateY(-50%) rotate(0deg); }
-      50% { transform: translateY(-50%) rotate(25deg); }
-    }
-
-    @keyframes shine {
-      0%, 100% { opacity: 0; transform: scale(0.5); }
-      50% { opacity: 0.9; transform: scale(1.2); }
-    }
-
-    .turtle {
-      width: 60px;
-      height: 50px;
-      background: linear-gradient(180deg, #6a9a7a 0%, #5a8a6a 100%);
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    /* 乌龟 */
+    .turtle-container {
+      display: none;
+      width: 70px;
+      height: 55px;
       position: absolute;
-      left: 30px;
-      top: 35px;
-      box-shadow: 0 0 15px rgba(90,138,106,0.4), inset 0 -3px 8px rgba(40,80,60,0.3);
-      animation: turtle-swim 5s ease-in-out infinite;
+      left: 15px;
+      top: 25px;
     }
 
-    .turtle::before {
-      content: "";
-      position: absolute;
-      top: 15%;
-      left: 15%;
-      right: 15%;
-      bottom: 25%;
-      background-image:
-        linear-gradient(30deg, transparent 48%, rgba(255,255,255,0.3) 49%, rgba(255,255,255,0.3) 51%, transparent 52%),
-        linear-gradient(-30deg, transparent 48%, rgba(255,255,255,0.3) 49%, rgba(255,255,255,0.3) 51%, transparent 52%),
-        linear-gradient(90deg, transparent 48%, rgba(255,255,255,0.2) 49%, rgba(255,255,255,0.2) 51%, transparent 52%);
-      background-size: 20px 12px;
-      border-radius: 50%;
-      opacity: 0.7;
-    }
+    .turtle-container.show { display: block; }
 
     .turtle-head {
       position: absolute;
-      width: 22px;
-      height: 18px;
+      width: 20px;
+      height: 16px;
       background: linear-gradient(180deg, #7aaa8a, #6a9a7a);
       border-radius: 50%;
       top: 8px;
       left: 50%;
       transform: translateX(-50%);
-      animation: turtle-head 4s ease-in-out infinite;
     }
 
-    .turtle-head::after {
-      content: "";
-      position: absolute;
-      top: 35%;
-      left: 25%;
-      width: 3px;
-      height: 3px;
-      background: rgba(255,255,255,0.8);
-      border-radius: 50%;
-      box-shadow: 8px 0 0 rgba(255,255,255,0.8);
+    .turtle-shell {
+      width: 60px;
+      height: 50px;
+      background: linear-gradient(180deg, #6a9a7a, #5a8a6a);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      box-shadow: 0 0 15px rgba(90,138,106,0.4);
     }
 
-    .turtle-flipper {
+    .turtle-leg {
       position: absolute;
-      width: 18px;
-      height: 12px;
+      width: 15px;
+      height: 10px;
       background: #5a8a6a;
       border-radius: 50%;
-      opacity: 0.8;
-      animation: flipper 2s ease-in-out infinite;
     }
 
-    @keyframes turtle-swim {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      33% { transform: translate(10px, -5px) rotate(-3deg); }
-      66% { transform: translate(-5px, -8px) rotate(3deg); }
+    .turtle-leg:nth-child(3) { left: 2px; top: 18px; }
+    .turtle-leg:nth-child(4) { right: 2px; top: 15px; }
+    .turtle-leg:nth-child(5) { left: 5px; top: 38px; }
+    .turtle-leg:nth-child(6) { right: 5px; top: 35px; }
+
+    .turtle-container.swimming .turtle-leg {
+      animation: leg-kick 1s ease-in-out infinite;
     }
 
-    @keyframes turtle-head {
-      0%, 70%, 100% { transform: translateX(-50%) translateY(0); }
-      80% { transform: translateX(-50%) translateY(3px); }
-      90% { transform: translateX(-50%) translateY(0); }
-    }
-
-    @keyframes flipper {
+    @keyframes leg-kick {
       0%, 100% { transform: rotate(0deg); }
       50% { transform: rotate(15deg); }
     }
 
+    /* 文字 */
     .emotion-name {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       color: #4a4239;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       font-weight: 400;
       letter-spacing: 0.1em;
       opacity: 0;
-      transform: translateY(15px);
+      transform: translateY(10px);
       transition: all 0.5s ease 0.3s;
     }
 
     .emotion-desc {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: #7a6d5a;
       font-style: italic;
-      margin-bottom: 25px;
-      font-weight: 300;
+      margin-bottom: 20px;
       opacity: 0;
-      transform: translateY(15px);
+      transform: translateY(10px);
       transition: all 0.5s ease 0.45s;
     }
 
     .lead-text {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: #6b5d4f;
       font-style: italic;
       cursor: pointer;
-      position: relative;
       display: inline-block;
-      padding: 0 10px;
       opacity: 0;
-      transform: translateY(15px);
+      transform: translateY(10px);
       transition: all 0.5s ease 0.6s;
-      letter-spacing: 0.05em;
     }
 
     .lead-text::after {
-      content: "";
-      position: absolute;
-      bottom: -4px;
-      left: 10%;
-      right: 10%;
+      content: '';
+      display: block;
+      width: 100%;
       height: 1px;
       background: linear-gradient(90deg, transparent, #c9b8a0, transparent);
-      transition: all 0.3s ease;
+      margin-top: 3px;
     }
 
-    .lead-text:hover {
-      transform: translateY(-3px);
-      color: #5a5046;
-    }
-
-    .lead-text:hover::after {
-      left: 5%;
-      right: 5%;
-      background: linear-gradient(90deg, transparent, #b5a28c, transparent);
-    }
+    .lead-text:hover { color: #5a5046; }
 
     .display.show .emotion-name,
     .display.show .emotion-desc,
@@ -416,6 +376,7 @@
       transform: translateY(0);
     }
 
+    /* 涟漪 */
     .ripple {
       position: absolute;
       border: 2px solid var(--ripple-color);
@@ -425,53 +386,54 @@
     }
 
     @keyframes ripple-expand {
-      0% { transform: scale(0.8); opacity: 0.6; }
+      0% { transform: scale(0.8); opacity: 0.5; }
       100% { transform: scale(2.5); opacity: 0; }
     }
 
+    /* 底部 */
     .brand {
       position: absolute;
       bottom: 35px;
+      left: 0;
+      right: 0;
+      text-align: center;
       font-size: 0.75rem;
       color: #a89880;
       letter-spacing: 0.25em;
       opacity: 0.5;
-      font-weight: 300;
     }
   </style>
 </head>
 <body>
-  <div class="water-ripple"></div>
-  <div class="ornament"></div>
+  <div class="water-bg"></div>
 
-  <h2>此刻，你是什么颜色</h2>
-  <div class="guide-text" id="guide">每一种情绪都值得被看见</div>
+  <div class="title-area">
+    <h2>此刻，你是什么颜色</h2>
+    <div class="guide-text" id="guide">每一种情绪都值得被看见</div>
+  </div>
 
   <div class="pond" id="pond">
-    <div class="pond-depth"></div>
+    <!-- 大荷叶 -->
+    <div class="lotus-leaf"></div>
 
+    <!-- 渔网 -->
     <div class="net" id="net">
-      <svg class="net-svg" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="45" fill="none" stroke="#a89070" stroke-width="2" opacity="0.8"/>
-        <circle cx="50" cy="50" r="42" fill="none" stroke="#c9b8a0" stroke-width="1" opacity="0.6"/>
-        <g stroke="#b8a890" stroke-width="0.8" opacity="0.5">
-          <line x1="50" y1="5" x2="50" y2="95"/>
-          <line x1="5" y1="50" x2="95" y2="50"/>
-          <line x1="18" y1="18" x2="82" y2="82"/>
-          <line x1="82" y1="18" x2="18" y2="82"/>
-          <line x1="50" y1="5" x2="85" y2="25"/>
-          <line x1="50" y1="5" x2="15" y2="25"/>
-          <line x1="50" y1="95" x2="85" y2="75"/>
-          <line x1="50" y1="95" x2="15" y2="75"/>
+      <svg viewBox="0 0 90 90">
+        <circle cx="45" cy="45" r="40" fill="none" stroke="#a89070" stroke-width="2" opacity="0.8"/>
+        <circle cx="45" cy="45" r="37" fill="none" stroke="#c9b8a0" stroke-width="1" opacity="0.6"/>
+        <g stroke="#b8a890" stroke-width="0.7" opacity="0.5">
+          <line x1="45" y1="5" x2="45" y2="85"/>
+          <line x1="5" y1="45" x2="85" y2="45"/>
+          <line x1="15" y1="15" x2="75" y2="75"/>
+          <line x1="75" y1="15" x2="15" y2="75"/>
         </g>
-        <path d="M 20 65 Q 50 85 80 65" fill="none" stroke="#a89070" stroke-width="1.5" opacity="0.7"/>
-        <path d="M 25 68 Q 50 82 75 68" fill="none" stroke="#b8a890" stroke-width="1" opacity="0.5"/>
-        <line x1="50" y1="5" x2="50" y2="-20" stroke="#a89070" stroke-width="2"/>
+        <path d="M 15 60 Q 45 75 75 60" fill="none" stroke="#a89070" stroke-width="1.5" opacity="0.7"/>
       </svg>
     </div>
 
+    <!-- 中央展示 -->
     <div class="display" id="display">
-      <div class="creature-area" id="creatureArea"></div>
+      <div class="creature-home" id="creatureHome"></div>
       <div class="emotion-name" id="eName"></div>
       <div class="emotion-desc" id="eDesc"></div>
       <div class="lead-text" id="lead" onclick="goNext()">让它随波，流入你的笔下</div>
@@ -482,25 +444,25 @@
 
   <script>
     const emotions = [
-      { id: 'warmth', name: '温暖黄', desc: '被阳光晒过', color: '#e8d4b8', glow: '#f4e4c8', type: 'koi', rotation: 8, guide: '把阳光的温度，存进文字', freq: 523.2 },
-      { id: 'anticipation', name: '期待粉', desc: '心在扑通跳', color: '#f0d8d8', glow: '#f8e8e8', type: 'koi', rotation: -12, guide: '把扑通的心跳，系在笔尖', freq: 587.3 },
-      { id: 'calm', name: '平静青', desc: '风很轻', color: '#c8d8d0', glow: '#e0f0e8', type: 'koi', rotation: 5, guide: '这阵风，想带你写点什么', freq: 440 },
-      { id: 'hope', name: '希望绿', desc: '嫩芽在破土', color: '#d0e0c8', glow: '#e8f8e0', type: 'koi', rotation: 15, guide: '那棵嫩芽，想在你纸上生长', freq: 493.9 },
-      { id: 'anxiety', name: '焦虑橙', desc: '心里有一团火', color: '#e0c8a8', glow: '#c8d8b8', type: 'turtle', rotation: -18, guide: '让这团火，慢慢冷却', freq: 329.6 },
-      { id: 'melancholy', name: '忧郁蓝', desc: '云遮住了光', color: '#b8c8d0', glow: '#a8c8b8', type: 'turtle', rotation: -22, guide: '把云上的重量，交给池水', freq: 261.6 },
-      { id: 'exhaustion', name: '疲惫灰', desc: '力气被抽走了', color: '#d0d0c8', glow: '#b8c8a8', type: 'turtle', rotation: 12, guide: '让它驮着你，歇一歇', freq: 293.7 },
-      { id: 'grievance', name: '委屈紫', desc: '酸涩在胸口', color: '#d8c8d8', glow: '#c8d8c0', type: 'turtle', rotation: -8, guide: '把酸涩，写给池水听', freq: 349.2 },
-      { id: 'heartbreak', name: '心碎粉', desc: '裂开的疼', color: '#e8d0d0', glow: '#d0e0d0', type: 'turtle', rotation: 18, guide: '让裂缝里的光，慢慢淌出', freq: 392 },
-      { id: 'emptiness', name: '空洞黑', desc: '什么都没有', color: '#686860', glow: '#809080', type: 'turtle', rotation: 0, guide: '把空白，写成存在', freq: 220 },
-      { id: 'chaos', name: '混乱彩', desc: '太多颜色搅在一起', color: '#c8c0c8', glow: '#b8c8b0', type: 'turtle', rotation: 28, guide: '让搅在一起的颜色，慢慢沉底', freq: 440 },
-      { id: 'nostalgia', name: '怀旧棕', desc: '时光在倒流', color: '#d8c8a8', glow: '#c8c0a0', type: 'turtle', rotation: -15, guide: '让倒流的时光，停在这一行', freq: 329.6 }
+      { id: "warmth", name: "温暖黄", desc: "被阳光晒过", color: "#e8d4b8", glow: "#f4e4c8", type: "koi", guide: "把阳光的温度，存进文字" },
+      { id: "anticipation", name: "期待粉", desc: "心在扑通跳", color: "#f0d8d8", glow: "#f8e8e8", type: "koi", guide: "把扑通的心跳，系在笔尖" },
+      { id: "calm", name: "平静青", desc: "风很轻", color: "#c8d8d0", glow: "#e0f0e8", type: "koi", guide: "这阵风，想带你写点什么" },
+      { id: "hope", name: "希望绿", desc: "嫩芽在破土", color: "#d0e0c8", glow: "#e8f8e0", type: "koi", guide: "那棵嫩芽，想在你纸上生长" },
+      { id: "anxiety", name: "焦虑橙", desc: "心里有一团火", color: "#e0c8a8", glow: "#c8d8b8", type: "turtle", guide: "让这团火，慢慢冷却" },
+      { id: "melancholy", name: "忧郁蓝", desc: "云遮住了光", color: "#b8c8d0", glow: "#a8c8b8", type: "turtle", guide: "把云上的重量，交给池水" },
+      { id: "exhaustion", name: "疲惫灰", desc: "力气被抽走了", color: "#d0d0c8", glow: "#b8c8a8", type: "turtle", guide: "让它驮着你，歇一歇" },
+      { id: "grievance", name: "委屈紫", desc: "酸涩在胸口", color: "#d8c8d8", glow: "#c8d8c0", type: "turtle", guide: "把酸涩，写给池水听" },
+      { id: "heartbreak", name: "心碎粉", desc: "裂开的疼", color: "#e8d0d0", glow: "#d0e0d0", type: "turtle", guide: "让裂缝里的光，慢慢淌出" },
+      { id: "emptiness", name: "空洞黑", desc: "什么都��有", color: "#686860", glow: "#809080", type: "turtle", guide: "把空白，写成存在" },
+      { id: "chaos", name: "混乱彩", desc: "太多颜色搅在一起", color: "#c8c0c8", glow: "#b8c8b0", type: "turtle", guide: "让搅在一起的颜色，慢慢沉底" },
+      { id: "nostalgia", name: "怀旧棕", desc: "时光在倒流", color: "#d8c8a8", glow: "#c8c0a0", type: "turtle", guide: "让倒流的时光，停在这一行" }
     ];
 
     const pond = document.getElementById('pond');
     const net = document.getElementById('net');
     const display = document.getElementById('display');
     const guide = document.getElementById('guide');
-    const creatureArea = document.getElementById('creatureArea');
+    const creatureHome = document.getElementById('creatureHome');
     const eName = document.getElementById('eName');
     const eDesc = document.getElementById('eDesc');
     const lead = document.getElementById('lead');
@@ -509,68 +471,63 @@
     let selected = null;
     let isAnimating = false;
 
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
+    // 生成12颗露珠
     emotions.forEach((emo, i) => {
       const angle = (i / 12) * 360 - 90;
       const rad = (angle * Math.PI) / 180;
       const x = Math.cos(rad) * radius;
       const y = Math.sin(rad) * radius;
 
-      const leaf = document.createElement('div');
-      leaf.className = 'leaf';
-      leaf.id = `leaf-${emo.id}`;
-      leaf.style.setProperty('--x', `${x}px`);
-      leaf.style.setProperty('--y', `${y}px`);
-      leaf.style.setProperty('--rot', `${emo.rotation}deg`);
-      leaf.style.backgroundColor = emo.color;
-      leaf.style.animationDelay = `${i * 0.3}s`;
+      const dew = document.createElement('div');
+      dew.className = 'dewdrop';
+      dew.id = 'dew-' + emo.id;
+      dew.style.backgroundColor = emo.color;
+      dew.style.setProperty('--x', x + 'px');
+      dew.style.setProperty('--y', y + 'px');
+      dew.style.animationDelay = (i * 0.4) + 's';
 
-      leaf.addEventListener('mouseenter', () => {
-        if (!isAnimating && !selected) {
-          guide.textContent = `这是${emo.name}的感觉`;
-          playTone(emo.freq, 0.25, 'sine');
-        }
+      dew.addEventListener('mouseenter', () => {
+        if (!isAnimating && !selected) guide.textContent = '这是' + emo.name + '的感觉';
       });
 
-      leaf.addEventListener('mouseleave', () => {
+      dew.addEventListener('mouseleave', () => {
         if (!selected) guide.textContent = '每一种情绪都值得被看见';
       });
 
-      leaf.addEventListener('click', () => catchLeaf(emo, leaf, x, y));
+      dew.addEventListener('click', () => catchDew(emo, dew, x, y));
 
-      pond.appendChild(leaf);
+      pond.appendChild(dew);
     });
 
-    function catchLeaf(emo, leaf, x, y) {
+    function catchDew(emo, dewElement, x, y) {
       if (isAnimating || selected === emo.id) return;
       isAnimating = true;
       selected = emo.id;
 
-      playWaterDrop();
+      guide.textContent = emo.desc + '，原来是这样';
 
-      guide.textContent = `${emo.desc}，原来是这样`;
-
+      // 渔网移动到露珠位置
       net.classList.add('active');
-      net.style.transform = `translate(${x}px, ${y}px)`;
+      net.style.left = 'calc(50% + ' + x + 'px)';
+      net.style.top = 'calc(50% + ' + y + 'px)';
+      net.style.transform = 'translate(-50%, -50%)';
 
       setTimeout(() => {
-        document.querySelectorAll('.leaf').forEach(l => {
-          if (l !== leaf) l.classList.add('faded');
+        document.querySelectorAll('.dewdrop').forEach(d => {
+          if (d !== dewElement) d.classList.add('faded');
         });
-
-        net.style.transform = 'translate(0, 0)';
-        leaf.style.transform = 'translate(0, 0) scale(0.4)';
-        leaf.style.opacity = '0';
-
+        net.style.left = '50%';
+        net.style.top = '50%';
+        dewElement.style.transform = 'scale(0.3)';
+        dewElement.style.opacity = '0';
         createRipple(emo.glow);
-      }, 400);
+      }, 500);
 
       setTimeout(() => {
         net.classList.remove('active');
-        leaf.classList.add('caught');
+        dewElement.classList.add('caught');
         showCreature(emo);
-      }, 900);
+      }, 1000);
     }
 
     function createRipple(color) {
@@ -578,111 +535,64 @@
         setTimeout(() => {
           const ripple = document.createElement('div');
           ripple.className = 'ripple';
-          ripple.style.cssText = `width: 120px; height: 120px; left: 50%; top: 50%; margin-left: -60px; margin-top: -60px; --ripple-color: ${color}; animation: ripple-expand 2s ease-out forwards;`;
+          ripple.style.cssText = 'width: 140px; height: 140px; left: 50%; top: 50%; margin-left: -70px; margin-top: -70px; --ripple-color: ' + color + '; animation: ripple-expand 2s ease-out forwards;';
           pond.appendChild(ripple);
           setTimeout(() => ripple.remove(), 2000);
-        }, i * 250);
+        }, i * 300);
       }
     }
 
     function showCreature(emo) {
       display.classList.add('show');
-
-      creatureArea.innerHTML = '';
-      creatureArea.style.setProperty('--glow-color', emo.glow);
+      creatureHome.innerHTML = '';
 
       if (emo.type === 'koi') {
-        const koi = document.createElement('div');
-        koi.className = 'koi';
+        const container = document.createElement('div');
+        container.className = 'koi-container';
 
-        for (let i = 0; i < 4; i++) {
-          const shine = document.createElement('div');
-          shine.className = 'koi-shine';
-          shine.style.left = `${15 + i * 12}px`;
-          shine.style.top = `${10 + (i % 2) * 15}px`;
-          shine.style.animationDelay = `${i * 0.4}s`;
-          koi.appendChild(shine);
-        }
+        const body = document.createElement('div');
+        body.className = 'koi-body';
 
-        creatureArea.appendChild(koi);
+        container.appendChild(body);
+        creatureHome.appendChild(container);
+
+        setTimeout(() => container.classList.add('show'), 100);
+        setTimeout(() => container.classList.add('swimming'), 400);
       } else {
-        const turtle = document.createElement('div');
-        turtle.className = 'turtle';
+        const container = document.createElement('div');
+        container.className = 'turtle-container';
 
         const head = document.createElement('div');
         head.className = 'turtle-head';
-        turtle.appendChild(head);
 
-        const flippers = [{l: 5, t: 25}, {l: 38, t: 20}, {l: 8, t: 42}, {l: 35, t: 40}];
-        flippers.forEach((pos, i) => {
-          const flipper = document.createElement('div');
-          flipper.className = 'turtle-flipper';
-          flipper.style.left = pos.l + 'px';
-          flipper.style.top = pos.t + 'px';
-          flipper.style.animationDelay = `${i * 0.5}s`;
-          turtle.appendChild(flipper);
-        });
+        const shell = document.createElement('div');
+        shell.className = 'turtle-shell';
 
-        creatureArea.appendChild(turtle);
+        for (let i = 0; i < 4; i++) {
+          const leg = document.createElement('div');
+          leg.className = 'turtle-leg';
+          container.appendChild(leg);
+        }
+
+        container.appendChild(shell);
+        container.appendChild(head);
+        creatureHome.appendChild(container);
+
+        setTimeout(() => container.classList.add('show'), 100);
+        setTimeout(() => container.classList.add('swimming'), 400);
       }
 
       eName.textContent = emo.name;
       eDesc.textContent = emo.desc;
       lead.textContent = emo.guide;
-
       isAnimating = false;
-    }
-
-    function playWaterDrop() {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.15);
-      osc.type = 'sine';
-
-      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.15);
-    }
-
-    function playTone(freq, duration, type = 'sine') {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      osc.frequency.value = freq;
-      osc.type = type;
-
-      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration);
     }
 
     function goNext() {
       if (!selected) return;
       const emo = emotions.find(e => e.id === selected);
-
       localStorage.setItem('currentEmotion', JSON.stringify(emo));
-
-      creatureArea.style.transition = 'all 0.5s ease';
-      creatureArea.style.opacity = '0';
-      creatureArea.style.transform = 'translateY(30px)';
-
-      lead.textContent = '……';
-
-      setTimeout(() => {
-        window.location.href = 'write.html';
-      }, 600);
+      alert('已选择：' + emo.name + '\n即将进入书写页');
     }
   </script>
 </body>
