@@ -36,6 +36,50 @@
       50% { transform: translate(30px, 20px) scale(1.02); }
     }
 
+    /* 背景中游动的小鱼 */
+    .bg-fish {
+      position: absolute;
+      width: 30px;
+      height: 18px;
+      opacity: 0.3;
+      z-index: 1;
+    }
+
+    .bg-fish::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #b8a890;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    }
+
+    .bg-fish::after {
+      content: '';
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 18px;
+      background: #b8a890;
+      border-radius: 0 70% 70% 0;
+    }
+
+    .bg-fish.fish1 { left: 10%; top: 20%; animation: swim-left 12s linear infinite; }
+    .bg-fish.fish2 { right: 15%; top: 70%; animation: swim-right 15s linear infinite; }
+    .bg-fish.fish3 { left: 30%; bottom: 15%; animation: swim-left 18s linear infinite; }
+
+    @keyframes swim-left {
+      0% { transform: translateX(-50px); }
+      100% { transform: translateX(calc(100vw + 50px)); }
+    }
+
+    @keyframes swim-right {
+      0% { transform: translateX(50px) scaleX(-1); }
+      100% { transform: translateX(calc(-100vw - 50px)) scaleX(-1); }
+    }
+
     /* 标题区 */
     .title-area {
       text-align: center;
@@ -64,120 +108,162 @@
     /* 池塘 */
     .pond {
       position: relative;
-      width: 420px;
-      height: 420px;
+      width: 480px;
+      height: 480px;
       margin: 0 auto;
       z-index: 10;
     }
 
-    /* 大荷叶 */
+    /* 大荷叶 - 更逼真的形态 */
     .lotus-leaf {
       position: absolute;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 340px;
-      height: 340px;
-      background: radial-gradient(ellipse at 30% 30%, #b0d8b8 0%, #9cc89c 40%, #7ab87a 100%);
-      border-radius: 55% 45% 50% 50% / 60% 55% 45% 40%;
-      box-shadow: 0 8px 30px rgba(90, 140, 90, 0.3), inset 0 -20px 60px rgba(255,255,255,0.2);
-      animation: leaf-float 6s ease-in-out infinite;
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(ellipse at 35% 30%, #a8d4a8 0%, #88c488 50%, #6ab86a 100%);
+      border-radius: 55% 45% 52% 48% / 58% 55% 45% 42%;
+      box-shadow:
+        0 10px 40px rgba(80, 130, 80, 0.35),
+        inset 0 -30px 80px rgba(255,255,255,0.25),
+        inset 0 20px 40px rgba(100, 150, 100, 0.15);
+      animation: leaf-breathe 8s ease-in-out infinite;
       z-index: 5;
+      overflow: visible;
     }
 
-    @keyframes leaf-float {
+    @keyframes leaf-breathe {
       0%, 100% { transform: translate(-50%, -50%) scale(1); }
-      50% { transform: translate(-50%, -52%) scale(1.01); }
+      50% { transform: translate(-50%, -52%) scale(1.015); }
     }
 
-    /* 叶脉 */
+    /* 叶脉纹理 */
     .lotus-leaf::before {
       content: '';
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 60%;
-      height: 60%;
+      width: 70%;
+      height: 70%;
       transform: translate(-50%, -50%);
       background:
-        linear-gradient(0deg, transparent 48%, rgba(255,255,255,0.3) 49%, rgba(255,255,255,0.3) 51%, transparent 52%) 0 0 / 30px 30px,
-        linear-gradient(60deg, transparent 48%, rgba(255,255,255,0.2) 49%, rgba(255,255,255,0.2) 51%, transparent 52%) 0 0 / 20px 20px;
-      opacity: 0.5;
+        radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(255,255,255,0.15) 31%, transparent 32%) 0 0 / 40px 40px,
+        conic-gradient(from 0deg at 50% 50%, rgba(255,255,255,0.2) 0deg 10deg, transparent 10deg 20deg, rgba(255,255,255,0.15) 20deg 30deg, transparent 30deg 60deg);
+      opacity: 0.6;
     }
 
-    /* 荷叶边缘波浪 */
-    .lotus-leaf::after {
-      content: '';
+    /* 主叶脉 */
+    .vein {
       position: absolute;
-      inset: 0;
+      top: 50%;
+      left: 50%;
+      width: 2px;
+      height: 35%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,0.15), transparent);
+      transform-origin: top center;
+    }
+
+    .vein:nth-child(1) { transform: translate(-50%, 0) rotate(0deg); }
+    .vein:nth-child(2) { transform: translate(-50%, 0) rotate(30deg); }
+    .vein:nth-child(3) { transform: translate(-50%, 0) rotate(60deg); }
+    .vein:nth-child(4) { transform: translate(-50%, 0) rotate(90deg); }
+    .vein:nth-child(5) { transform: translate(-50%, 0) rotate(120deg); }
+    .vein:nth-child(6) { transform: translate(-50%, 0) rotate(150deg); }
+
+    /* 侧叶脉 */
+    .sub-vein {
+      position: absolute;
+      width: 80px;
+      height: 1px;
+      background: linear-gradient(to right, rgba(255,255,255,0.3), transparent);
+      transform-origin: left center;
+    }
+
+    /* 荷叶边缘波纹 */
+    .leaf-edge {
+      position: absolute;
+      inset: -5px;
       border-radius: inherit;
-      background: radial-gradient(ellipse at 70% 70%, transparent 60%, rgba(90,140,90,0.3) 100%);
-      filter: blur(3px);
+      filter: blur(8px);
+      background: radial-gradient(ellipse at 70% 70%, transparent 50%, rgba(80,130,80,0.4) 100%);
+      z-index: -1;
     }
 
-    /* 露珠 */
-    .dewdrop {
+    /* 情绪树叶 */
+    .emotion-leaf {
       position: absolute;
-      width: 44px;
-      height: 44px;
+      width: 55px;
+      height: 45px;
       left: 50%;
       top: 50%;
-      margin-left: -22px;
+      margin-left: -27px;
       margin-top: -22px;
-      border-radius: 50%;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.4s ease;
       z-index: 20;
-      animation: dew-float 3s ease-in-out infinite;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 -8px 15px rgba(0,0,0,0.1), inset 0 4px 8px rgba(255,255,255,0.5);
+      animation: leaf-float 3s ease-in-out infinite;
     }
 
-    .dewdrop::before {
+    .emotion-leaf .leaf-body {
+      width: 100%;
+      height: 100%;
+      border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    /* 叶脉纹理 */
+    .emotion-leaf .leaf-body::before {
       content: '';
       position: absolute;
-      top: 8px;
-      left: 8px;
-      width: 12px;
-      height: 8px;
-      background: rgba(255,255,255,0.8);
-      border-radius: 50%;
-      filter: blur(2px);
+      top: 45%;
+      left: 15%;
+      width: 70%;
+      height: 1px;
+      background: linear-gradient(to right, rgba(255,255,255,0.4), transparent);
+      transform: rotate(-8deg);
     }
 
-    .dewdrop:hover {
-      transform: scale(1.15);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    .emotion-leaf:hover {
+      transform: scale(1.18);
     }
 
-    .dewdrop.faded {
+    .emotion-leaf:hover .leaf-body {
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+
+    .emotion-leaf.faded {
       opacity: 0.25;
-      filter: grayscale(0.5);
+      filter: grayscale(0.6);
+      transform: scale(0.9) !important;
     }
 
-    .dewdrop.caught {
+    .emotion-leaf.caught {
       opacity: 0;
-      transform: scale(0.3);
-      transition: all 0.5s ease;
+      transform: scale(0.2);
+      transition: all 0.6s ease;
     }
 
-    @keyframes dew-float {
-      0%, 100% { transform: translate(var(--x), var(--y)) translateY(0); }
-      50% { transform: translate(var(--x), var(--y)) translateY(-4px); }
+    @keyframes leaf-float {
+      0%, 100% { transform: translate(var(--x), var(--y)) translateY(0) rotate(var(--r)); }
+      50% { transform: translate(var(--x), var(--y)) translateY(-5px) rotate(var(--r)); }
     }
 
     /* 渔网 */
     .net {
       position: absolute;
-      width: 90px;
-      height: 90px;
+      width: 100px;
+      height: 100px;
       left: 50%;
       top: 50%;
-      margin-left: -45px;
-      margin-top: -45px;
+      margin-left: -50px;
+      margin-top: -50px;
       opacity: 0;
       pointer-events: none;
-      z-index: 25;
-      transition: all 0.5s ease;
+      z-index: 30;
+      transition: all 0.6s ease;
     }
 
     .net.active {
@@ -187,7 +273,7 @@
     .net svg {
       width: 100%;
       height: 100%;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.2));
     }
 
     /* 中央展示 */
@@ -199,9 +285,9 @@
       text-align: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.6s ease;
-      width: 200px;
-      z-index: 15;
+      transition: opacity 0.7s ease;
+      width: 220px;
+      z-index: 25;
     }
 
     .display.show {
@@ -209,131 +295,221 @@
       pointer-events: auto;
     }
 
-    /* 生物容器 */
     .creature-home {
-      width: 100px;
+      width: 120px;
       height: 100px;
-      margin: 0 auto 15px;
+      margin: 0 auto 20px;
       position: relative;
     }
 
-    /* 锦鲤 */
+    /* 锦鲤 - 更逼真 */
     .koi-container {
       display: none;
-      width: 80px;
-      height: 45px;
       position: absolute;
-      left: 10px;
-      top: 28px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
     }
 
     .koi-container.show { display: block; }
 
     .koi-body {
-      width: 80px;
-      height: 40px;
-      background: linear-gradient(135deg, #f4a676, #e89b6c 50%, #d48658);
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-      box-shadow: 0 0 20px rgba(244,166,118,0.5);
       position: relative;
+      width: 90px;
+      height: 45px;
     }
 
-    .koi-body::before {
-      content: '';
+    .koi-main {
+      width: 70px;
+      height: 40px;
+      background: linear-gradient(135deg, #f5a060 0%, #e89050 40%, #d87040 100%);
+      border-radius: 55% 45% 50% 50% / 60% 55% 45% 40%;
       position: absolute;
-      right: -18px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 28px;
-      height: 32px;
-      background: linear-gradient(135deg, #f4a676, #e89b6c);
-      border-radius: 0 80% 80% 0;
+      left: 0;
+      top: 5px;
+      box-shadow:
+        0 0 25px rgba(245,160,96,0.5),
+        inset 0 -5px 15px rgba(180,80,40,0.3);
     }
 
-    .koi-body::after {
-      content: '';
+    /* 鳞片 */
+    .koi-scales {
       position: absolute;
+      top: 8px;
       left: 15px;
-      top: 35%;
+      width: 40px;
+      height: 25px;
+      background: repeating-linear-gradient(
+        60deg,
+        transparent 0px,
+        transparent 4px,
+        rgba(255,255,255,0.15) 4px,
+        rgba(255,255,255,0.15) 5px
+      );
+    }
+
+    .koi-head {
+      position: absolute;
+      left: 60px;
+      top: 12px;
+      width: 25px;
+      height: 22px;
+      background: linear-gradient(135deg, #e89050, #d87040);
+      border-radius: 50% 50% 40% 40%;
+    }
+
+    .koi-eye {
+      position: absolute;
+      left: 6px;
+      top: 6px;
       width: 5px;
       height: 5px;
-      background: rgba(255,255,255,0.9);
+      background: #000;
       border-radius: 50%;
     }
 
-    .koi-container.swimming .koi-body {
+    .koi-eye::after {
+      content: '';
+      position: absolute;
+      left: 1px;
+      top: 1px;
+      width: 2px;
+      height: 2px;
+      background: #fff;
+      border-radius: 50%;
+    }
+
+    .koi-tail {
+      position: absolute;
+      left: -20px;
+      top: 8px;
+      width: 30px;
+      height: 35px;
+      background: linear-gradient(135deg, #f5a060, #e89050);
+      border-radius: 30% 0 60% 30%;
+      transform-origin: right center;
+    }
+
+    .koi-fin {
+      position: absolute;
+      width: 18px;
+      height: 12px;
+      background: linear-gradient(135deg, #f5a060, #d87040);
+      border-radius: 70% 70% 30% 30%;
+    }
+
+    .koi-fin.top { left: 25px; top: 0; transform: rotate(-15deg); }
+    .koi-fin.bottom { left: 25px; top: 32px; transform: rotate(10deg); }
+
+    .koi-container.swimming .koi-main {
       animation: koi-swim 3s ease-in-out infinite;
     }
 
-    @keyframes koi-swim {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      25% { transform: translate(10px, -8px) rotate(-5deg); }
-      50% { transform: translate(0, -4px) rotate(0deg); }
-      75% { transform: translate(-8px, -8px) rotate(5deg); }
+    .koi-container.swimming .koi-tail {
+      animation: koi-tail 0.6s ease-in-out infinite;
     }
 
-    /* 乌龟 */
+    @keyframes koi-swim {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      25% { transform: translateX(8px) rotate(-3deg); }
+      75% { transform: translateX(-5px) rotate(2deg); }
+    }
+
+    @keyframes koi-tail {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(15deg); }
+    }
+
+    /* 乌龟 - 更逼真 */
     .turtle-container {
       display: none;
-      width: 70px;
-      height: 55px;
       position: absolute;
-      left: 15px;
-      top: 25px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
     }
 
     .turtle-container.show { display: block; }
 
+    .turtle-shell {
+      width: 75px;
+      height: 60px;
+      background: linear-gradient(180deg, #6a9068 0%, #4a7048 50%, #3a5a38 100%);
+      border-radius: 50% 50% 48% 52% / 55% 55% 45% 45%;
+      position: relative;
+      box-shadow: 0 0 20px rgba(70,100,60,0.4);
+    }
+
+    /* 龟壳六边形纹理 */
+    .turtle-shell::before {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      background:
+        linear-gradient(30deg, transparent 48%, rgba(255,255,255,0.2) 49%, rgba(255,255,255,0.2) 51%, transparent 52%),
+        linear-gradient(-30deg, transparent 48%, rgba(255,255,255,0.2) 49%, rgba(255,255,255,0.2) 51%, transparent 52%);
+      background-size: 15px 10px;
+      border-radius: 50%;
+      opacity: 0.6;
+    }
+
     .turtle-head {
       position: absolute;
-      width: 20px;
-      height: 16px;
-      background: linear-gradient(180deg, #7aaa8a, #6a9a7a);
+      width: 24px;
+      height: 20px;
+      background: linear-gradient(180deg, #7aaa8a, #5a8a6a);
       border-radius: 50%;
       top: 8px;
       left: 50%;
       transform: translateX(-50%);
     }
 
-    .turtle-shell {
-      width: 60px;
-      height: 50px;
-      background: linear-gradient(180deg, #6a9a7a, #5a8a6a);
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-      box-shadow: 0 0 15px rgba(90,138,106,0.4);
+    .turtle-head::before {
+      content: '';
+      position: absolute;
+      top: 30%;
+      left: 20%;
+      width: 3px;
+      height: 3px;
+      background: #222;
+      border-radius: 50%;
+      box-shadow: 8px 0 0 #222;
     }
 
     .turtle-leg {
       position: absolute;
-      width: 15px;
-      height: 10px;
-      background: #5a8a6a;
-      border-radius: 50%;
+      width: 18px;
+      height: 12px;
+      background: linear-gradient(180deg, #5a8a6a, #4a7058);
+      border-radius: 40%;
     }
 
-    .turtle-leg:nth-child(3) { left: 2px; top: 18px; }
-    .turtle-leg:nth-child(4) { right: 2px; top: 15px; }
-    .turtle-leg:nth-child(5) { left: 5px; top: 38px; }
-    .turtle-leg:nth-child(6) { right: 5px; top: 35px; }
+    .turtle-leg.fl { left: 2px; top: 15px; }
+    .turtle-leg.fr { right: 2px; top: 12px; }
+    .turtle-leg.bl { left: 5px; top: 42px; }
+    .turtle-leg.br { right: 5px; top: 40px; }
 
     .turtle-container.swimming .turtle-leg {
-      animation: leg-kick 1s ease-in-out infinite;
+      animation: leg-paddle 1.2s ease-in-out infinite;
     }
 
-    @keyframes leg-kick {
-      0%, 100% { transform: rotate(0deg); }
-      50% { transform: rotate(15deg); }
+    .turtle-leg.fl, .turtle-leg.br { animation-delay: 0s; }
+    .turtle-leg.fr, .turtle-leg.bl { animation-delay: 0.6s; }
+
+    @keyframes leg-paddle {
+      0%, 100% { transform: rotate(-10deg); }
+      50% { transform: rotate(10deg); }
     }
 
     /* 文字 */
     .emotion-name {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       color: #4a4239;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       font-weight: 400;
       letter-spacing: 0.1em;
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(12px);
       transition: all 0.5s ease 0.3s;
     }
 
@@ -341,9 +517,9 @@
       font-size: 0.9rem;
       color: #7a6d5a;
       font-style: italic;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(12px);
       transition: all 0.5s ease 0.45s;
     }
 
@@ -354,7 +530,7 @@
       cursor: pointer;
       display: inline-block;
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(12px);
       transition: all 0.5s ease 0.6s;
     }
 
@@ -364,7 +540,7 @@
       width: 100%;
       height: 1px;
       background: linear-gradient(90deg, transparent, #c9b8a0, transparent);
-      margin-top: 3px;
+      margin-top: 4px;
     }
 
     .lead-text:hover { color: #5a5046; }
@@ -386,8 +562,8 @@
     }
 
     @keyframes ripple-expand {
-      0% { transform: scale(0.8); opacity: 0.5; }
-      100% { transform: scale(2.5); opacity: 0; }
+      0% { transform: scale(0.6); opacity: 0.6; }
+      100% { transform: scale(2.8); opacity: 0; }
     }
 
     /* 底部 */
@@ -407,6 +583,11 @@
 <body>
   <div class="water-bg"></div>
 
+  <!-- 背景小鱼 -->
+  <div class="bg-fish fish1"></div>
+  <div class="bg-fish fish2"></div>
+  <div class="bg-fish fish3"></div>
+
   <div class="title-area">
     <h2>此刻，你是什么颜色</h2>
     <div class="guide-text" id="guide">每一种情绪都值得被看见</div>
@@ -414,20 +595,34 @@
 
   <div class="pond" id="pond">
     <!-- 大荷叶 -->
-    <div class="lotus-leaf"></div>
+    <div class="lotus-leaf">
+      <div class="leaf-edge"></div>
+      <div class="vein"></div>
+      <div class="vein"></div>
+      <div class="vein"></div>
+      <div class="vein"></div>
+      <div class="vein"></div>
+      <div class="vein"></div>
+    </div>
 
     <!-- 渔网 -->
     <div class="net" id="net">
-      <svg viewBox="0 0 90 90">
-        <circle cx="45" cy="45" r="40" fill="none" stroke="#a89070" stroke-width="2" opacity="0.8"/>
-        <circle cx="45" cy="45" r="37" fill="none" stroke="#c9b8a0" stroke-width="1" opacity="0.6"/>
-        <g stroke="#b8a890" stroke-width="0.7" opacity="0.5">
-          <line x1="45" y1="5" x2="45" y2="85"/>
-          <line x1="5" y1="45" x2="85" y2="45"/>
-          <line x1="15" y1="15" x2="75" y2="75"/>
-          <line x1="75" y1="15" x2="15" y2="75"/>
+      <svg viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="45" fill="none" stroke="#a89070" stroke-width="2.5" opacity="0.85"/>
+        <circle cx="50" cy="50" r="42" fill="none" stroke="#c9b8a0" stroke-width="1.2" opacity="0.65"/>
+        <g stroke="#b8a890" stroke-width="0.8" opacity="0.5">
+          <line x1="50" y1="5" x2="50" y2="95"/>
+          <line x1="5" y1="50" x2="95" y2="50"/>
+          <line x1="18" y1="18" x2="82" y2="82"/>
+          <line x1="82" y1="18" x2="18" y2="82"/>
+          <line x1="50" y1="5" x2="82" y2="25"/>
+          <line x1="50" y1="5" x2="18" y2="25"/>
+          <line x1="50" y1="95" x2="82" y2="75"/>
+          <line x1="50" y1="95" x2="18" y2="75"/>
         </g>
-        <path d="M 15 60 Q 45 75 75 60" fill="none" stroke="#a89070" stroke-width="1.5" opacity="0.7"/>
+        <path d="M 18 65 Q 50 85 82 65" fill="none" stroke="#a89070" stroke-width="1.8" opacity="0.75"/>
+        <path d="M 22 68 Q 50 82 78 68" fill="none" stroke="#b8a890" stroke-width="1" opacity="0.55"/>
+        <line x1="50" y1="5" x2="50" y2="-18" stroke="#a89070" stroke-width="2.5"/>
       </svg>
     </div>
 
@@ -453,7 +648,7 @@
       { id: "exhaustion", name: "疲惫灰", desc: "力气被抽走了", color: "#d0d0c8", glow: "#b8c8a8", type: "turtle", guide: "让它驮着你，歇一歇" },
       { id: "grievance", name: "委屈紫", desc: "酸涩在胸口", color: "#d8c8d8", glow: "#c8d8c0", type: "turtle", guide: "把酸涩，写给池水听" },
       { id: "heartbreak", name: "心碎粉", desc: "裂开的疼", color: "#e8d0d0", glow: "#d0e0d0", type: "turtle", guide: "让裂缝里的光，慢慢淌出" },
-      { id: "emptiness", name: "空洞黑", desc: "什么都��有", color: "#686860", glow: "#809080", type: "turtle", guide: "把空白，写成存在" },
+      { id: "emptiness", name: "空洞黑", desc: "什么都没有", color: "#686860", glow: "#809080", type: "turtle", guide: "把空白，写成存在" },
       { id: "chaos", name: "混乱彩", desc: "太多颜色搅在一起", color: "#c8c0c8", glow: "#b8c8b0", type: "turtle", guide: "让搅在一起的颜色，慢慢沉底" },
       { id: "nostalgia", name: "怀旧棕", desc: "时光在倒流", color: "#d8c8a8", glow: "#c8c0a0", type: "turtle", guide: "让倒流的时光，停在这一行" }
     ];
@@ -467,67 +662,71 @@
     const eDesc = document.getElementById('eDesc');
     const lead = document.getElementById('lead');
 
-    const radius = 150;
+    const radius = 175;
     let selected = null;
     let isAnimating = false;
 
-    // 生成12颗露珠
+    // 生成12片情绪树叶
     emotions.forEach((emo, i) => {
       const angle = (i / 12) * 360 - 90;
       const rad = (angle * Math.PI) / 180;
       const x = Math.cos(rad) * radius;
       const y = Math.sin(rad) * radius;
+      const rotation = (i % 2 === 0 ? -8 : 8);
 
-      const dew = document.createElement('div');
-      dew.className = 'dewdrop';
-      dew.id = 'dew-' + emo.id;
-      dew.style.backgroundColor = emo.color;
-      dew.style.setProperty('--x', x + 'px');
-      dew.style.setProperty('--y', y + 'px');
-      dew.style.animationDelay = (i * 0.4) + 's';
+      const leaf = document.createElement('div');
+      leaf.className = 'emotion-leaf';
+      leaf.id = 'leaf-' + emo.id;
+      leaf.style.setProperty('--x', x + 'px');
+      leaf.style.setProperty('--y', y + 'px');
+      leaf.style.setProperty('--r', rotation + 'deg');
+      leaf.style.animationDelay = (i * 0.35) + 's';
 
-      dew.addEventListener('mouseenter', () => {
+      const leafBody = document.createElement('div');
+      leafBody.className = 'leaf-body';
+      leafBody.style.backgroundColor = emo.color;
+
+      leaf.appendChild(leafBody);
+
+      leaf.addEventListener('mouseenter', () => {
         if (!isAnimating && !selected) guide.textContent = '这是' + emo.name + '的感觉';
       });
 
-      dew.addEventListener('mouseleave', () => {
+      leaf.addEventListener('mouseleave', () => {
         if (!selected) guide.textContent = '每一种情绪都值得被看见';
       });
 
-      dew.addEventListener('click', () => catchDew(emo, dew, x, y));
+      leaf.addEventListener('click', () => catchLeaf(emo, leaf, x, y));
 
-      pond.appendChild(dew);
+      pond.appendChild(leaf);
     });
 
-    function catchDew(emo, dewElement, x, y) {
+    function catchLeaf(emo, leafElement, x, y) {
       if (isAnimating || selected === emo.id) return;
       isAnimating = true;
       selected = emo.id;
 
       guide.textContent = emo.desc + '，原来是这样';
 
-      // 渔网移动到露珠位置
       net.classList.add('active');
       net.style.left = 'calc(50% + ' + x + 'px)';
       net.style.top = 'calc(50% + ' + y + 'px)';
       net.style.transform = 'translate(-50%, -50%)';
 
       setTimeout(() => {
-        document.querySelectorAll('.dewdrop').forEach(d => {
-          if (d !== dewElement) d.classList.add('faded');
+        document.querySelectorAll('.emotion-leaf').forEach(l => {
+          if (l !== leafElement) l.classList.add('faded');
         });
         net.style.left = '50%';
         net.style.top = '50%';
-        dewElement.style.transform = 'scale(0.3)';
-        dewElement.style.opacity = '0';
+        leafElement.classList.add('caught');
         createRipple(emo.glow);
-      }, 500);
+      }, 600);
 
       setTimeout(() => {
         net.classList.remove('active');
-        dewElement.classList.add('caught');
         showCreature(emo);
-      }, 1000);
+      }, 1200);
     }
 
     function createRipple(color) {
@@ -535,10 +734,10 @@
         setTimeout(() => {
           const ripple = document.createElement('div');
           ripple.className = 'ripple';
-          ripple.style.cssText = 'width: 140px; height: 140px; left: 50%; top: 50%; margin-left: -70px; margin-top: -70px; --ripple-color: ' + color + '; animation: ripple-expand 2s ease-out forwards;';
+          ripple.style.cssText = 'width: 160px; height: 160px; left: 50%; top: 50%; margin-left: -80px; margin-top: -80px; --ripple-color: ' + color + '; animation: ripple-expand 2.5s ease-out forwards;';
           pond.appendChild(ripple);
-          setTimeout(() => ripple.remove(), 2000);
-        }, i * 300);
+          setTimeout(() => ripple.remove(), 2500);
+        }, i * 350);
       }
     }
 
@@ -550,36 +749,37 @@
         const container = document.createElement('div');
         container.className = 'koi-container';
 
-        const body = document.createElement('div');
-        body.className = 'koi-body';
+        container.innerHTML = `
+          <div class="koi-body">
+            <div class="koi-main">
+              <div class="koi-scales"></div>
+            </div>
+            <div class="koi-head">
+              <div class="koi-eye"></div>
+            </div>
+            <div class="koi-tail"></div>
+            <div class="koi-fin top"></div>
+            <div class="koi-fin bottom"></div>
+          </div>`;
 
-        container.appendChild(body);
         creatureHome.appendChild(container);
-
-        setTimeout(() => container.classList.add('show'), 100);
-        setTimeout(() => container.classList.add('swimming'), 400);
+        setTimeout(() => container.classList.add('show'), 150);
+        setTimeout(() => container.classList.add('swimming'), 500);
       } else {
         const container = document.createElement('div');
         container.className = 'turtle-container';
 
-        const head = document.createElement('div');
-        head.className = 'turtle-head';
+        container.innerHTML = `
+          <div class="turtle-shell"></div>
+          <div class="turtle-head"></div>
+          <div class="turtle-leg fl"></div>
+          <div class="turtle-leg fr"></div>
+          <div class="turtle-leg bl"></div>
+          <div class="turtle-leg br"></div>`;
 
-        const shell = document.createElement('div');
-        shell.className = 'turtle-shell';
-
-        for (let i = 0; i < 4; i++) {
-          const leg = document.createElement('div');
-          leg.className = 'turtle-leg';
-          container.appendChild(leg);
-        }
-
-        container.appendChild(shell);
-        container.appendChild(head);
         creatureHome.appendChild(container);
-
-        setTimeout(() => container.classList.add('show'), 100);
-        setTimeout(() => container.classList.add('swimming'), 400);
+        setTimeout(() => container.classList.add('show'), 150);
+        setTimeout(() => container.classList.add('swimming'), 500);
       }
 
       eName.textContent = emo.name;
