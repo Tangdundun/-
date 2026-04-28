@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>情绪池 · 投石问心</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  font-family: "Noto Serif SC", serif;
+  background: linear-gradient(180deg,
+    #e0f0f0 0%,
+    #c8e8e8 15%,
+    #b0e0e0 35%,
+    #a0d8d8 55%,
+    #90d0d0 75%,
+    #80c8c8 100%
+  );
+  overflow: hidden;
+  position: relative;
+  color: #3a5860;
+}
+
+/* ===== 巨大浅绿叶子背景 ===== */
+.giant-leaf {
+  position: fixed;
+  top: -30%;
+  left: -20%;
+  width: 140%;
+  height: 160%;
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 40%, rgba(160,220,210,0.2), transparent 50%),
+    radial-gradient(ellipse 60% 80% at 70% 60%, rgba(150,210,200,0.15), transparent 50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.giant-leaf::before {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: 10%;
+  width: 80%;
+  height: 70%;
+  background: radial-gradient(ellipse, rgba(180,230,220,0.12), transparent 60%);
+  border-radius: 50% 50% 50% 50% / 40% 60% 60% 40%;
+  filter: blur(40px);
+}
+
+/* ===== 水波层 ===== */
+.water-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 38%;
+  background: linear-gradient(180deg,
+    rgba(160,216,216,0.3) 0%,
+    rgba(140,208,208,0.4) 25%,
+    rgba(120,200,200,0.5) 50%,
+    rgba(100,192,192,0.6) 75%,
+    rgba(90,184,184,0.65) 100%
+  );
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* 水波纹线 */
+.water-ripple-line {
+  position: absolute;
+  width: 200%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: water-wave 4s ease-in-out infinite;
+}
+
+@keyframes water-wave {
+  0%, 100% { transform: translateX(-50%); }
+  50% { transform: translateX(0); }
+}
+
+/* 涟漪效果 */
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.4);
+  animation: ripple-expand 2.5s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes ripple-expand {
+  0% { width: 20px; height: 10px; opacity: 0.8; }
+  100% { width: 200px; height: 100px; opacity: 0; }
+}
+
+/* ===== 上升气泡 ===== */
+.rising-bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.7), rgba(255,255,255,0.2));
+  border: 1px solid rgba(255,255,255,0.3);
+  animation: bubble-rise linear forwards;
+  pointer-events: none;
+}
+
+@keyframes bubble-rise {
+  0% { transform: translateY(0) scale(1); opacity: 0.6; }
+  100% { transform: translateY(-100vh) scale(0.4); opacity: 0; }
+}
+
+/* ===== 锦鲤 ===== */
+.koi-fish {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  animation: koi-swim 18s linear infinite;
+}
+
+@keyframes koi-swim {
+  0% { left: -80px; transform: scaleX(1); }
+  45% { left: calc(100% + 80px); transform: scaleX(1); }
+  50% { left: calc(100% + 80px); transform: scaleX(-1); }
+  95% { left: -80px; transform: scaleX(-1); }
+  100% { left: -80px; transform: scaleX(1); }
+}
+
+/* ===== 树叶圆圈 ===== */
+.leaf-circle {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  z-index: 10;
+}
+
+/* 中央诗句 */
+.poem-display {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  text-align: center;
+  z-index: 12;
+  opacity: 0;
+  transition: all 0.7s ease;
+  pointer-events: none;
+}
+
+.poem-display.show {
+  opacity: 1;
+}
+
+.poem-display p {
+  font-size: 0.85rem;
+  color: #3a6870;
+  font-style: italic;
+  line-height: 1.8;
+  text-shadow: 0 1px 8px rgba(255,255,255,0.6);
+}
+
+.poem-display .mood-tag {
+  font-size: 0.7rem;
+  color: #6a9098;
+  margin-top: 8px;
+  letter-spacing: 0.1em;
+}
+
+/* 情绪石头 */
+.mood-leaf {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  border: 2.5px solid rgba(255,255,255,0.5);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12), inset 0 0 15px rgba(255,255,255,0.2);
+  z-index: 11;
+}
+
+.mood-leaf:hover {
+  transform: scale(1.25);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2), inset 0 0 20px rgba(255,255,255,0.3);
+}
+
+.mood-leaf.active {
+  transform: scale(1.35);
+  box-shadow: 0 0 35px rgba(255,255,255,0.6), inset 0 0 25px rgba(255,255,255,0.4);
+  z-index: 15;
+}
+
+/* ===== 右下角漂流瓶 ===== */
+.bottle-container {
+  position: absolute;
+  right: 20px;
+  bottom: 140px;
+  z-index: 15;
+  text-align: center;
+}
+
+.bottle {
+  width: 50px;
+  height: 85px;
+  position: relative;
+  margin: 0 auto 6px;
+}
+
+/* 瓶身 */
+.bottle-body {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 55px;
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.2),
+    rgba(220,240,230,0.25)
+  );
+  border-radius: 8px 8px 45% 45%;
+  border: 2px solid rgba(255,255,255,0.5);
+  box-shadow: inset 0 0 15px rgba(255,255,255,0.3), 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* 瓶口 */
+.bottle-neck {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 22px;
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.4),
+    rgba(255,255,255,0.25)
+  );
+  border-radius: 4px 4px 2px 2px;
+  border: 2px solid rgba(255,255,255,0.5);
+}
+
+/* 瓶塞 */
+.bottle-cork {
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 8px;
+  background: linear-gradient(180deg, rgba(200,170,130,0.6), rgba(180,150,110,0.5));
+  border-radius: 2px 2px 0 0;
+}
+
+/* 瓶内石头 */
+.bottle-stone {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: bottle-float 3s ease-in-out infinite;
+}
+
+@keyframes bottle-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* ===== 木架 ===== */
+.rack-container {
+  position: absolute;
+  right: 90px;
+  bottom: 140px;
+  z-index: 15;
+  text-align: center;
+}
+
+.wood-rack {
+  width: 60px;
+  height: 80px;
+  position: relative;
+  margin: 0 auto 6px;
+}
+
+/* 架子竖杆 */
+.rack-pole {
+  position: absolute;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(140,120,100,0.6), rgba(120,100,80,0.5));
+  border-radius: 2px;
+}
+
+.rack-pole.left { left: 8px; }
+.rack-pole.right { right: 8px; }
+
+/* 架子横杆 */
+.rack-bar {
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(140,120,100,0.5), rgba(160,140,120,0.6), rgba(140,120,100,0.5));
+  border-radius: 2px;
+}
+
+.rack-bar:nth-child(3) { top: 20px; }
+.rack-bar:nth-child(4) { top: 50px; }
+
+/* 架子上挂的石头 */
+.rack-stone {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  opacity: 0.65;
+  animation: rack-sway 4s ease-in-out infinite;
+}
+
+.rack-stone::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1.5px;
+  height: 8px;
+  background: rgba(180,160,140,0.5);
+}
+
+@keyframes rack-sway {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+/* ===== 计数器 ===== */
+.counter {
+  font-size: 0.7rem;
+  color: #4a7880;
+  letter-spacing: 0.05em;
+  text-shadow: 0 1px 4px rgba(255,255,255,0.5);
+}
+
+.counter .num {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #2a6870;
+}
+
+/* ===== 底部投石按钮 ===== */
+.cast-bar {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.cast-btn {
+  padding: 14px 48px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.15));
+  border: 2.5px solid rgba(255,255,255,0.6);
+  border-radius: 35px;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.05rem;
+  color: #4a6050;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  letter-spacing: 0.15em;
+}
+
+.cast-btn:hover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.45), rgba(255,255,255,0.25));
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.cast-btn:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+/* ===== 便签弹窗 ===== */
+.note-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.25);
+  backdrop-filter: blur(8px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.note-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.note-card {
+  width: 340px;
+  padding: 35px 30px 25px;
+  background: linear-gradient(145deg, #fffbf5, #fff5e8);
+  border-radius: 16px;
+  box-shadow: 0 25px 70px rgba(0,0,0,0.25);
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.4s ease;
+}
+
+.note-overlay.open .note-card {
+  transform: translateY(0);
+}
+
+/* 便签胶带 */
+.note-card::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 50px;
+  height: 22px;
+  background: linear-gradient(180deg, rgba(220,200,170,0.6), rgba(200,180,150,0.5));
+  border-radius: 3px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.note-textarea {
+  width: 100%;
+  min-height: 130px;
+  border: none;
+  background: transparent;
+  font-family: "Noto Serif SC", serif;
+  font-size: 0.95rem;
+  color: #4a5860;
+  resize: none;
+  outline: none;
+  line-height: 1.9;
+  letter-spacing: 0.03em;
+}
+
+.note-textarea::placeholder {
+  color: #a09890;
+  font-style: italic;
+}
+
+.note-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(200,190,180,0.3);
+}
+
+.char-count {
+  font-size: 0.7rem;
+  color: #b0a898;
+}
+
+.stone-btn {
+  padding: 10px 32px;
+  background: linear-gradient(135deg, #c8b8a0, #b0a088);
+  border: none;
+  border-radius: 25px;
+  font-family: "Noto Serif SC", serif;
+  font-size: 0.9rem;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(160,140,120,0.3);
+  transition: all 0.3s ease;
+  letter-spacing: 0.1em;
+}
+
+.stone-btn:hover {
+  background: linear-gradient(135deg, #d0c0a8, #b8a890);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(160,140,120,0.4);
+}
+
+/* ===== 飞行石头 ===== */
+.flying-stone {
+  position: fixed;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #d0c0b0, #b8a898);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 0 10px rgba(255,255,255,0.3);
+  z-index: 60;
+  pointer-events: none;
+  transition: all 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ===== 标题 ===== */
+.header {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 20;
+}
+
+.header h1 {
+  font-weight: 400;
+  font-size: 1.4rem;
+  letter-spacing: 0.3em;
+  color: #3a5860;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 10px rgba(255,255,255,0.5);
+}
+
+.header p {
+  font-size: 0.78rem;
+  color: #5a8090;
+  font-style: italic;
+  letter-spacing: 0.08em;
+}
+
+/* ===== 品牌 ===== */
+.brand {
+  position: absolute;
+  top: 25px;
+  right: 30px;
+  font-size: 0.6rem;
+  color: #6a9098;
+  letter-spacing: 0.2em;
+  opacity: 0.35;
+  z-index: 20;
+  writing-mode: vertical-rl;
+}
+</style>
+</head>
+<body>
+  <!-- 背景 -->
+  <div class="giant-leaf"></div>
+
+  <!-- 水波 -->
+  <div class="water-layer" id="waterLayer">
+    <div class="water-ripple-line" style="top:20%; animation-delay:0s;"></div>
+    <div class="water-ripple-line" style="top:40%; animation-delay:1.5s;"></div>
+    <div class="water-ripple-line" style="top:60%; animation-delay:3s;"></div>
+    <div class="water-ripple-line" style="top:80%; animation-delay:0.8s;"></div>
+  </div>
+
+  <!-- 标题 -->
+  <div class="header">
+    <h1>情绪池</h1>
+    <p>点击一片叶子，听听它的诗句</p>
+  </div>
+
+  <div class="brand">投石问心</div>
+
+  <!-- 树叶圆圈 -->
+  <div class="leaf-circle" id="leafCircle"></div>
+
+  <!-- 中央诗句 -->
+  <div class="poem-display" id="poemDisplay">
+    <p id="poemText"></p>
+    <div class="mood-tag" id="moodTag"></div>
+  </div>
+
+  <!-- 漂流瓶 -->
+  <div class="bottle-container">
+    <div class="bottle" id="bottle">
+      <div class="bottle-neck"></div>
+      <div class="bottle-cork"></div>
+      <div class="bottle-body"></div>
+    </div>
+    <div class="counter">好情绪 <span class="num" id="goodCount">0</span></div>
+  </div>
+
+  <!-- 木架 -->
+  <div class="rack-container">
+    <div class="wood-rack" id="woodRack">
+      <div class="rack-pole left"></div>
+      <div class="rack-pole right"></div>
+      <div class="rack-bar"></div>
+      <div class="rack-bar"></div>
+    </div>
+    <div class="counter">待释放 <span class="num" id="badCount">0</span></div>
+  </div>
+
+  <!-- 底部按钮 -->
+  <div class="cast-bar">
+    <button class="cast-btn" id="castBtn">🪨 投石写心情</button>
+  </div>
+
+  <!-- 便签弹窗 -->
+  <div class="note-overlay" id="noteOverlay">
+    <div class="note-card">
+      <textarea class="note-textarea" id="noteTextarea" placeholder="把此刻的心情，写成一句话...
+"></textarea>
+      <div class="note-actions">
+        <span class="char-count" id="charCount">0 字</span>
+        <button class="stone-btn" id="stoneBtn">投石头</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== 情绪数据（12片树叶） =====
+    const moods = [
+      // 好情绪 → 漂流瓶
+      { id: 'joy', name: '喜悦', color: '#e8a0a0', glow: '#f5c0c0', poem: '「热烈绽放，是你本来的样子」', type: 'good' },
+      { id: 'warm', name: '温暖', color: '#e8c8a0', glow: '#f5e0c0', poem: '「被阳光晒过的时刻，值得记住」', type: 'good' },
+      { id: 'hope', name: '期待', color: '#f0c090', glow: '#f8dcb0', poem: '「光在来的路上，你只需要等」', type: 'good' },
+      { id: 'calm', name: '平静', color: '#90c8b8', glow: '#b0e0d0', poem: '「水面无风，心自澄明」', type: 'good' },
+      { id: 'growth', name: '希望', color: '#98d0a0', glow: '#b8e8c0', poem: '「种子在土里，别急着挖开看」', type: 'good' },
+      { id: 'gratitude', name: '感恩', color: '#d8c898', glow: '#f0e8c0', poem: '「谢谢你来过，谢谢我还在」', type: 'good' },
+      // 坏情绪 → 木架
+      { id: 'anxiety', name: '焦虑', color: '#b8b8b8', glow: '#d0d0d0', poem: '「风暴前的安静，也是力量」', type: 'bad' },
+      { id: 'sad', name: '忧郁', color: '#98b8d0', glow: '#b8d0e8', poem: '「雨会下完，云记得所有形状」', type: 'bad' },
+      { id: 'tired', name: '疲惫', color: '#c8b8a0', glow: '#e0d0c0', poem: '「累不是软弱，是身体在诚实说话」', type: 'bad' },
+      { id: 'wronged', name: '委屈', color: '#c8b0d8', glow: '#e0d0f0', poem: '「被误解的感觉，不需要合理化」', type: 'bad' },
+      { id: 'broken', name: '心碎', color: '#e8c0d8', glow: '#f5e0f0', poem: '「碎片也是完整的，只是方式不同」', type: 'bad' },
+      { id: 'empty', name: '空洞', color: '#d8d8d0', glow: '#f0f0e8', poem: '「空白不是缺失，是空间」', type: 'bad' }
+    ];
+
+    // ===== 音效系统（Web Audio API） =====
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
+
+    function initAudio() {
+      if (!audioCtx) audioCtx = new AudioContext();
+    }
+
+    function playTone(freq, duration, type = 'sine') {
+      initAudio();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function playClickSound() {
+      playTone(520, 0.12);
+      setTimeout(() => playTone(784, 0.08, 'triangle'), 50);
+    }
+    function playPoemSound() {
+      playTone(440, 0.3);
+      setTimeout(() => playTone(554, 0.2), 100);
+      setTimeout(() => playTone(659, 0.4), 200);
+    }
+    function flySound() {
+      playTone(600, 0.15);
+      setTimeout(() => playTone(800, 0.2), 80);
+    }
+    function dropSound() {
+      playTone(350, 0.3, 'sine');
+    }
+    function rippleSound() {
+      playTone(200, 0.5, 'sine');
+      setTimeout(() => playTone(150, 0.3, 'sine'), 100);
+    }
+    function openNoteSound() {
+      playTone(440, 0.1);
+      setTimeout(() => playTone(550, 0.1), 80);
+      setTimeout(() => playTone(660, 0.15), 160);
+    }
+    function castSound() {
+      playTone(300, 0.15);
+      setTimeout(() => playTone(500, 0.2), 100);
+      setTimeout(() => playTone(700, 0.25), 250);
+    }
+
+    // ===== 生成树叶圆圈 =====
+    const circle = document.getElementById('leafCircle');
+    const radius = 125;
+
+    moods.forEach((mood, i) => {
+      const angle = (i * 30 - 90) * Math.PI / 180;
+      const x = radius * Math.cos(angle) + 150 - 23;
+      const y = radius * Math.sin(angle) + 150 - 23;
+
+      const leaf = document.createElement('div');
+      leaf.className = 'mood-leaf';
+      leaf.style.cssText = `left:${x}px; top:${y}px; background:radial-gradient(circle at 35% 35%, ${mood.color}, ${mood.glow});`;
+      leaf.textContent = mood.name;
+      leaf.dataset.index = i;
+
+      leaf.addEventListener('click', () => selectMood(mood, leaf));
+      circle.appendChild(leaf);
+    });
+
+    let goodCount = 0, badCount = 0;
+    let selectedMood = null;
+
+    function selectMood(mood, element) {
+      playClickSound();
+      document.querySelectorAll('.mood-leaf').forEach(l => l.classList.remove('active'));
+      element.classList.add('active');
+      selectedMood = mood;
+
+      // 显示诗句
+      const display = document.getElementById('poemDisplay');
+      document.getElementById('poemText').textContent = mood.poem;
+      document.getElementById('moodTag').textContent = '— ' + mood.name + ' —';
+      display.classList.add('show');
+
+      // 延迟后飞到容器
+      setTimeout(() => {
+        playPoemSound();
+        flyToContainer(mood, element);
+      }, 600);
+    }
+
+    function flyToContainer(mood, element) {
+      const rect = element.getBoundingClientRect();
+      const flyer = element.cloneNode(true);
+      flyer.style.position = 'fixed';
+      flyer.style.left = rect.left + 'px';
+      flyer.style.top = rect.top + 'px';
+      flyer.style.zIndex = '100';
+      flyer.style.transition = 'all 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      flyer.classList.remove('active');
+      document.body.appendChild(flyer);
+
+      let targetId, countId;
+      if (mood.type === 'good') {
+        targetId = 'bottle';
+        countId = 'goodCount';
+        goodCount++;
+      } else {
+        targetId = 'woodRack';
+        countId = 'badCount';
+        badCount++;
+      }
+
+      const target = document.getElementById(targetId).getBoundingClientRect();
+
+      setTimeout(() => {
+        flyer.style.left = (target.left + target.width/2 - 18) + 'px';
+        flyer.style.top = (target.top + target.height/2 - 18) + 'px';
+        flyer.style.transform = 'scale(0.3)';
+        flyer.style.opacity = '0.5';
+      }, 50);
+
+      setTimeout(() => {
+        flyer.remove();
+        flySound();
+        document.getElementById(countId).textContent = mood.type === 'good' ? goodCount : badCount;
+
+        // 添加到容器视觉效果
+        if (mood.type === 'good') {
+          addBottleStone(mood);
+        } else {
+          addRackStone(mood);
+        }
+      }, 950);
+    }
+
+    function addBottleStone(mood) {
+      const stone = document.createElement('div');
+      stone.className = 'bottle-stone';
+      stone.style.cssText = `
+        left: ${10 + Math.random() * 20}px;
+        bottom: ${8 + Math.random() * 25}px;
+        background: radial-gradient(circle, ${mood.color}, ${mood.glow});
+        animation-delay: ${Math.random() * 2}s;
+      `;
+      document.getElementById('bottle').appendChild(stone);
+    }
+
+    function addRackStone(mood) {
+      const stone = document.createElement('div');
+      stone.className = 'rack-stone';
+      const row = Math.random() > 0.5 ? 28 : 58;
+      const col = 12 + Math.random() * 36;
+      stone.style.cssText = `
+        left: ${col}px;
+        top: ${row}px;
+        background: radial-gradient(circle, ${mood.color}, ${mood.glow});
+        animation-delay: ${Math.random() * 3}s;
+      `;
+      document.getElementById('woodRack').appendChild(stone);
+    }
+
+    // ===== 气泡系统 =====
+    function createBubble() {
+      const b = document.createElement('div');
+      b.className = 'rising-bubble';
+      const size = 2 + Math.random() * 7;
+      b.style.cssText = `
+        width: ${size}px; height: ${size}px;
+        left: ${5 + Math.random() * 90}%;
+        bottom: ${Math.random() * 15}%;
+        animation-duration: ${5 + Math.random() * 8}s;
+      `;
+      document.body.appendChild(b);
+      setTimeout(() => b.remove(), 14000);
+    }
+    setInterval(createBubble, 700);
+
+    // ===== 锦鲤系统 =====
+    function spawnKoi() {
+      const koi = document.createElement('div');
+      koi.className = 'koi-fish';
+      const y = 55 + Math.random() * 35;
+      const size = 45 + Math.random() * 20;
+      koi.style.cssText = `
+        bottom: ${y}%;
+        animation-duration: ${14 + Math.random() * 10}s;
+      `;
+      koi.innerHTML = `
+        <svg width="${size}" height="${size*0.6}" viewBox="0 0 50 30">
+          <ellipse cx="25" cy="15" rx="20" ry="12" fill="#ff9a56" opacity="0.85"/>
+          <ellipse cx="20" cy="15" rx="10" ry="11" fill="#ffb070" opacity="0.65"/>
+          <ellipse cx="38" cy="13" rx="7" ry="9" fill="#ff9a56" opacity="0.75" transform="rotate(-15 38 13)"/>
+          <circle cx="32" cy="11" r="2.5" fill="#444" opacity="0.5"/>
+          <path d="M42 15 Q47 8 45 20" stroke="#ff9a56" stroke-width="3" fill="none" opacity="0.8"/>
+          <path d="M8 15 Q3 10 5 20" stroke="#ffb070" stroke-width="2" fill="none" opacity="0.7"/>
+        </svg>
+      `;
+      document.body.appendChild(koi);
+      setTimeout(() => koi.remove(), 25000);
+    }
+    setInterval(spawnKoi, 5000);
+    setTimeout(spawnKoi, 500);
+
+    // ===== 水波涟漪 =====
+    function createRipple(x, y) {
+      const r = document.createElement('div');
+      r.className = 'ripple-effect';
+      r.style.left = (x - 10) + 'px';
+      r.style.top = (y - 5) + 'px';
+      document.body.appendChild(r);
+      rippleSound();
+      setTimeout(() => r.remove(), 2500);
+    }
+
+    // ===== 投石写心情 =====
+    const castBtn = document.getElementById('castBtn');
+    const noteOverlay = document.getElementById('noteOverlay');
+    const stoneBtn = document.getElementById('stoneBtn');
+    const noteTextarea = document.getElementById('noteTextarea');
+    const charCount = document.getElementById('charCount');
+
+    castBtn.addEventListener('click', () => {
+      openNoteSound();
+      noteOverlay.classList.add('open');
+      noteTextarea.focus();
+    });
+
+    noteOverlay.addEventListener('click', (e) => {
+      if (e.target === noteOverlay) noteOverlay.classList.remove('open');
+    });
+
+    noteTextarea.addEventListener('input', () => {
+      charCount.textContent = noteTextarea.value.length + ' 字';
+    });
+
+    stoneBtn.addEventListener('click', () => {
+      const text = noteTextarea.value.trim();
+      if (!text) return;
+
+      noteOverlay.classList.remove('open');
+      castSound();
+
+      // 创建飞行石头
+      const stone = document.createElement('div');
+      stone.className = 'flying-stone';
+      const btnRect = castBtn.getBoundingClientRect();
+      stone.style.left = (btnRect.left + btnRect.width/2 - 18) + 'px';
+      stone.style.top = (btnRect.top - 18) + 'px';
+      document.body.appendChild(stone);
+
+      // 目标：水面随机位置
+      const water = document.getElementById('waterLayer').getBoundingClientRect();
+      const targetX = water.left + water.width * (0.3 + Math.random() * 0.4) - 18;
+      const targetY = water.top + water.height * (0.3 + Math.random() * 0.4) - 18;
+
+      setTimeout(() => {
+        stone.style.left = targetX + 'px';
+        stone.style.top = targetY + 'px';
+        stone.style.transform = 'scale(0.5) rotate(360deg)';
+      }, 50);
+
+      setTimeout(() => {
+        stone.remove();
+        dropSound();
+        createRipple(targetX + 18, targetY + 18);
+        noteTextarea.value = '';
+        charCount.textContent = '0 字';
+      }, 1000);
+    });
+
+    // 定期随机涟漪
+    setInterval(() => {
+      const water = document.getElementById('waterLayer').getBoundingClientRect();
+      const x = water.left + Math.random() * water.width;
+      const y = water.top + Math.random() * water.height;
+      createRipple(x, y);
+    }, 4000);
+  </script>
+</body>
+</html>
