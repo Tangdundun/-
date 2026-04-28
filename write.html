@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>情绪池 - 书写</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      background: linear-gradient(180deg, #f0ebe3 0%, #d8ddd5 50%, #c5c8c0 100%);
+      font-family: "Noto Serif SC", serif;
+      color: #5a5046;
+      overflow: hidden;
+      position: relative;
+      padding-top: 60px;
+    }
+
+    .water-bg {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+      background:
+        radial-gradient(ellipse 200px 100px at 20% 30%, rgba(224,227,219,0.3) 0%, transparent 70%),
+        radial-gradient(ellipse 250px 120px at 80% 70%, rgba(224,227,219,0.2) 0%, transparent 70%);
+      animation: wave 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(20px, 10px) rotate(2deg); }
+    }
+
+    .ornament {
+      position: absolute;
+      top: 60px;
+      width: 200px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #c9b8a0, transparent);
+      opacity: 0.6;
+    }
+
+    /* 情绪状态栏 */
+    .emotion-bar {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+      z-index: 10;
+      opacity: 0;
+      transform: translateY(-10px);
+      animation: fadeInDown 0.6s ease forwards;
+    }
+
+    @keyframes fadeInDown {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .emotion-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      box-shadow: 0 0 20px var(--glow-color);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .emotion-info {
+      text-align: left;
+    }
+
+    .emotion-name {
+      font-size: 1.1rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+    }
+
+    .emotion-desc {
+      font-size: 0.85rem;
+      color: #8b7d6b;
+      font-style: italic;
+    }
+
+    /* 引导文案 */
+    .guide-text {
+      font-size: 1rem;
+      color: #8b7d6b;
+      font-style: italic;
+      margin-bottom: 25px;
+      z-index: 10;
+      opacity: 0;
+      transform: translateY(-10px);
+      animation: fadeInDown 0.6s ease 0.2s forwards;
+    }
+
+    /* 书写区 */
+    .write-area {
+      position: relative;
+      width: 90%;
+      max-width: 480px;
+      z-index: 10;
+      opacity: 0;
+      animation: fadeInDown 0.6s ease 0.4s forwards;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 20px;
+      background: rgba(255,255,255,0.4);
+      border: 1px solid rgba(201, 184, 160, 0.3);
+      border-radius: 12px;
+      font-family: "Noto Serif SC", serif;
+      font-size: 1rem;
+      color: #5a5046;
+      line-height: 1.8;
+      resize: none;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    textarea:focus {
+      background: rgba(255,255,255,0.6);
+      border-color: rgba(201, 184, 160, 0.6);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    textarea::placeholder {
+      color: #b5a28c;
+      font-style: italic;
+    }
+
+    /* 字数统计 */
+    .char-count {
+      text-align: right;
+      font-size: 0.8rem;
+      color: #b5a28c;
+      margin-top: 10px;
+      opacity: 0;
+      animation: fadeInDown 0.6s ease 0.5s forwards;
+    }
+
+    /* 操作按钮 */
+    .actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 25px;
+      z-index: 10;
+      opacity: 0;
+      animation: fadeInDown 0.6s ease 0.6s forwards;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      background: transparent;
+      border: 1px solid #c9b8a0;
+      border-radius: 25px;
+      color: #5a5046;
+      cursor: pointer;
+      font-family: "Noto Serif SC", serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: rgba(201, 184, 160, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: rgba(201, 184, 160, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: rgba(201, 184, 160, 0.35);
+    }
+
+    /* 返回 */
+    .back-link {
+      margin-top: 30px;
+      font-size: 0.85rem;
+      color: #b5a28c;
+      cursor: pointer;
+      z-index: 10;
+      opacity: 0;
+      animation: fadeInDown 0.6s ease 0.7s forwards;
+      transition: color 0.3s;
+    }
+
+    .back-link:hover {
+      color: #8b7d6b;
+    }
+
+    /* 底部品牌 */
+    .brand {
+      position: absolute;
+      bottom: 40px;
+      font-size: 0.75rem;
+      color: #b5a28c;
+      letter-spacing: 0.2em;
+      opacity: 0.6;
+    }
+
+    /* 完成提示 */
+    .success-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 100;
+    }
+
+    .success-modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: linear-gradient(180deg, #faf8f5, #f5f0e8);
+      padding: 40px;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 320px;
+      transform: scale(0.9);
+      transition: transform 0.4s ease;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    }
+
+    .success-modal.show .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      font-weight: 400;
+    }
+
+    .modal-desc {
+      font-size: 0.9rem;
+      color: #8b7d6b;
+      font-style: italic;
+      margin-bottom: 25px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="water-bg"></div>
+  <div class="ornament"></div>
+
+  <div class="emotion-bar" id="emotionBar">
+    <div class="emotion-dot" id="emotionDot"></div>
+    <div class="emotion-info">
+      <div class="emotion-name" id="emotionName"></div>
+      <div class="emotion-desc" id="emotionDesc"></div>
+    </div>
+  </div>
+
+  <div class="guide-text" id="guideText"></div>
+
+  <div class="write-area">
+    <textarea id="writeInput" placeholder="把它写下来..."></textarea>
+  </div>
+
+  <div class="char-count"><span id="charCount">0</span> 字</div>
+
+  <div class="actions">
+    <button class="btn" onclick="goBack()">← 重选</button>
+    <button class="btn btn-primary" onclick="submitWriting()">让它入水</button>
+  </div>
+
+  <div class="back-link" onclick="goBack()">回到池塘</div>
+
+  <div class="brand">情绪之境 · 情绪池</div>
+
+  <!-- 成功提示 -->
+  <div class="success-modal" id="successModal">
+    <div class="modal-content">
+      <div class="modal-icon"></div>
+      <div class="modal-title">已入水</div>
+      <div class="modal-desc" id="modalDesc"></div>
+      <button class="btn btn-primary" onclick="closeModal()">再写一页</button>
+    </div>
+  </div>
+
+  <script>
+    // 读取选中的情绪
+    const emoData = JSON.parse(localStorage.getItem('currentEmotion') || '{}');
+
+    if (!emoData.id) {
+      window.location.href = 'index.html';
+    }
+
+    // 设置情绪显示
+    document.getElementById('emotionDot').style.setProperty('--glow-color', emoData.glow || emoData.color);
+    document.getElementById('emotionName').textContent = emoData.name || '未知情绪';
+    document.getElementById('emotionDesc').textContent = emoData.desc || '';
+    document.getElementById('guideText').textContent = emoData.guide || '把心里的话写下来';
+
+    // 字数统计
+    const input = document.getElementById('writeInput');
+    const count = document.getElementById('charCount');
+
+    input.addEventListener('input', () => {
+      count.textContent = input.value.length;
+    });
+
+    function goBack() {
+      window.location.href = 'index.html';
+    }
+
+    function submitWriting() {
+      const text = input.value.trim();
+      if (!text) {
+        input.style.borderColor = '#d4a8a8';
+        setTimeout(() => input.style.borderColor = '', 1000);
+        return;
+      }
+
+      // 播放入水音效
+      playDropSound();
+
+      // 保存（这里可以用 localStorage，或者后续接后端）
+      const record = {
+        emotion: emoData,
+        text: text,
+        timestamp: Date.now(),
+        id: Date.now().toString(36)
+      };
+
+      const records = JSON.parse(localStorage.getItem('emotionRecords') || '[]');
+      records.push(record);
+      localStorage.setItem('emotionRecords', JSON.stringify(records));
+
+      // 显示成功
+      document.getElementById('modalDesc').textContent = `${emoData.name}已随波而去`;
+      document.getElementById('successModal').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('successModal').classList.remove('show');
+      input.value = '';
+      count.textContent = '0';
+    }
+
+    // 入水音效
+    function playDropSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.5);
+        osc.type = 'sine';
+
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.5);
+      } catch(e) {}
+    }
+  </script>
+
+</body>
+</html>
