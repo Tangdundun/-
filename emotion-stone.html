@@ -57,58 +57,89 @@ body {
   left: 0;
   right: 0;
   height: 38%;
-  background: linear-gradient(180deg,
-    rgba(160,216,216,0.3) 0%,
-    rgba(140,208,208,0.4) 25%,
-    rgba(120,200,200,0.5) 50%,
-    rgba(100,192,192,0.6) 75%,
-    rgba(90,184,184,0.65) 100%
-  );
+  background:
+    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(180,230,230,0.4) 0%, transparent 60%),
+    linear-gradient(180deg,
+      rgba(160,220,220,0.35) 0%,
+      rgba(140,210,210,0.45) 20%,
+      rgba(120,200,200,0.55) 45%,
+      rgba(100,190,190,0.65) 70%,
+      rgba(85,180,180,0.7) 100%
+    );
   z-index: 1;
   overflow: hidden;
 }
 
-/* 水波纹线 */
+/* 水波纹线 - 多层波光 */
 .water-ripple-line {
   position: absolute;
-  width: 200%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  animation: water-wave 4s ease-in-out infinite;
+  width: 300%;
+  height: 1.5px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.15) 20%,
+    rgba(255,255,255,0.5) 50%,
+    rgba(255,255,255,0.15) 80%,
+    transparent 100%
+  );
+  animation: water-wave 6s ease-in-out infinite;
+  filter: blur(0.3px);
 }
 
 @keyframes water-wave {
-  0%, 100% { transform: translateX(-50%); }
+  0%, 100% { transform: translateX(-66%); }
   50% { transform: translateX(0); }
+}
+
+/* 水面波光闪烁 */
+.water-sparkle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 8px 2px rgba(255,255,255,0.6);
+  animation: sparkle-twinkle 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes sparkle-twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.2); }
 }
 
 /* 涟漪效果 */
 .ripple-effect {
   position: absolute;
   border-radius: 50%;
-  border: 2px solid rgba(255,255,255,0.4);
-  animation: ripple-expand 2.5s ease-out forwards;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  box-shadow: 0 0 15px rgba(255,255,255,0.2), inset 0 0 10px rgba(255,255,255,0.1);
+  animation: ripple-expand 3s ease-out forwards;
   pointer-events: none;
 }
 
 @keyframes ripple-expand {
-  0% { width: 20px; height: 10px; opacity: 0.8; }
-  100% { width: 200px; height: 100px; opacity: 0; }
+  0% { width: 15px; height: 8px; opacity: 0.9; }
+  30% { opacity: 0.6; }
+  100% { width: 280px; height: 140px; opacity: 0; }
 }
 
 /* ===== 上升气泡 ===== */
 .rising-bubble {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.7), rgba(255,255,255,0.2));
-  border: 1px solid rgba(255,255,255,0.3);
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.15) 60%, transparent 100%);
+  border: 0.5px solid rgba(255,255,255,0.35);
+  box-shadow: 0 0 6px rgba(255,255,255,0.3), inset 0 0 4px rgba(255,255,255,0.5);
   animation: bubble-rise linear forwards;
   pointer-events: none;
 }
 
 @keyframes bubble-rise {
-  0% { transform: translateY(0) scale(1); opacity: 0.6; }
-  100% { transform: translateY(-100vh) scale(0.4); opacity: 0; }
+  0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0; }
+  5% { opacity: 0.7; }
+  90% { opacity: 0.4; }
+  100% { transform: translateY(-110vh) scale(0.25) rotate(180deg); opacity: 0; }
 }
 
 /* ===== 锦鲤 ===== */
@@ -116,15 +147,33 @@ body {
   position: absolute;
   z-index: 5;
   pointer-events: none;
-  animation: koi-swim 18s linear infinite;
+  animation: koi-swim 22s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
 }
 
 @keyframes koi-swim {
-  0% { left: -80px; transform: scaleX(1); }
-  45% { left: calc(100% + 80px); transform: scaleX(1); }
-  50% { left: calc(100% + 80px); transform: scaleX(-1); }
-  95% { left: -80px; transform: scaleX(-1); }
-  100% { left: -80px; transform: scaleX(1); }
+  0% { left: -120px; transform: scaleX(1) translateY(0); }
+  20% { transform: scaleX(1) translateY(-8px); }
+  45% { left: calc(100% + 120px); transform: scaleX(1) translateY(4px); }
+  50% { left: calc(100% + 120px); transform: scaleX(-1) translateY(0); }
+  70% { transform: scaleX(-1) translateY(-6px); }
+  95% { left: -120px; transform: scaleX(-1) translateY(3px); }
+  100% { left: -120px; transform: scaleX(1) translateY(0); }
+}
+
+.koi-fish svg {
+  filter: drop-shadow(0 2px 4px rgba(200,100,50,0.2));
+}
+
+/* 锦鲤尾鳍摆动 */
+.koi-tail {
+  transform-origin: center;
+  animation: tail-sway 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes tail-sway {
+  0% { transform: rotate(-8deg); }
+  100% { transform: rotate(8deg); }
 }
 
 /* ===== 树叶圆圈 ===== */
@@ -171,50 +220,81 @@ body {
   letter-spacing: 0.1em;
 }
 
-/* 情绪石头 */
+/* 情绪石头 - 通透鹅卵石 */
 .mood-leaf {
   position: absolute;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
+  width: 48px;
+  height: 42px;
+  border-radius: 45% 55% 50% 50% / 55% 50% 55% 45%;
   cursor: pointer;
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.6rem;
-  color: rgba(255,255,255,0.95);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.25);
-  border: 2.5px solid rgba(255,255,255,0.5);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12), inset 0 0 15px rgba(255,255,255,0.2);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1.5px solid rgba(255,255,255,0.6);
+  box-shadow:
+    0 6px 20px rgba(0,0,0,0.1),
+    inset 0 0 20px rgba(255,255,255,0.5),
+    inset 0 0 8px rgba(255,255,255,0.8);
   z-index: 11;
+  backdrop-filter: blur(2px);
+}
+
+.mood-leaf::before {
+  content: '';
+  position: absolute;
+  top: 12%;
+  left: 18%;
+  width: 35%;
+  height: 22%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.1));
+  border-radius: 50%;
+  transform: rotate(-25deg);
+  pointer-events: none;
+}
+
+.mood-leaf::after {
+  content: '';
+  position: absolute;
+  bottom: 15%;
+  right: 20%;
+  width: 18%;
+  height: 12%;
+  background: rgba(255,255,255,0.25);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .mood-leaf:hover {
-  transform: scale(1.25);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.2), inset 0 0 20px rgba(255,255,255,0.3);
+  transform: scale(1.3) rotate(3deg);
+  box-shadow:
+    0 10px 35px rgba(0,0,0,0.15),
+    0 0 40px rgba(255,255,255,0.3),
+    inset 0 0 25px rgba(255,255,255,0.6),
+    inset 0 0 12px rgba(255,255,255,0.9);
 }
 
 .mood-leaf.active {
-  transform: scale(1.35);
-  box-shadow: 0 0 35px rgba(255,255,255,0.6), inset 0 0 25px rgba(255,255,255,0.4);
+  transform: scale(1.4) rotate(5deg);
+  box-shadow:
+    0 0 50px rgba(255,255,255,0.5),
+    0 0 80px rgba(255,255,255,0.2),
+    inset 0 0 30px rgba(255,255,255,0.7);
   z-index: 15;
 }
 
-/* ===== 右下角漂流瓶 ===== */
+/* ===== 右下角漂流瓶 - 梦幻水晶 ===== */
 .bottle-container {
   position: absolute;
-  right: 20px;
-  bottom: 140px;
+  right: 15px;
+  bottom: 130px;
   z-index: 15;
   text-align: center;
 }
 
 .bottle {
-  width: 50px;
-  height: 85px;
+  width: 56px;
+  height: 95px;
   position: relative;
-  margin: 0 auto 6px;
+  margin: 0 auto 8px;
+  filter: drop-shadow(0 8px 20px rgba(160,200,220,0.3));
 }
 
 /* 瓶身 */
@@ -223,16 +303,46 @@ body {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;
-  height: 55px;
-  background: linear-gradient(135deg,
-    rgba(255,255,255,0.35),
-    rgba(255,255,255,0.2),
-    rgba(220,240,230,0.25)
+  width: 44px;
+  height: 62px;
+  background: linear-gradient(165deg,
+    rgba(255,255,255,0.5) 0%,
+    rgba(220,240,245,0.35) 30%,
+    rgba(200,230,240,0.3) 60%,
+    rgba(180,220,235,0.4) 100%
   );
-  border-radius: 8px 8px 45% 45%;
-  border: 2px solid rgba(255,255,255,0.5);
-  box-shadow: inset 0 0 15px rgba(255,255,255,0.3), 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 10px 10px 50% 50%;
+  border: 1.5px solid rgba(255,255,255,0.7);
+  box-shadow:
+    inset 0 0 25px rgba(255,255,255,0.5),
+    inset 0 0 8px rgba(200,230,255,0.3),
+    0 6px 18px rgba(100,160,180,0.15);
+  overflow: hidden;
+}
+
+/* 瓶身高光 */
+.bottle-body::before {
+  content: '';
+  position: absolute;
+  top: 8%;
+  left: 15%;
+  width: 25%;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.1));
+  border-radius: 50%;
+  transform: rotate(-15deg);
+}
+
+.bottle-body::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  right: 20%;
+  width: 8%;
+  height: 30%;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  transform: rotate(10deg);
 }
 
 /* 瓶口 */
@@ -241,26 +351,61 @@ body {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 18px;
-  height: 22px;
-  background: linear-gradient(135deg,
-    rgba(255,255,255,0.4),
-    rgba(255,255,255,0.25)
+  width: 20px;
+  height: 26px;
+  background: linear-gradient(165deg,
+    rgba(255,255,255,0.55),
+    rgba(220,240,245,0.4),
+    rgba(200,230,240,0.35)
   );
-  border-radius: 4px 4px 2px 2px;
-  border: 2px solid rgba(255,255,255,0.5);
+  border-radius: 5px 5px 3px 3px;
+  border: 1.5px solid rgba(255,255,255,0.7);
+  box-shadow: inset 0 0 12px rgba(255,255,255,0.4);
 }
 
-/* 瓶塞 */
+/* 瓶塞 - 梦幻星光 */
 .bottle-cork {
   position: absolute;
-  top: -2px;
+  top: -4px;
   left: 50%;
   transform: translateX(-50%);
-  width: 16px;
-  height: 8px;
-  background: linear-gradient(180deg, rgba(200,170,130,0.6), rgba(180,150,110,0.5));
-  border-radius: 2px 2px 0 0;
+  width: 18px;
+  height: 10px;
+  background: linear-gradient(180deg,
+    rgba(255,230,200,0.8),
+    rgba(230,200,160,0.7),
+    rgba(210,180,140,0.6)
+  );
+  border-radius: 3px 3px 1px 1px;
+  box-shadow: 0 2px 6px rgba(200,170,130,0.3);
+}
+
+.bottle-cork::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 5px;
+  background: rgba(255,230,200,0.9);
+  border-radius: 1px;
+}
+
+/* 瓶内星光 */
+.bottle-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 6px 2px rgba(255,255,255,0.5);
+  animation: star-twinkle 2s ease-in-out infinite;
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); }
 }
 
 /* 瓶内石头 */
@@ -268,81 +413,105 @@ body {
   position: absolute;
   width: 10px;
   height: 10px;
-  border-radius: 50%;
-  opacity: 0.7;
-  animation: bottle-float 3s ease-in-out infinite;
+  border-radius: 45% 55% 50% 50%;
+  opacity: 0.8;
+  animation: bottle-float 4s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(255,255,255,0.3), inset 0 0 4px rgba(255,255,255,0.4);
 }
 
 @keyframes bottle-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-5px) rotate(5deg); }
+  66% { transform: translateY(-2px) rotate(-3deg); }
 }
 
-/* ===== 木架 ===== */
+/* ===== 木架 - 梦幻树枝 ===== */
 .rack-container {
   position: absolute;
-  right: 90px;
-  bottom: 140px;
+  right: 85px;
+  bottom: 130px;
   z-index: 15;
   text-align: center;
 }
 
 .wood-rack {
-  width: 60px;
-  height: 80px;
+  width: 55px;
+  height: 85px;
   position: relative;
-  margin: 0 auto 6px;
+  margin: 0 auto 8px;
+  filter: drop-shadow(0 6px 15px rgba(140,120,100,0.2));
 }
 
-/* 架子竖杆 */
+/* 架子竖杆 - 自然树枝 */
 .rack-pole {
   position: absolute;
-  width: 4px;
+  width: 3.5px;
   height: 100%;
-  background: linear-gradient(180deg, rgba(140,120,100,0.6), rgba(120,100,80,0.5));
+  background: linear-gradient(180deg,
+    rgba(160,140,120,0.5) 0%,
+    rgba(140,120,100,0.6) 50%,
+    rgba(120,100,80,0.5) 100%
+  );
   border-radius: 2px;
 }
 
-.rack-pole.left { left: 8px; }
-.rack-pole.right { right: 8px; }
+.rack-pole.left { left: 8px; transform: rotate(-2deg); }
+.rack-pole.right { right: 8px; transform: rotate(2deg); }
 
 /* 架子横杆 */
 .rack-bar {
   position: absolute;
-  left: 5px;
-  right: 5px;
-  height: 3px;
-  background: linear-gradient(90deg, rgba(140,120,100,0.5), rgba(160,140,120,0.6), rgba(140,120,100,0.5));
+  left: 4px;
+  right: 4px;
+  height: 2.5px;
+  background: linear-gradient(90deg,
+    rgba(150,130,110,0.4),
+    rgba(170,150,130,0.6),
+    rgba(150,130,110,0.4)
+  );
   border-radius: 2px;
 }
 
-.rack-bar:nth-child(3) { top: 20px; }
-.rack-bar:nth-child(4) { top: 50px; }
+.rack-bar:nth-child(3) { top: 22px; }
+.rack-bar:nth-child(4) { top: 52px; }
 
-/* 架子上挂的石头 */
+/* 架子上挂的石头 - 带光晕 */
 .rack-stone {
   position: absolute;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  opacity: 0.65;
-  animation: rack-sway 4s ease-in-out infinite;
+  width: 11px;
+  height: 11px;
+  border-radius: 45% 55% 50% 50%;
+  opacity: 0.75;
+  animation: rack-sway 5s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(255,255,255,0.2), inset 0 0 5px rgba(255,255,255,0.3);
 }
 
 .rack-stone::before {
   content: '';
   position: absolute;
-  top: -8px;
+  top: -10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 1.5px;
-  height: 8px;
-  background: rgba(180,160,140,0.5);
+  width: 1px;
+  height: 10px;
+  background: linear-gradient(180deg, rgba(180,160,140,0.4), rgba(180,160,140,0.1));
+}
+
+.rack-stone::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 20%;
+  width: 35%;
+  height: 25%;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  transform: rotate(-20deg);
 }
 
 @keyframes rack-sway {
-  0%, 100% { transform: rotate(-5deg); }
-  50% { transform: rotate(5deg); }
+  0%, 100% { transform: rotate(-6deg) translateY(0); }
+  50% { transform: rotate(6deg) translateY(-2px); }
 }
 
 /* ===== 计数器 ===== */
@@ -702,8 +871,8 @@ body {
 
       const leaf = document.createElement('div');
       leaf.className = 'mood-leaf';
-      leaf.style.cssText = `left:${x}px; top:${y}px; background:radial-gradient(circle at 35% 35%, ${mood.color}, ${mood.glow});`;
-      leaf.textContent = mood.name;
+      leaf.style.cssText = `left:${x}px; top:${y}px; background:radial-gradient(ellipse at 35% 30%, ${mood.color}ee, ${mood.glow}88 60%, ${mood.color}44 100%);`;
+      leaf.title = mood.name + ' · ' + mood.poem;
       leaf.dataset.index = i;
 
       leaf.addEventListener('click', () => selectMood(mood, leaf));
@@ -783,10 +952,20 @@ body {
       stone.style.cssText = `
         left: ${10 + Math.random() * 20}px;
         bottom: ${8 + Math.random() * 25}px;
-        background: radial-gradient(circle, ${mood.color}, ${mood.glow});
-        animation-delay: ${Math.random() * 2}s;
+        background: radial-gradient(ellipse at 35% 30%, ${mood.color}dd, ${mood.glow}aa);
+        animation-delay: ${Math.random() * 4}s;
       `;
       document.getElementById('bottle').appendChild(stone);
+
+      // 添加星光
+      const star = document.createElement('div');
+      star.className = 'bottle-star';
+      star.style.cssText = `
+        left: ${8 + Math.random() * 28}px;
+        bottom: ${10 + Math.random() * 40}px;
+        animation-delay: ${Math.random() * 2}s;
+      `;
+      document.getElementById('bottle').appendChild(star);
     }
 
     function addRackStone(mood) {
@@ -807,43 +986,107 @@ body {
     function createBubble() {
       const b = document.createElement('div');
       b.className = 'rising-bubble';
-      const size = 2 + Math.random() * 7;
+      const size = 3 + Math.random() * 10;
+      const leftPos = 5 + Math.random() * 90;
+      const delay = Math.random() * 2;
       b.style.cssText = `
         width: ${size}px; height: ${size}px;
-        left: ${5 + Math.random() * 90}%;
-        bottom: ${Math.random() * 15}%;
-        animation-duration: ${5 + Math.random() * 8}s;
+        left: ${leftPos}%;
+        bottom: ${Math.random() * 20}%;
+        animation-duration: ${12 + Math.random() * 15}s;
+        animation-delay: -${delay}s;
       `;
       document.body.appendChild(b);
-      setTimeout(() => b.remove(), 14000);
+      setTimeout(() => b.remove(), 28000);
     }
-    setInterval(createBubble, 700);
+    setInterval(createBubble, 250);
 
     // ===== 锦鲤系统 =====
     function spawnKoi() {
       const koi = document.createElement('div');
       koi.className = 'koi-fish';
-      const y = 55 + Math.random() * 35;
-      const size = 45 + Math.random() * 20;
+      const y = 55 + Math.random() * 30;
+      const size = 55 + Math.random() * 25;
+      const hue = Math.random() > 0.5 ? 20 : 15; // 橙红或金黄
+      const bodyColor = hue === 20 ? '#e87850' : '#f0a040';
+      const accentColor = hue === 20 ? '#ff9a70' : '#ffc060';
+      const tailColor = hue === 20 ? '#d06040' : '#e89030';
+
       koi.style.cssText = `
         bottom: ${y}%;
-        animation-duration: ${14 + Math.random() * 10}s;
+        animation-duration: ${18 + Math.random() * 12}s;
+        animation-delay: ${Math.random() * 3}s;
       `;
+
       koi.innerHTML = `
-        <svg width="${size}" height="${size*0.6}" viewBox="0 0 50 30">
-          <ellipse cx="25" cy="15" rx="20" ry="12" fill="#ff9a56" opacity="0.85"/>
-          <ellipse cx="20" cy="15" rx="10" ry="11" fill="#ffb070" opacity="0.65"/>
-          <ellipse cx="38" cy="13" rx="7" ry="9" fill="#ff9a56" opacity="0.75" transform="rotate(-15 38 13)"/>
-          <circle cx="32" cy="11" r="2.5" fill="#444" opacity="0.5"/>
-          <path d="M42 15 Q47 8 45 20" stroke="#ff9a56" stroke-width="3" fill="none" opacity="0.8"/>
-          <path d="M8 15 Q3 10 5 20" stroke="#ffb070" stroke-width="2" fill="none" opacity="0.7"/>
+        <svg width="${size * 1.6}" height="${size * 0.65}" viewBox="0 0 80 32" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bodyGrad${hue}" x1="0%" y1="50%" x2="100%" y2="50%">
+              <stop offset="0%" style="stop-color:${accentColor};stop-opacity:0.9" />
+              <stop offset="50%" style="stop-color:${bodyColor};stop-opacity:0.95" />
+              <stop offset="100%" style="stop-color:${tailColor};stop-opacity:0.85" />
+            </linearGradient>
+            <radialGradient id="spotGrad" cx="30%" cy="30%" r="40%">
+              <stop offset="0%" style="stop-color:rgba(255,255,255,0.7)" />
+              <stop offset="100%" style="stop-color:rgba(255,255,255,0)" />
+            </radialGradient>
+          </defs>
+
+          <!-- 尾鳍 -->
+          <g class="koi-tail">
+            <path d="M 62 16 Q 75 6 78 12 Q 80 16 78 20 Q 75 26 62 16"
+              fill="${tailColor}" opacity="0.75" />
+            <path d="M 62 16 Q 72 10 75 14 Q 76 16 75 18 Q 72 22 62 16"
+              fill="${accentColor}" opacity="0.5" />
+          </g>
+
+          <!-- 背鳍 -->
+          <path d="M 30 8 Q 40 2 50 6 Q 45 8 40 8 Q 35 8 30 8"
+            fill="${bodyColor}" opacity="0.7" />
+
+          <!-- 身体主体 -->
+          <ellipse cx="38" cy="16" rx="26" ry="12"
+            fill="url(#bodyGrad${hue})" />
+
+          <!-- 腹部高光 -->
+          <ellipse cx="36" cy="20" rx="20" ry="5"
+            fill="rgba(255,255,255,0.25)" />
+
+          <!-- 鱼鳞纹理 -->
+          <g opacity="0.3">
+            <ellipse cx="28" cy="14" rx="5" ry="3" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.5" />
+            <ellipse cx="35" cy="13" rx="5" ry="3" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.5" />
+            <ellipse cx="42" cy="14" rx="5" ry="3" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.5" />
+            <ellipse cx="32" cy="18" rx="5" ry="3" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.5" />
+            <ellipse cx="39" cy="18" rx="5" ry="3" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.5" />
+          </g>
+
+          <!-- 斑点 -->
+          <circle cx="32" cy="14" r="2.5" fill="url(#spotGrad)" opacity="0.6" />
+          <circle cx="42" cy="16" r="2" fill="url(#spotGrad)" opacity="0.5" />
+          <circle cx="36" cy="12" r="1.5" fill="url(#spotGrad)" opacity="0.4" />
+
+          <!-- 眼睛 -->
+          <ellipse cx="18" cy="13" rx="2.5" ry="3" fill="rgba(0,0,0,0.6)" />
+          <circle cx="17.5" cy="12" r="1" fill="rgba(255,255,255,0.9)" />
+
+          <!-- 胸鳍 -->
+          <path d="M 26 22 Q 24 28 28 26 Q 30 24 26 22"
+            fill="${bodyColor}" opacity="0.6" />
+
+          <!-- 嘴 -->
+          <ellipse cx="14" cy="16" rx="2" ry="1.5"
+            fill="${tailColor}" opacity="0.7" />
+
+          <!-- 须 -->
+          <path d="M 13 17 Q 10 20 8 18" stroke="${tailColor}" stroke-width="0.5" fill="none" opacity="0.5" />
         </svg>
       `;
       document.body.appendChild(koi);
-      setTimeout(() => koi.remove(), 25000);
+      setTimeout(() => koi.remove(), 35000);
     }
-    setInterval(spawnKoi, 5000);
-    setTimeout(spawnKoi, 500);
+    setInterval(spawnKoi, 6000);
+    setTimeout(spawnKoi, 800);
 
     // ===== 水波涟漪 =====
     function createRipple(x, y) {
@@ -911,6 +1154,21 @@ body {
         charCount.textContent = '0 字';
       }, 1000);
     });
+
+    // ===== 水面星光 =====
+    function createSparkle() {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'water-sparkle';
+      const water = document.getElementById('waterLayer').getBoundingClientRect();
+      sparkle.style.cssText = `
+        left: ${water.left + Math.random() * water.width}px;
+        top: ${water.top + Math.random() * water.height}px;
+        animation-delay: ${Math.random() * 2}s;
+      `;
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 4000);
+    }
+    setInterval(createSparkle, 800);
 
     // 定期随机涟漪
     setInterval(() => {
