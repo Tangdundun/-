@@ -1,1326 +1,1567 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>情绪池 - 情绪之境</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>情绪之境 · 情绪池</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  min-height: 100vh;
+  font-family: "Noto Serif SC", serif;
+  background: linear-gradient(180deg,
+    #fdfcfa 0%, #f0f4f8 12%, #e3ecf4 22%, #d6e4f0 32%,
+    #c9dcec 42%, #bcd4e8 52%, #afcce4 62%, #a2c4e0 74%,
+    #95bcdc 84%, #88b4d8 94%, #7badd4 100%);
+  overflow: hidden; position: relative; color: #6a5a70;
+}
 
-    body {
-      min-height: 100vh;
-      background: linear-gradient(180deg, #faf8f5 0%, #f0e8dc 30%, #e5ddd0 60%, #d8d0c4 100%);
-      font-family: "Noto Serif SC", serif;
-      color: #6b5d4f;
-      overflow: hidden;
-    }
+/* ===== 巨大浅绿叶子背景 ===== */
+.giant-lotus {
+  position: fixed; top: -25%; left: -20%; width: 140%; height: 150%;
+  background:
+    radial-gradient(ellipse 80% 55% at 20% 30%, rgba(190,225,245,0.38), transparent 55%),
+    radial-gradient(ellipse 55% 75% at 80% 40%, rgba(200,230,250,0.3), transparent 50%),
+    radial-gradient(ellipse 65% 65% at 50% 65%, rgba(180,220,240,0.26), transparent 60%),
+    radial-gradient(ellipse 45% 45% at 35% 75%, rgba(210,235,250,0.22), transparent 45%);
+  z-index: 0; pointer-events: none;
+}
+.giant-lotus::before {
+  content: ''; position: absolute; top: 10%; left: 0; width: 100%; height: 80%;
+  background:
+    radial-gradient(circle at 25% 35%, rgba(230,245,252,0.6), transparent 40%),
+    radial-gradient(circle at 75% 25%, rgba(225,242,250,0.5), transparent 35%),
+    radial-gradient(circle at 55% 70%, rgba(235,248,255,0.45), transparent 45%);
+  filter: blur(35px);
+}
 
-    /* 导航 */
-    .nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      padding: 15px;
-      background: rgba(255,255,255,0.8);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(201,184,160,0.3);
-      z-index: 100;
-    }
+/* ===== 背景水光 ===== */
+.water-glow {
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 25% 45%, rgba(255,252,245,0.52), transparent 50%),
+    radial-gradient(ellipse 50% 60% at 75% 55%, rgba(210,240,252,0.42), transparent 45%),
+    radial-gradient(ellipse 40% 40% at 50% 70%, rgba(255,254,252,0.32), transparent 40%);
+  z-index: 0; pointer-events: none;
+  animation: water-glow-breathe 10s ease-in-out infinite;
+}
+@keyframes water-glow-breathe {
+  0%,100%{opacity:0.7; transform:scale(1)}
+  50%{opacity:1; transform:scale(1.04)}
+}
 
-    .nav-item {
-      padding: 8px 20px;
-      color: #8b7d6b;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 14px;
-      letter-spacing: 0.1em;
-    }
+/* ===== 水晶光斑背景 ===== */
+.crystal-bg {
+  position: fixed; inset: 0;
+  z-index: 0; pointer-events: none;
+}
+.crystal-orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(55px);
+  pointer-events: none;
+  animation: orb-float 18s ease-in-out infinite;
+}
+@keyframes orb-float {
+  0%,100%{transform:translate(0,0) scale(1); opacity:0.45}
+  25%{transform:translate(25px,-18px) scale(1.12); opacity:0.75}
+  50%{transform:translate(-15px,12px) scale(0.92); opacity:0.55}
+  75%{transform:translate(18px,8px) scale(1.08); opacity:0.7}
+}
 
-    .nav-item:hover, .nav-item.active {
-      color: #5a5046;
-    }
+/* ===== 水晶切割面几何层 ===== */
+.crystal-facet {
+  position: fixed; inset: 0;
+  z-index: 0; pointer-events: none;
+  opacity: 0.5;
+}
+.crystal-facet .facet {
+  position: absolute;
+  background: linear-gradient(135deg, rgba(255,255,255,0.28), rgba(230,245,250,0.05));
+  backdrop-filter: blur(1px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.crystal-shard {
+  position: absolute;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(230,245,250,0.06));
+  backdrop-filter: blur(0.5px);
+  border: 0.5px solid rgba(255,255,255,0.15);
+}
+.crystal-ray {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(230,245,252,0.3), transparent);
+  transform-origin: center;
+  animation: ray-rotate 25s linear infinite;
+}
+.crystal-ray-2 {
+  position: absolute;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(230,245,252,0.2), transparent);
+  transform-origin: center;
+  animation: ray-rotate 30s linear infinite reverse;
+}
+@keyframes ray-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
-    .nav-item.active {
-      border-bottom: 1px solid #c9b8a0;
-    }
+/* ===== 背景颗粒质感 ===== */
+.bg-noise {
+  position: fixed; inset: 0;
+  z-index: 0; pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
 
-    /* 页面容器 */
-    .page {
-      display: none;
-      min-height: 100vh;
-      padding: 60px 20px 100px;
-      overflow-y: auto;
-    }
+/* ===== 一体化真实水面 ===== */
+.water-area {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 48%;
+  background: linear-gradient(180deg,
+    rgba(180,210,230,0) 0%,
+    rgba(175,205,225,0.06) 8%,
+    rgba(168,200,220,0.14) 20%,
+    rgba(160,195,215,0.28) 38%,
+    rgba(152,190,210,0.42) 55%,
+    rgba(145,185,205,0.55) 72%,
+    rgba(138,180,200,0.62) 88%,
+    rgba(132,175,195,0.7) 100%);
+  z-index: 1; overflow: hidden;
+  animation: water-breathe 6s ease-in-out infinite;
+}
+@keyframes water-breathe {
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.06)}
+}
 
-    .page.active {
-      display: block;
-    }
+/* 光柱 */
+.light-beam {
+  position: absolute; top: -30%; height: 130%;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.16), rgba(220,240,252,0.07), transparent);
+  filter: blur(22px);
+  border-radius: 50%;
+  animation: beam-shift 10s ease-in-out infinite;
+}
+@keyframes beam-shift {
+  0%,100%{transform:translateX(0) scaleX(1); opacity:0.7}
+  33%{transform:translateX(30px) scaleX(1.3); opacity:1}
+  66%{transform:translateX(-20px) scaleX(0.9); opacity:0.8}
+}
 
-    /* 统计 */
-    .stats {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
+/* 水底暗部 */
+.water-dark {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 35%;
+  background: linear-gradient(180deg, transparent, rgba(90,130,160,0.28));
+  pointer-events: none;
+}
 
-    .stat-item {
-      text-align: center;
-    }
+/* ===== 背景植物 ===== */
+.water-plants {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 38%;
+  z-index: 2; pointer-events: none; overflow: hidden;
+}
+.plant {
+  position: absolute; bottom: -8px;
+  width: 3px;
+  background: linear-gradient(180deg, rgba(140,180,190,0), rgba(120,170,185,0.35) 40%, rgba(100,160,180,0.5));
+  border-radius: 50% 50% 0 0;
+  transform-origin: bottom center;
+  animation: plant-sway 5s ease-in-out infinite;
+}
+.plant::before {
+  content: ''; position: absolute;
+  width: 22px; height: 36px;
+  background: radial-gradient(ellipse at 30% 30%, rgba(140,190,200,0.22), transparent 70%);
+  border-radius: 0 80% 0 80%;
+  transform: rotate(-20deg);
+  top: 8px; left: -10px;
+}
+.plant::after {
+  content: ''; position: absolute;
+  width: 18px; height: 28px;
+  background: radial-gradient(ellipse at 70% 30%, rgba(130,180,190,0.18), transparent 65%);
+  border-radius: 80% 0 80% 0;
+  transform: rotate(15deg);
+  top: 28px; left: -6px;
+}
+@keyframes plant-sway {
+  0%,100%{transform:rotate(-5deg)}
+  50%{transform:rotate(7deg)}
+}
 
-    .stat-num {
-      font-size: 24px;
-      color: #5a5046;
-    }
+/* 细密波纹纹理 */
+.water-ripple-texture {
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 18px, rgba(255,255,255,0.035) 18px, rgba(255,255,255,0.035) 19px),
+    repeating-linear-gradient(0deg, transparent, transparent 14px, rgba(255,255,255,0.03) 14px, rgba(255,255,255,0.03) 15px);
+  animation: ripple-flow 18s linear infinite;
+}
+@keyframes ripple-flow {
+  0%{transform:translate(0,0)}
+  100%{transform:translate(-18px,-14px)}
+}
 
-    .stat-label {
-      font-size: 12px;
-      color: #a89880;
-    }
+/* 扩散水波纹 */
+.water-surface-ripple {
+  position: absolute;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 50%;
+  animation: ripple-spread 5s ease-out infinite;
+  pointer-events: none;
+}
+.water-surface-ripple::before {
+  content: ''; position: absolute; inset: -6px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 50%;
+  animation: ripple-spread 5s ease-out infinite 1.2s;
+}
+@keyframes ripple-spread {
+  0% { transform: scale(0.3); opacity: 0.7; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
 
-    /* 标题 */
-    h2 {
-      text-align: center;
-      font-weight: 300;
-      font-size: 1.5rem;
-      letter-spacing: 0.2em;
-      margin-bottom: 10px;
-    }
+/* ===== 4个游动光斑（焦散） ===== */
+.caustic {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,240,0.28), transparent 70%);
+  filter: blur(28px);
+  pointer-events: none; z-index: 2;
+}
 
-    .page-desc {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #8b7d6b;
-      font-style: italic;
-      margin-bottom: 40px;
-    }
+/* ===== 椭圆扩散涟漪 ===== */
+.ripple-ellipse {
+  position: absolute; z-index: 3; pointer-events: none;
+}
+.ripple-ellipse .ring {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  border: 1.5px solid rgba(255,255,255,0.4);
+  border-radius: 50%;
+  opacity: 0;
+  animation: ellipse-expand 2.6s ease-out forwards;
+}
+@keyframes ellipse-expand {
+  0%{width:8px; height:5px; opacity:0.65}
+  100%{width:160px; height:80px; opacity:0}
+}
 
-    /* 池塘容器 */
-    .pond {
-      position: relative;
-      width: 340px;
-      height: 340px;
-      margin: 0 auto 30px;
-    }
+/* ===== 上升气泡（带折射高光） ===== */
+.rising-bubble {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle at 32% 32%, rgba(255,255,255,0.85), rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.1));
+  border: 1px solid rgba(255,255,255,0.35);
+  animation: bubble-rise linear forwards;
+  pointer-events: none; z-index: 4;
+}
+.rising-bubble::before {
+  content: ''; position: absolute; top: 12%; left: 18%;
+  width: 28%; height: 28%; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.95), transparent);
+}
+.rising-bubble::after {
+  content: ''; position: absolute; bottom: 18%; right: 22%;
+  width: 15%; height: 10%; border-radius: 50%;
+  background: rgba(255,255,255,0.35); transform: rotate(-30deg);
+}
+@keyframes bubble-rise {
+  0%{transform:translateY(0) scale(1); opacity:0.45}
+  15%{opacity:0.7}
+  85%{opacity:0.5}
+  100%{transform:translateY(-100vh) scale(0.25); opacity:0}
+}
 
-    .pond-depth {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 120px;
-      height: 120px;
-      background: radial-gradient(circle, rgba(200,192,180,0.5) 0%, transparent 70%);
-      border-radius: 50%;
-    }
+/* ===== 锦鲤（区域内轻柔浮动+呼吸光晕） ===== */
+.koi-fish {
+  position: absolute; z-index: 5; pointer-events: none;
+  animation: koi-breathe 2.2s ease-in-out infinite;
+  will-change: transform, left;
+}
+.koi-fish svg {
+  display: block;
+  filter: drop-shadow(0 0 4px rgba(255,160,80,0.35));
+}
+@keyframes koi-breathe {
+  0%,100%{filter:drop-shadow(0 0 8px rgba(255,150,70,0.5)) drop-shadow(0 0 20px rgba(255,180,100,0.25))}
+  50%{filter:drop-shadow(0 0 18px rgba(255,170,90,0.85)) drop-shadow(0 0 36px rgba(255,200,130,0.5))}
+}
 
-    /* 颜色叶片 - 树叶形状 */
-    .color-leaf {
-      position: absolute;
-      width: 44px;
-      height: 56px;
-      left: 50%;
-      top: 50%;
-      margin-left: -22px;
-      margin-top: -28px;
-      cursor: pointer;
-      transition: all 0.4s ease;
-      opacity: 0.85;
-    }
+/* ===== 树叶圆圈 ===== */
+.leaf-circle {
+  position: absolute; left: 50%; top: 36%;
+  transform: translate(-50%, -50%);
+  width: 340px; height: 340px; z-index: 10;
+}
 
-    .color-leaf::before {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: currentColor;
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+/* 中央诗句 */
+.poem-display {
+  position: absolute; left: 0; top: 0;
+  transform: translate(-50%, -50%);
+  width: 200px; text-align: center; z-index: 12;
+  opacity: 0; transition: all 0.8s ease; pointer-events: none;
+}
+.poem-display.show { opacity: 1; }
+.poem-display p {
+  font-size: 0.88rem; color: #7a6a80; font-style: italic;
+  line-height: 1.9; text-shadow: 0 1px 10px rgba(255,255,255,0.7);
+}
+.poem-display .mood-tag {
+  font-size: 0.72rem; color: #9a8aa0; margin-top: 10px; letter-spacing: 0.12em;
+}
 
-    .color-leaf::after {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 15%;
-      transform: translateX(-50%);
-      width: 2px;
-      height: 35%;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
-      border-radius: 2px;
-    }
+/* 情绪石头（无文字，通透饱满，有质感） */
+.mood-leaf {
+  position: absolute; width: 66px; height: 60px;
+  border-radius: 46% 54% 48% 52% / 52% 48% 54% 46%;
+  cursor: pointer; z-index: 11;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 2.5px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.08),
+    0 4px 12px rgba(0,0,0,0.04),
+    inset 0 0 32px rgba(255,255,255,0.55),
+    inset 3px 4px 14px rgba(0,0,0,0.04),
+    inset -3px -4px 12px rgba(255,255,255,0.45),
+    inset 0 -10px 24px rgba(0,0,0,0.03);
+}
+.mood-leaf::before {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  background:
+    radial-gradient(circle at 38% 32%, rgba(255,255,255,0.7), transparent 48%),
+    radial-gradient(circle at 68% 70%, rgba(255,255,255,0.3), transparent 45%),
+    radial-gradient(circle at 52% 52%, rgba(255,255,255,0.12), transparent 38%);
+}
+.mood-leaf::after {
+  content: ''; position: absolute; top: 35%; left: 22%; width: 44%; height: 14%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.42), transparent);
+  border-radius: 50%; transform: rotate(-20deg);
+  box-shadow:
+    8px 16px 0 -1px rgba(255,255,255,0.2),
+    -4px 22px 0 -2px rgba(255,255,255,0.12),
+    20px 8px 0 -3px rgba(255,255,255,0.08);
+}
+.mood-leaf:hover {
+  transform: scale(1.22);
+  box-shadow: 0 14px 38px rgba(0,0,0,0.1), inset 0 0 38px rgba(255,255,255,0.6);
+}
+.mood-leaf.active {
+  transform: scale(1.35);
+  box-shadow: 0 0 60px rgba(255,255,255,0.9), inset 0 0 45px rgba(255,255,255,0.65);
+  z-index: 15;
+}
 
-    .color-leaf:hover::before {
-      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-    }
+/* ===== 右下角漂流瓶（梦幻水晶） ===== */
+.bottle-container {
+  position: absolute; right: 22px; bottom: 150px;
+  z-index: 15; text-align: center;
+}
+.bottle {
+  width: 58px; height: 96px; position: relative; margin: 0 auto 8px;
+}
+.bottle-body {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 48px; height: 66px;
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.55), rgba(255,255,255,0.3), rgba(240,230,250,0.4), rgba(255,255,255,0.25));
+  border-radius: 12px 12px 50% 50%;
+  border: 2.5px solid rgba(255,255,255,0.7);
+  box-shadow: inset 0 0 22px rgba(255,255,255,0.45), 0 6px 20px rgba(120,100,140,0.15);
+  overflow: hidden;
+}
+.bottle-body::before {
+  content: ''; position: absolute; top: 8px; left: 6px; width: 12px; height: 25px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0));
+  border-radius: 50%; transform: rotate(-15deg);
+}
+.bottle-neck {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 22px; height: 26px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.35));
+  border-radius: 5px 5px 3px 3px;
+  border: 2.5px solid rgba(255,255,255,0.7);
+}
+.bottle-cork {
+  position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
+  width: 20px; height: 10px;
+  background: linear-gradient(180deg, rgba(210,180,150,0.6), rgba(190,160,130,0.5));
+  border-radius: 3px 3px 0 0;
+}
+.bottle-glow {
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+  width: 30px; height: 30px;
+  background: radial-gradient(circle, rgba(255,250,230,0.6), transparent 70%);
+  border-radius: 50%;
+  animation: bottle-glow-pulse 3s ease-in-out infinite;
+}
+@keyframes bottle-glow-pulse {
+  0%,100%{opacity:0.5; transform:translateX(-50%) scale(1)}
+  50%{opacity:0.9; transform:translateX(-50%) scale(1.3)}
+}
+.bottle-stone {
+  position: absolute; width: 10px; height: 10px;
+  border-radius: 50%; opacity: 0.75;
+  animation: bottle-float 3.5s ease-in-out infinite;
+}
+@keyframes bottle-float {
+  0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)}
+}
 
-    /* 选中时的动画 */
-    @keyframes leaf-selected {
-      0% { transform: translate(var(--x), var(--y)) scale(1); }
-      50% { transform: translate(var(--x), var(--y)) scale(1.2); }
-      100% { transform: translate(var(--x), var(--y)) scale(1.15); }
-    }
+/* ===== 竹篓（带树叶） ===== */
+.rack-container {
+  position: absolute; right: 110px; bottom: 150px;
+  z-index: 15; text-align: center;
+}
+.bamboo-basket {
+  width: 72px; height: 90px; position: relative; margin: 0 auto 8px;
+}
+.basket-handle {
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  width: 40px; height: 26px;
+  border: 2px solid rgba(160,130,100,0.45);
+  border-bottom: none;
+  border-radius: 50% 50% 0 0;
+}
+.basket-rim {
+  position: absolute; top: 2px; left: 50%; transform: translateX(-50%);
+  width: 66px; height: 10px;
+  background: linear-gradient(180deg, rgba(185,155,120,0.55), rgba(160,130,100,0.45));
+  border-radius: 50%;
+  border: 1px solid rgba(140,115,85,0.35);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  z-index: 2;
+}
+.basket-inner {
+  position: absolute; top: 9px; left: 50%; transform: translateX(-50%);
+  width: 52px; height: 14px;
+  background: radial-gradient(ellipse, rgba(75,55,35,0.1), transparent 70%);
+  border-radius: 50%;
+  z-index: 2;
+}
+.basket-body {
+  position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
+  width: 58px; height: 62px;
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(150,125,95,0.13) 5px, rgba(150,125,95,0.13) 6px),
+    repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(150,125,95,0.16) 5px, rgba(150,125,95,0.16) 6.5px),
+    linear-gradient(180deg, rgba(175,150,120,0.15), rgba(150,125,95,0.3));
+  border-radius: 4px 4px 45% 45%;
+  clip-path: polygon(6% 0%, 94% 0%, 87% 100%, 13% 100%);
+  z-index: 1;
+}
+.basket-bottom {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 44px; height: 8px;
+  background: linear-gradient(180deg, rgba(155,130,100,0.35), rgba(135,110,80,0.3));
+  border-radius: 50%;
+  z-index: 0;
+}
+.rack-stone {
+  position: absolute; width: 11px; height: 11px;
+  border-radius: 50%; opacity: 0.75;
+  z-index: 2;
+}
 
-    /* 引导文案 */
-    .guide-text {
-      text-align: center;
-      font-size: 0.95rem;
-      color: #8b7d6b;
-      font-style: italic;
-      margin-bottom: 30px;
-      min-height: 24px;
-    }
+/* 竹篓上的叶子 */
+.basket-leaf {
+  position: absolute;
+  width: 14px; height: 22px;
+  border-radius: 0 80% 0 80%;
+  background: linear-gradient(135deg, rgba(155,220,130,0.85), rgba(115,195,95,0.7));
+  transform-origin: bottom center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  border: 0.5px solid rgba(255,255,255,0.2);
+  z-index: 3;
+}
+.basket-leaf::before {
+  content: ''; position: absolute; top: 2px; left: 50%; transform: translateX(-50%);
+  width: 0.8px; height: 70%;
+  background: linear-gradient(180deg, rgba(90,165,70,0.35), transparent);
+}
 
-    /* 书写区域 */
-    .write-section {
-      display: none;
-      width: 90%;
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 25px;
-      background: rgba(255,255,255,0.5);
-      border-radius: 16px;
-      transition: opacity 0.3s;
-    }
+@keyframes leaf-sway-1 { 0%,100%{transform:rotate(-8deg)} 50%{transform:rotate(6deg)} }
+@keyframes leaf-sway-2 { 0%,100%{transform:rotate(6deg)} 50%{transform:rotate(-10deg)} }
+@keyframes leaf-sway-3 { 0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(9deg)} }
+@keyframes leaf-sway-4 { 0%,100%{transform:rotate(10deg)} 50%{transform:rotate(-6deg)} }
+@keyframes leaf-sway-5 { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(11deg)} }
+@keyframes leaf-sway-6 { 0%,100%{transform:rotate(8deg)} 50%{transform:rotate(-7deg)} }
 
-    .write-prompt {
-      font-size: 0.95rem;
-      color: #7a6d5a;
-      font-style: italic;
-      margin-bottom: 15px;
-      text-align: center;
-    }
+/* ===== 计数器 ===== */
+.counter {
+  font-size: 0.72rem; color: #8a7a95;
+  letter-spacing: 0.06em; text-shadow: 0 1px 5px rgba(255,255,255,0.6);
+}
+.counter .num { font-size: 0.95rem; font-weight: 500; color: #6a5a80; }
 
-    .write-area {
-      width: 100%;
-      height: 120px;
-      padding: 15px;
-      background: rgba(255,255,255,0.6);
-      border: 1px solid rgba(201,184,160,0.3);
-      border-radius: 12px;
-      font-family: "Noto Serif SC", serif;
-      font-size: 1rem;
-      color: #5a5046;
-      line-height: 1.8;
-      resize: none;
-      outline: none;
-      transition: all 0.3s;
-    }
+/* ===== 底部按钮 ===== */
+.cast-bar {
+  position: absolute; bottom: 22px; left: 50%;
+  transform: translateX(-50%); z-index: 20;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.cast-btn {
+  padding: 14px 50px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+  border: 2px solid rgba(255,255,255,0.8);
+  border-radius: 38px;
+  font-family: "Noto Serif SC", serif; font-size: 1.05rem; color: #4a8068;
+  cursor: pointer;
+  backdrop-filter: blur(22px) saturate(1.3);
+  box-shadow:
+    0 8px 28px rgba(80,140,120,0.15),
+    inset 0 1px 2px rgba(255,255,255,0.7),
+    inset 0 -1px 2px rgba(255,255,255,0.25);
+  transition: all 0.35s ease; letter-spacing: 0.18em;
+  position: relative; overflow: hidden;
+}
+.cast-btn::before {
+  content: ''; position: absolute; top: -40%; left: -30%; width: 180%; height: 180%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0.15) 70%, rgba(255,255,255,0) 100%);
+  transform: rotate(30deg);
+  pointer-events: none;
+  transition: all 0.5s ease;
+}
+.cast-btn:hover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+  transform: translateY(-3px);
+  box-shadow:
+    0 12px 40px rgba(80,140,120,0.22),
+    inset 0 1px 2px rgba(255,255,255,0.8),
+    inset 0 -1px 2px rgba(255,255,255,0.3);
+}
+.cast-btn:hover::before {
+  transform: rotate(30deg) translate(10%, 5%);
+}
+.cast-btn:active { transform: translateY(-1px) scale(0.97); }
 
-    .write-area:focus {
-      border-color: rgba(201,184,160,0.6);
-      background: rgba(255,255,255,0.8);
-    }
+/* ===== 心情统计条 ===== */
+.mood-stats {
+  position: absolute; bottom: 62px; left: 50%; transform: translateX(-50%);
+  z-index: 20; text-align: center;
+}
+.mood-stats-bar {
+  width: 160px; height: 6px; border-radius: 3px;
+  background: rgba(255,255,255,0.35);
+  overflow: hidden; display: flex;
+  margin-bottom: 5px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+}
+.mood-stats-good {
+  height: 100%; background: linear-gradient(90deg, #a0daa0, #8dd3c0);
+  transition: width 0.6s ease; border-radius: 3px 0 0 3px;
+}
+.mood-stats-bad {
+  height: 100%; background: linear-gradient(90deg, #c8b0d8, #aab8c8);
+  transition: width 0.6s ease; border-radius: 0 3px 3px 0;
+}
+.mood-stats-text {
+  font-size: 0.62rem; color: #8a8a95; letter-spacing: 0.06em;
+}
 
-    .write-area::placeholder {
-      color: #b5a28c;
-      font-style: italic;
-    }
+/* ===== 浮萍 ===== */
+.lily-pad {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(ellipse at 35% 35%, rgba(140,180,165,0.38), rgba(120,165,150,0.22));
+  border: 0.5px solid rgba(140,180,165,0.18);
+  animation: lily-float 6s ease-in-out infinite;
+}
+.lily-pad::before {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  width: 1px; height: 45%;
+  background: linear-gradient(180deg, rgba(140,180,165,0.25), transparent);
+  transform: translate(-50%,-50%) rotate(25deg);
+}
+@keyframes lily-float {
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-3px) rotate(4deg)}
+}
 
-    /* 可见性选项 */
-    .visibility-options {
-      display: flex;
-      justify-content: center;
-      gap: 25px;
-      margin-top: 15px;
-    }
+/* ===== 糖墩墩（三花猫） ===== */
+.cat-container {
+  position: fixed; bottom: 14px; left: 14px;
+  z-index: 25; display: flex; flex-direction: column; align-items: center;
+}
+.cat-counter {
+  font-size: 0.6rem; color: #7a6a80;
+  margin-top: 3px; letter-spacing: 0.04em;
+  text-shadow: 0 1px 4px rgba(255,255,255,0.6);
+  white-space: nowrap;
+}
+.cat-bubble {
+  position: absolute; bottom: 66px; left: 50%; transform: translateX(-50%) translateY(6px);
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+  padding: 7px 12px; border-radius: 12px;
+  font-size: 0.7rem; color: #6a5a70; white-space: nowrap;
+  opacity: 0; transition: all 0.45s ease;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+  pointer-events: none;
+}
+.cat-bubble::after {
+  content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
+  border-left: 5px solid transparent; border-right: 5px solid transparent;
+  border-top: 5px solid rgba(255,255,255,0.92);
+}
+.cat-bubble.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.cat-wrap {
+  position: relative; width: 60px; height: 52px;
+  transition: all 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.08));
+  cursor: pointer;
+}
 
-    .visibility-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.85rem;
-      color: #8b7d6b;
-      cursor: pointer;
-    }
+/* 毛茸茸身体 */
+.cat-body {
+  position: absolute; bottom: 2px; left: 6px;
+  width: 44px; height: 32px;
+  background:
+    radial-gradient(ellipse 55% 45% at 32% 28%, rgba(255,255,255,0.55), transparent 55%),
+    linear-gradient(135deg, #333 45%, #fff 45%, #fff 70%, #f5d060 70%);
+  border-radius: 52% 48% 46% 54% / 56% 54% 46% 44%;
+  box-shadow:
+    inset -3px -3px 8px rgba(0,0,0,0.12),
+    inset 3px 3px 10px rgba(255,255,255,0.25),
+    0 2px 8px rgba(0,0,0,0.06);
+  transition: all 0.5s ease;
+}
+.cat-body::before {
+  content: ''; position: absolute; inset: -4px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(245,240,235,0.45), transparent 60%);
+  border-radius: inherit; filter: blur(3px); z-index: -1;
+}
+.cat-body::after {
+  content: ''; position: absolute; inset: -8px;
+  border-radius: inherit;
+  box-shadow:
+    0 0 6px 4px rgba(240,230,220,0.22),
+    0 0 12px 6px rgba(230,220,210,0.12),
+    inset 0 0 10px 4px rgba(255,255,255,0.1);
+  filter: blur(3px);
+  z-index: -2;
+}
 
-    .visibility-option input {
-      accent-color: #c9b8a0;
-    }
+/* 立体脑袋 */
+.cat-head {
+  position: absolute; top: 2px; left: 13px;
+  width: 32px; height: 28px;
+  background:
+    radial-gradient(ellipse 45% 40% at 38% 32%, rgba(255,255,255,0.5), transparent 50%),
+    linear-gradient(100deg, #333 55%, #fff 55%);
+  border-radius: 48% 52% 50% 50% / 55% 55% 45% 45%;
+  box-shadow:
+    inset -2px -2px 6px rgba(0,0,0,0.1),
+    inset 2px 2px 8px rgba(255,255,255,0.2),
+    0 2px 5px rgba(0,0,0,0.05);
+  transition: all 0.5s ease;
+  z-index: 2;
+}
+.cat-head::before {
+  content: ''; position: absolute; inset: -4px;
+  background: radial-gradient(ellipse at 50% 50%, rgba(245,240,235,0.35), transparent 60%);
+  border-radius: inherit; filter: blur(3px); z-index: -1;
+}
+.cat-head::after {
+  content: ''; position: absolute;
+  bottom: -6px; left: 50%; transform: translateX(-50%);
+  width: 20px; height: 12px;
+  background: linear-gradient(100deg, #333 55%, #fff 55%);
+  border-radius: 40% 40% 50% 50%;
+  filter: blur(1px);
+}
 
-    /* 提交按钮 */
-    .submit-btn {
-      display: block;
-      width: 100%;
-      margin-top: 20px;
-      padding: 14px;
-      background: rgba(201,184,160,0.2);
-      border: 1px solid rgba(201,184,160,0.4);
-      border-radius: 25px;
-      color: #5a5046;
-      font-family: "Noto Serif SC", serif;
-      font-size: 1rem;
-      letter-spacing: 0.1em;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
+/* 耳朵带内耳粉 */
+.cat-ear {
+  position: absolute; top: -5px;
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 11px solid #333;
+  transition: all 0.4s ease;
+  z-index: 1;
+}
+.cat-ear::after {
+  content: ''; position: absolute; top: 3px; left: -3px;
+  width: 0; height: 0;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-bottom: 7px solid #f0c0b8;
+}
+.cat-ear-l { left: 15px; transform: rotate(-12deg); }
+.cat-ear-r { left: 27px; transform: rotate(12deg); border-bottom-color: #f5d060; }
+.cat-ear-r::after { border-bottom-color: #f0c0b8; }
 
-    .submit-btn:hover {
-      background: rgba(201,184,160,0.35);
-      transform: translateY(-2px);
-    }
+/* 蓬松尾巴 */
+.cat-tail {
+  position: absolute; bottom: 6px; right: 2px;
+  width: 26px; height: 5px;
+  background: linear-gradient(90deg, #333, #f5d060 55%, #fff 55%);
+  border-radius: 50%;
+  transform-origin: left center;
+  animation: tail-wag 2.2s ease-in-out infinite;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.08));
+}
+.cat-tail::before {
+  content: ''; position: absolute; right: -3px; top: -2px;
+  width: 10px; height: 9px;
+  background: #fff;
+  border-radius: 50%; filter: blur(1px); opacity: 0.7;
+}
 
-    /* 漂叶页面 */
-    .drifting-container {
-      width: 90%;
-      max-width: 400px;
-      margin: 0 auto;
-    }
+/* 可爱大眼睛 */
+.cat-eye {
+  position: absolute; top: 11px;
+  width: 5px; height: 6px;
+  background: #2a2018;
+  border-radius: 50% 50% 45% 45%;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+  transition: all 0.4s ease;
+}
+.cat-eye::after {
+  content: ''; position: absolute; top: 1px; left: 1.5px;
+  width: 2px; height: 2px;
+  background: #fff; border-radius: 50%;
+}
+.cat-eye-l { left: 18px; }
+.cat-eye-r { left: 26px; }
 
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
+/* 腮红 */
+.cat-blush {
+  position: absolute; top: 17px;
+  width: 5px; height: 3.5px;
+  background: rgba(240,160,160,0.32);
+  border-radius: 50%; filter: blur(1.5px);
+  transition: all 0.4s ease;
+}
+.cat-blush-l { left: 16px; }
+.cat-blush-r { left: 28px; }
 
-    .filter-chip {
-      padding: 6px 12px;
-      font-size: 12px;
-      background: rgba(255,255,255,0.5);
-      border: 1px solid rgba(201,184,160,0.3);
-      border-radius: 15px;
-      color: #8b7d6b;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
+/* 小鼻子 */
+.cat-nose {
+  position: absolute; top: 15px; left: 21.5px;
+  width: 3.5px; height: 2.5px;
+  background: #e89890;
+  border-radius: 50% 50% 55% 55%;
+  z-index: 3;
+}
 
-    .filter-chip:hover, .filter-chip.active {
-      background: rgba(201,184,160,0.3);
-      color: #5a5046;
-    }
+/* 小嘴巴 */
+.cat-mouth {
+  position: absolute; top: 18px; left: 22px;
+  width: 3px; height: 2px;
+  border-bottom: 1px solid rgba(80,60,60,0.22);
+  border-radius: 0 0 50% 50%;
+  transition: all 0.3s ease;
+}
 
-    .filter-chip .dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin-right: 5px;
-    }
+/* 小舌头 */
+.cat-tongue {
+  position: absolute; top: 17px; left: 22.5px;
+  width: 3px; height: 0;
+  background: #e89890;
+  border-radius: 0 0 50% 50%;
+  transition: all 0.3s ease;
+  z-index: 4;
+}
 
-    .catch-btn {
-      display: block;
-      width: 200px;
-      margin: 30px auto;
-      padding: 15px 30px;
-      background: linear-gradient(135deg, rgba(201,184,160,0.3), rgba(201,184,160,0.1));
-      border: 1px solid rgba(201,184,160,0.4);
-      border-radius: 30px;
-      color: #5a5046;
-      font-family: "Noto Serif SC", serif;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
+/* 胡须 */
+.cat-whisker {
+  position: absolute; top: 15px;
+  width: 9px; height: 0.7px;
+  background: rgba(100,90,85,0.18);
+  border-radius: 1px;
+  transition: all 0.3s ease;
+}
+.cat-whisker-l1 { left: 8px; transform: rotate(8deg); }
+.cat-whisker-l2 { left: 8px; top: 17px; transform: rotate(2deg); }
+.cat-whisker-r1 { left: 30px; transform: rotate(-8deg); }
+.cat-whisker-r2 { left: 30px; top: 17px; transform: rotate(-2deg); }
 
-    .catch-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 15px rgba(201,184,160,0.3);
-    }
+/* 小爪子 */
+.cat-paw {
+  position: absolute; bottom: 0;
+  width: 7px; height: 5px;
+  background: #fff;
+  border-radius: 50% 50% 40% 40%;
+  box-shadow: inset 0 -1px 2px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  transition: all 0.4s ease;
+}
+.cat-paw::after {
+  content: ''; position: absolute; top: 1px; left: 50%;
+  transform: translateX(-50%);
+  width: 4px; height: 2px;
+  background: rgba(240,220,210,0.4);
+  border-radius: 50%;
+}
+.cat-paw-l { left: 14px; z-index: 3; }
+.cat-paw-r { left: 32px; z-index: 3; }
 
-    .catch-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
+/* 形态变化 */
+.cat-wrap.stretch .cat-body { height: 22px; width: 48px; left: 4px; border-radius: 40% 40% 42% 42%; }
+.cat-wrap.stretch .cat-head { top: -4px; left: 2px; }
+.cat-wrap.stretch .cat-tail { width: 30px; transform: rotate(-25deg); animation:none; }
+.cat-wrap.stretch .cat-paw-l { left: 12px; }
+.cat-wrap.stretch .cat-paw-r { left: 38px; }
 
-    .drifting-leaf {
-      padding: 30px;
-      border-radius: 16px;
-      text-align: center;
-      margin-bottom: 30px;
-    }
+.cat-wrap.roll { transform: rotate(85deg) translateY(-4px); }
+.cat-wrap.roll .cat-tail { transform: rotate(40deg); }
 
-    .leaf-origin {
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.8);
-      margin-bottom: 15px;
-    }
+.cat-wrap.tilt .cat-head { transform: rotate(12deg) translateY(-2px); }
+.cat-wrap.tilt .cat-ear-l { transform: rotate(-22deg); }
+.cat-wrap.tilt .cat-ear-r { transform: rotate(4deg); }
 
-    .leaf-content {
-      font-size: 1.1rem;
-      color: #5a5046;
-      line-height: 1.8;
-      margin-bottom: 15px;
-    }
+.cat-wrap.lie .cat-body { height: 19px; width: 46px; left: 5px; border-radius: 42% 42% 38% 38%; }
+.cat-wrap.lie .cat-head { top: 7px; left: 32px; }
+.cat-wrap.lie .cat-tail { width: 28px; transform: rotate(-8deg); animation:none; }
 
-    .leaf-time {
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.6);
-    }
+/* 侧卧在窝里 */
+.cat-wrap.side-lie { transform: rotate(-15deg) translateY(2px); }
+.cat-wrap.side-lie .cat-body { height: 20px; width: 48px; left: 5px; border-radius: 45% 45% 40% 40%; }
+.cat-wrap.side-lie .cat-head { top: 9px; left: 34px; transform: rotate(25deg); }
+.cat-wrap.side-lie .cat-tail { width: 24px; transform: rotate(-35deg); animation:none; }
+.cat-wrap.side-lie .cat-eye { height: 1.5px; border-radius: 0; width: 4px; opacity: 0.4; }
 
-    /* 回应选项 */
-    .response-options {
-      display: none;
-      justify-content: center;
-      gap: 20px;
-    }
+/* 舔毛 */
+.cat-wrap.lick .cat-head { top: 7px; left: 18px; transform: rotate(-15deg); }
+.cat-wrap.lick .cat-body { height: 24px; width: 42px; left: 7px; }
+.cat-wrap.lick .cat-paw-l { left: 24px; bottom: 9px; height: 7px; transform: rotate(-30deg); }
+.cat-wrap.lick .cat-tail { animation:none; transform: rotate(5deg); }
+.cat-wrap.lick .cat-tongue { height: 4px; }
 
-    .response-btn {
-      padding: 12px 24px;
-      background: transparent;
-      border: 1px solid #c9b8a0;
-      border-radius: 20px;
-      color: #6b5d4f;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
+/* 打盹 */
+.cat-wrap.doze { transform: translateY(1px); }
+.cat-wrap.doze .cat-body { height: 21px; width: 46px; left: 6px; border-radius: 44% 44% 42% 42%; }
+.cat-wrap.doze .cat-head { top: 5px; left: 13px; transform: rotate(-5deg); }
+.cat-wrap.doze .cat-eye { height: 1.5px; border-radius: 0; width: 4px; opacity: 0.3; }
+.cat-wrap.doze .cat-tail { animation:none; transform: rotate(-5deg); }
+.cat-wrap.doze .cat-ear-l { transform: rotate(-15deg); }
+.cat-wrap.doze .cat-ear-r { transform: rotate(15deg); }
 
-    .response-btn:hover {
-      background: rgba(201,184,160,0.2);
-    }
+/* 蜷成一团 */
+.cat-wrap.curl { transform: scale(0.92); }
+.cat-wrap.curl .cat-body { height: 26px; width: 38px; left: 9px; border-radius: 50% 50% 45% 45%; }
+.cat-wrap.curl .cat-head { top: 11px; left: 21px; }
+.cat-wrap.curl .cat-tail { width: 26px; transform: rotate(-60deg); animation:none; }
+.cat-wrap.curl .cat-paw { opacity: 0.5; }
 
-    /* 历史页面 */
-    .timeline {
-      width: 90%;
-      max-width: 400px;
-      margin: 0 auto;
-    }
+/* 抬头 */
+.cat-wrap.lookup .cat-head { top: -5px; left: 11px; transform: rotate(-8deg); }
+.cat-wrap.lookup .cat-body { height: 26px; width: 38px; left: 9px; }
+.cat-wrap.lookup .cat-ear-l { transform: rotate(-25deg); }
+.cat-wrap.lookup .cat-ear-r { transform: rotate(20deg); }
+.cat-wrap.lookup .cat-tail { transform: rotate(-10deg); }
 
-    .timeline-item {
-      display: flex;
-      gap: 15px;
-      padding: 15px 0;
-      border-bottom: 1px solid rgba(201,184,160,0.2);
-    }
+@keyframes tail-wag {
+  0%,100%{transform:rotate(0deg)}
+  50%{transform:rotate(18deg)}
+}
 
-    .timeline-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      margin-top: 5px;
-    }
+/* ===== 猫窝 ===== */
+.cat-bed {
+  position: absolute;
+  bottom: -4px; left: 50%;
+  transform: translateX(-50%);
+  width: 70px; height: 30px;
+  background: radial-gradient(ellipse at 50% 40%, #f5e8d8, #e0c8a8);
+  border-radius: 50% 50% 45% 45%;
+  box-shadow: inset 0 2px 8px rgba(200,170,140,0.25), 0 2px 6px rgba(0,0,0,0.04);
+  z-index: -1;
+}
+.cat-bed::before {
+  content: '';
+  position: absolute;
+  top: -6px; left: 50%;
+  transform: translateX(-50%);
+  width: 60px; height: 18px;
+  background: radial-gradient(ellipse at 50% 30%, #faf0e6, #eddcc8);
+  border-radius: 50% 50% 40% 40%;
+  border: 1px solid rgba(210,190,170,0.35);
+}
+.cat-bed::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 50%;
+  transform: translateX(-50%);
+  width: 52px; height: 10px;
+  background: radial-gradient(ellipse at 50% 30%, rgba(255,255,255,0.5), transparent 70%);
+  border-radius: 50%;
+}
 
-    .timeline-content {
-      flex: 1;
-    }
+/* ===== 便签弹窗 ===== */
+.note-overlay {
+  position: fixed; inset: 0;
+  background: rgba(100,90,120,0.2); backdrop-filter: blur(10px);
+  z-index: 50; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.45s ease;
+}
+.note-overlay.open { opacity: 1; pointer-events: all; }
+.note-card {
+  width: 350px; padding: 38px 32px 28px;
+  background: linear-gradient(145deg, #fffefc, #fff8f0); border-radius: 18px;
+  box-shadow: 0 30px 80px rgba(120,100,140,0.22);
+  position: relative; transform: translateY(25px);
+  transition: transform 0.45s ease;
+}
+.note-overlay.open .note-card { transform: translateY(0); }
+.note-card::before {
+  content: ''; position: absolute; top: -14px; left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  width: 55px; height: 24px;
+  background: linear-gradient(180deg, rgba(230,210,180,0.55), rgba(210,190,160,0.45));
+  border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+.note-textarea {
+  width: 100%; min-height: 135px; border: none; background: transparent;
+  font-family: "Noto Serif SC", serif; font-size: 0.98rem; color: #5a4a60;
+  resize: none; outline: none; line-height: 2; letter-spacing: 0.04em;
+}
+.note-textarea::placeholder { color: #b0a8a0; font-style: italic; }
+.note-actions {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid rgba(200,190,180,0.3);
+}
+.char-count { font-size: 0.72rem; color: #b8b0a8; }
+.stone-btn {
+  padding: 10px 36px;
+  background: linear-gradient(135deg, #c8b8d0, #b0a0c0);
+  border: none; border-radius: 28px;
+  font-family: "Noto Serif SC", serif; font-size: 0.92rem; color: #fff;
+  cursor: pointer; box-shadow: 0 4px 18px rgba(160,140,180,0.3);
+  transition: all 0.35s ease; letter-spacing: 0.12em;
+}
+.stone-btn:hover {
+  background: linear-gradient(135deg, #d0c0d8, #b8a8c8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(160,140,180,0.4);
+}
 
-    .timeline-emotion {
-      font-size: 0.9rem;
-      color: #8b7d6b;
-      margin-bottom: 5px;
-    }
+/* ===== 飞行石头 ===== */
+.flying-stone {
+  position: fixed; width: 38px; height: 38px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #d8c8d0, #c0b0c0);
+  box-shadow: 0 4px 18px rgba(120,100,140,0.18), inset 0 0 12px rgba(255,255,255,0.35);
+  z-index: 60; pointer-events: none;
+  transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
 
-    .timeline-text {
-      font-size: 0.95rem;
-      color: #5a5046;
-      line-height: 1.6;
-      margin-bottom: 5px;
-    }
+/* ===== 标题 ===== */
+.header {
+  position: absolute; top: 35px; left: 50%; transform: translateX(-50%);
+  text-align: center; z-index: 20;
+}
+.header h1 {
+  font-weight: 400; font-size: 1.5rem; letter-spacing: 0.35em;
+  color: #6a5a70; margin-bottom: 8px;
+  text-shadow: 0 2px 12px rgba(255,255,255,0.6);
+}
+.header p { font-size: 0.82rem; color: #9a8aa0; font-style: italic; letter-spacing: 0.1em; }
 
-    .timeline-time {
-      font-size: 0.8rem;
-      color: #a89880;
-    }
-
-    /* 周统计 */
-    .week-chart {
-      width: 100%;
-      height: 150px;
-      margin: 20px 0;
-    }
-
-    .week-summary {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #7a6d5a;
-      font-style: italic;
-      margin-bottom: 30px;
-    }
-
-    /* 冥想建议 */
-    .meditation-suggestion {
-      display: none;
-      width: 90%;
-      max-width: 400px;
-      margin: 20px auto;
-      padding: 20px;
-      background: rgba(255,255,255,0.5);
-      border-radius: 12px;
-    }
-
-    /* 空池 */
-    .empty-pool {
-      text-align: center;
-      padding: 60px 20px;
-      color: #a89880;
-    }
-
-    /* 涟漪动画 */
-    @keyframes ripple-expand {
-      0% { transform: scale(0.8); opacity: 0.5; }
-      100% { transform: scale(2); opacity: 0; }
-    }
-  </style>
+/* ===== 品牌 ===== */
+.brand {
+  position: absolute; top: 28px; right: 32px;
+  font-size: 0.62rem; color: #b0a0b8; letter-spacing: 0.25em;
+  opacity: 0.35; z-index: 20; writing-mode: vertical-rl;
+}
+</style>
 </head>
 <body>
+  <div class="giant-lotus"></div>
+  <div class="water-glow"></div>
+  <div class="crystal-bg">
+    <div class="crystal-orb" style="width:280px; height:220px; top:8%; left:-5%; background:radial-gradient(circle, rgba(255,252,250,0.4), transparent 70%); animation-delay:0s;"></div>
+    <div class="crystal-orb" style="width:200px; height:160px; top:25%; right:5%; background:radial-gradient(circle, rgba(220,240,250,0.35), transparent 70%); animation-delay:3s;"></div>
+    <div class="crystal-orb" style="width:180px; height:180px; top:55%; left:15%; background:radial-gradient(circle, rgba(230,245,252,0.32), transparent 70%); animation-delay:6s;"></div>
+    <div class="crystal-orb" style="width:240px; height:190px; top:65%; right:10%; background:radial-gradient(circle, rgba(210,235,245,0.32), transparent 70%); animation-delay:1.5s;"></div>
+    <div class="crystal-orb" style="width:150px; height:150px; top:40%; left:45%; background:radial-gradient(circle, rgba(255,253,252,0.25), transparent 70%); animation-delay:9s;"></div>
+    <div class="crystal-orb" style="width:260px; height:200px; bottom:5%; left:30%; background:radial-gradient(circle, rgba(200,230,242,0.28), transparent 70%); animation-delay:4.5s;"></div>
+    <div class="crystal-orb" style="width:170px; height:140px; top:5%; right:25%; background:radial-gradient(circle, rgba(255,254,253,0.22), transparent 70%); animation-delay:7.5s;"></div>
+    <div class="crystal-orb" style="width:220px; height:170px; top:35%; left:-3%; background:radial-gradient(circle, rgba(215,240,248,0.25), transparent 70%); animation-delay:11s;"></div>
+  </div>
 
-  <!-- 导航 -->
-  <nav class="nav">
-    <div class="nav-item active" data-page="deposit">投落叶</div>
-    <div class="nav-item" data-page="catch">漂叶</div>
-    <div class="nav-item" data-page="history">沉淀</div>
-  </nav>
+  <!-- 水晶切割面 -->
+  <div class="crystal-facet">
+    <!-- 大切面 -->
+    <div class="facet" style="width:180px; height:180px; top:5%; left:-3%; clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%); animation:orb-float 22s ease-in-out infinite;"></div>
+    <div class="facet" style="width:140px; height:140px; top:35%; right:-2%; clip-path:polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%); animation:orb-float 26s ease-in-out infinite 4s;"></div>
+    <div class="facet" style="width:100px; height:100px; top:65%; left:20%; clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%); animation:orb-float 20s ease-in-out infinite 8s;"></div>
+    <div class="facet" style="width:160px; height:160px; bottom:10%; right:15%; clip-path:polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%); animation:orb-float 24s ease-in-out infinite 2s;"></div>
+    <div class="facet" style="width:120px; height:120px; top:15%; left:55%; clip-path:polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%); animation:orb-float 28s ease-in-out infinite 6s;"></div>
+    <!-- 小切面 -->
+    <div class="facet" style="width:80px; height:80px; top:45%; left:8%; clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%); animation:orb-float 18s ease-in-out infinite 3s;"></div>
+    <div class="facet" style="width:60px; height:60px; top:20%; left:75%; clip-path:polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%); animation:orb-float 21s ease-in-out infinite 7s;"></div>
+    <div class="facet" style="width:90px; height:90px; bottom:25%; left:45%; clip-path:polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%); animation:orb-float 24s ease-in-out infinite 5s;"></div>
+    <!-- 小碎片 -->
+    <div class="crystal-shard" style="width:12px; height:12px; top:12%; left:35%; clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%); animation:orb-float 15s ease-in-out infinite;"></div>
+    <div class="crystal-shard" style="width:16px; height:16px; top:28%; left:12%; clip-path:polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%); animation:orb-float 17s ease-in-out infinite 2s;"></div>
+    <div class="crystal-shard" style="width:10px; height:10px; top:48%; right:18%; clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%); animation:orb-float 14s ease-in-out infinite 4s;"></div>
+    <div class="crystal-shard" style="width:14px; height:14px; top:72%; right:35%; clip-path:polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%); animation:orb-float 16s ease-in-out infinite 1s;"></div>
+    <div class="crystal-shard" style="width:8px; height:8px; top:82%; left:38%; clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%); animation:orb-float 13s ease-in-out infinite 6s;"></div>
+    <div class="crystal-shard" style="width:11px; height:11px; top:38%; left:62%; clip-path:polygon(50% 0%,100% 38%,82% 100%,18% 100%,0% 38%); animation:orb-float 18s ease-in-out infinite 3s;"></div>
+    <div class="crystal-shard" style="width:9px; height:9px; top:58%; left:5%; clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%); animation:orb-float 15s ease-in-out infinite 5s;"></div>
+    <div class="crystal-shard" style="width:13px; height:13px; top:8%; right:30%; clip-path:polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%); animation:orb-float 19s ease-in-out infinite 2s;"></div>
+    <!-- 折射光线 -->
+    <div class="crystal-ray" style="width:300px; top:25%; left:-10%; animation-delay:0s;"></div>
+    <div class="crystal-ray" style="width:250px; top:60%; right:-5%; animation-delay:8s; animation-duration:28s;"></div>
+    <div class="crystal-ray" style="width:200px; bottom:20%; left:20%; animation-delay:15s; animation-duration:22s;"></div>
+    <div class="crystal-ray-2" style="height:250px; top:10%; left:30%; animation-delay:5s;"></div>
+    <div class="crystal-ray-2" style="height:200px; top:40%; right:25%; animation-delay:12s; animation-duration:32s;"></div>
+  </div>
 
-  <!-- 投放页面 -->
-  <div class="page active" id="deposit">
-    <div class="stats">
-      <div class="stat-item">
-        <div class="stat-num" id="depositedCount">0</div>
-        <div class="stat-label">已投落叶</div>
+  <!-- 背景颗粒质感 -->
+  <div class="bg-noise"></div>
+
+  <div class="water-area" id="waterLayer">
+    <div class="water-ripple-texture"></div>
+    <div class="water-surface-ripple" style="width:60px; height:30px; left:20%; top:35%;"></div>
+    <div class="water-surface-ripple" style="width:80px; height:40px; left:55%; top:55%; animation-delay:1.5s;"></div>
+    <div class="water-surface-ripple" style="width:50px; height:25px; left:75%; top:25%; animation-delay:3s;"></div>
+    <div class="water-surface-ripple" style="width:70px; height:35px; left:35%; top:65%; animation-delay:2.5s;"></div>
+    <div class="lily-pad" style="width:28px; height:22px; left:22%; top:40%; animation-delay:0s;"></div>
+    <div class="lily-pad" style="width:22px; height:18px; left:48%; top:55%; animation-delay:2s;"></div>
+    <div class="lily-pad" style="width:26px; height:20px; left:68%; top:30%; animation-delay:1s;"></div>
+    <div class="lily-pad" style="width:18px; height:15px; left:38%; top:70%; animation-delay:3s;"></div>
+    <div class="lily-pad" style="width:24px; height:19px; left:82%; top:45%; animation-delay:1.5s;"></div>
+    <div class="light-beam" style="left:15%; width:70px; animation-delay:0s;"></div>
+    <div class="light-beam" style="left:45%; width:50px; animation-delay:3.5s;"></div>
+    <div class="light-beam" style="left:72%; width:60px; animation-delay:7s;"></div>
+    <div class="water-dark"></div>
+  </div>
+
+  <div id="koiContainer" style="position:fixed; inset:0; z-index:5; pointer-events:none; overflow:hidden;"></div>
+
+  <div class="water-plants">
+    <div class="plant" style="left:2%; height:100px; animation-delay:0.3s;"></div>
+    <div class="plant" style="left:4%; height:90px; animation-delay:0s;"></div>
+    <div class="plant" style="left:7%; height:75px; animation-delay:1.8s;"></div>
+    <div class="plant" style="left:9%; height:70px; animation-delay:1.3s;"></div>
+    <div class="plant" style="left:12%; height:120px; animation-delay:0.9s;"></div>
+    <div class="plant" style="left:14%; height:110px; animation-delay:0.7s;"></div>
+    <div class="plant" style="left:16%; height:60px; animation-delay:2.5s;"></div>
+    <div class="plant" style="left:80%; height:85px; animation-delay:1.1s;"></div>
+    <div class="plant" style="left:84%; height:80px; animation-delay:2.1s;"></div>
+    <div class="plant" style="left:87%; height:95px; animation-delay:0.5s;"></div>
+    <div class="plant" style="left:90%; height:100px; animation-delay:1.6s;"></div>
+    <div class="plant" style="left:93%; height:70px; animation-delay:2.8s;"></div>
+    <div class="plant" style="left:95%; height:65px; animation-delay:0.4s;"></div>
+    <div class="plant" style="left:97%; height:55px; animation-delay:1.9s;"></div>
+  </div>
+
+  <!-- 糖墩墩 -->
+  <div class="cat-container" id="catContainer">
+    <div class="cat-bubble" id="catBubble"></div>
+    <div class="cat-wrap" id="catWrap">
+      <div class="cat-tail"></div>
+      <div class="cat-body"></div>
+      <div class="cat-head">
+        <div class="cat-ear cat-ear-l"></div>
+        <div class="cat-ear cat-ear-r"></div>
+        <div class="cat-eye cat-eye-l"></div>
+        <div class="cat-eye cat-eye-r"></div>
+        <div class="cat-blush cat-blush-l"></div>
+        <div class="cat-blush cat-blush-r"></div>
+        <div class="cat-nose"></div>
+        <div class="cat-mouth"></div>
+        <div class="cat-tongue"></div>
+        <div class="cat-whisker cat-whisker-l1"></div>
+        <div class="cat-whisker cat-whisker-l2"></div>
+        <div class="cat-whisker cat-whisker-r1"></div>
+        <div class="cat-whisker cat-whisker-r2"></div>
       </div>
-      <div class="stat-item">
-        <div class="stat-num" id="heldCount">0</div>
-        <div class="stat-label">托住</div>
-      </div>
+      <div class="cat-paw cat-paw-l"></div>
+      <div class="cat-paw cat-paw-r"></div>
     </div>
+    <div class="cat-counter" id="catCounter">被糖墩儿安慰了 0 次</div>
+    <div class="cat-bed"></div>
+  </div>
 
-    <h2>此刻，你是什么颜色</h2>
-    <div class="page-desc">每一种情绪都值得被看见</div>
+  <div class="header">
+    <h1>情绪池</h1>
+    <p>点击一颗石子，听听它的诗句</p>
+  </div>
+  <div class="brand">情绪之境</div>
 
-    <div class="guide-text" id="guideText">每一种情绪都值得被看见</div>
-
-    <div class="pond" id="colorWheel">
-      <div class="pond-depth"></div>
-    </div>
-
-    <div class="write-section" id="writeSection">
-      <div class="write-prompt" id="writePrompt"></div>
-      <textarea class="write-area" id="writeArea" placeholder="写下此刻的心情..."></textarea>
-      <div class="visibility-options">
-        <label class="visibility-option">
-          <input type="radio" name="visibility" value="private" checked>
-          <span> 沉入池底</span>
-        </label>
-        <label class="visibility-option">
-          <input type="radio" name="visibility" value="public">
-          <span> 随波漂流</span>
-        </label>
-      </div>
-      <button class="submit-btn" onclick="depositLeaf()">让它入水</button>
+  <div class="leaf-circle" id="leafCircle">
+    <div class="poem-display" id="poemDisplay">
+      <p id="poemText"></p>
+      <div class="mood-tag" id="moodTag"></div>
     </div>
   </div>
 
-  <!-- 认领页面 -->
-  <div class="page" id="catch">
-    <h2>池水里有漂来的落叶</h2>
-    <div class="page-desc">轻轻托住一片</div>
-
-    <div class="drifting-container">
-      <div class="filter-bar" id="filterBar">
-        <div class="filter-chip active" data-filter="all"><span class="dot"></span>全部</div>
-      </div>
-
-      <button class="catch-btn" id="catchBtn" onclick="catchLeaf()">捞起一片</button>
-
-      <div id="driftingLeaf"></div>
-      <div style="text-align: center; font-size: 12px; color: #a89880; margin-bottom: 15px; font-style: italic;">你也可以留下想说的话</div>
-      <div class="response-options" id="responseOptions" style="display: flex; flex-wrap: wrap; justify-content: center;">
-        <button class="response-btn" onclick="respondToLeaf('resonance')">🌙 共鸣</button>
-        <button class="response-btn" onclick="respondToLeaf('comfort')">🤲 安慰</button>
-        <button class="response-btn" onclick="respondToLeaf('witness')">👁️ 见证</button>
-        <button class="response-btn" onclick="showNoteInput()">💌 字条</button>
-      </div>
-
-      <div class="note-input-section" id="noteInputSection" style="display: none; margin-top: 20px;">
-        <textarea class="write-area" id="noteArea" placeholder="写几句话，轻轻放下..." style="height: 80px;"></textarea>
-        <button class="submit-btn" onclick="sendNote()">放下字条</button>
-        <button class="response-btn" onclick="hideNoteInput()" style="margin-top: 10px;">取消</button>
+  <div class="bottle-container">
+    <div class="bottle" id="bottle">
+      <div class="bottle-neck"></div>
+      <div class="bottle-cork"></div>
+      <div class="bottle-body">
+        <div class="bottle-glow"></div>
       </div>
     </div>
+    <div class="counter">好情绪 <span class="num" id="goodCount">0</span></div>
   </div>
 
-  <!-- 历史页面 -->
-  <div class="page" id="history">
-    <div class="stats">
-      <div class="stat-item">
-        <div class="stat-num" id="depositedCount2">0</div>
-        <div class="stat-label">已投落叶</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num" id="caughtCount">0</div>
-        <div class="stat-label">捞起</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num" id="heldCount2">0</div>
-        <div class="stat-label">托住</div>
+  <div class="rack-container">
+    <div class="bamboo-basket" id="woodRack">
+      <div class="basket-handle"></div>
+      <div class="basket-rim"></div>
+      <div class="basket-inner"></div>
+      <div class="basket-body"></div>
+      <div class="basket-bottom"></div>
+      <!-- 叶子搭在篓口 -->
+      <div class="basket-leaf" style="left:-2px; top:2px; animation:leaf-sway-1 3.5s ease-in-out infinite;"></div>
+      <div class="basket-leaf" style="left:10px; top:0px; transform:scaleX(-1); animation:leaf-sway-2 4.2s ease-in-out infinite;"></div>
+      <div class="basket-leaf" style="left:46px; top:1px; animation:leaf-sway-3 3.8s ease-in-out infinite;"></div>
+      <div class="basket-leaf" style="left:58px; top:3px; transform:scaleX(-1); animation:leaf-sway-4 4.5s ease-in-out infinite;"></div>
+      <div class="basket-leaf" style="left:28px; top:-2px; animation:leaf-sway-5 3.2s ease-in-out infinite;"></div>
+    </div>
+    <div class="counter">待释放 <span class="num" id="badCount">0</span></div>
+  </div>
+
+  <div class="mood-stats" id="moodStats">
+    <div class="mood-stats-bar">
+      <div class="mood-stats-good" id="statsGood" style="width:50%"></div>
+      <div class="mood-stats-bad" id="statsBad" style="width:50%"></div>
+    </div>
+    <div class="mood-stats-text" id="statsText">投石问心 · 记录心情</div>
+  </div>
+
+  <div class="cast-bar">
+    <button class="cast-btn" id="castBtn">投石写心情</button>
+  </div>
+
+  <div class="note-overlay" id="noteOverlay">
+    <div class="note-card">
+      <textarea class="note-textarea" id="noteTextarea" placeholder="把此刻的心情，写成一句话..."></textarea>
+      <div class="note-actions">
+        <span class="char-count" id="charCount">0 字</span>
+        <button class="stone-btn" id="stoneBtn">投石头</button>
       </div>
     </div>
-
-    <h2>你的池水沉淀</h2>
-    <div class="page-desc">时光在这里留下了什么</div>
-
-    <canvas class="week-chart" id="weekChart"></canvas>
-    <div class="week-summary" id="weekSummary">本周还没有落叶入池</div>
-
-    <div class="meditation-suggestion" id="meditationSuggestion"></div>
-
-    <h3 style="font-size: 1rem; color: #8b7d6b; margin: 30px 0 15px; text-align: center; font-weight: 400;">你的落叶</h3>
-    <div class="timeline" id="timeline"></div>
-
-    <h3 style="font-size: 1rem; color: #8b7d6b; margin: 30px 0 15px; text-align: center; font-weight: 400;">相遇记录</h3>
-    <div class="timeline" id="encounters"></div>
   </div>
 
   <script>
-    // 情绪数据
-    const EMOTION_DATA = {
-      emotions: [
-        { id: "anxiety", name: "焦虑橙", desc: "心里有一团火", color: "#D4A574", glow: "#f4e4c8", type: "turtle", guide: "让这团火，慢慢冷却" },
-        { id: "melancholy", name: "忧郁蓝", desc: "云遮住了光", color: "#8FA3B8", glow: "#e0f0f8", type: "turtle", guide: "把���上���重量，交给池水" },
-        { id: "exhaustion", name: "疲惫灰", desc: "力气被抽走了", color: "#95A5A6", glow: "#d0d8d8", type: "turtle", guide: "让它驮着你，歇一歇" },
-        { id: "grievance", name: "委屈紫", desc: "酸涩在胸口", color: "#9B59B6", glow: "#f0e8f8", type: "turtle", guide: "把酸涩，写给池水听" },
-        { id: "calm", name: "平静青", desc: "风很轻", color: "#16A085", glow: "#e8f8f5", type: "fish", guide: "这阵风，想带你写点什么" },
-        { id: "warmth", name: "温暖黄", desc: "被阳光晒过", color: "#F39C12", glow: "#fff8e8", type: "fish", guide: "把阳光的温度，存进文字" },
-        { id: "heartbreak", name: "心碎粉", desc: "裂开的疼", color: "#E91E63", glow: "#fce8f0", type: "turtle", guide: "让裂缝里的光，慢慢淌出" },
-        { id: "emptiness", name: "空洞黑", desc: "什么都没有", color: "#34495E", glow: "#d0d8e0", type: "turtle", guide: "把空白，写成存在" },
-        { id: "chaos", name: "混乱彩", desc: "太多颜色搅在一起", color: "#8E44AD", glow: "#f0e8f8", type: "turtle", guide: "让搅在一起的颜色，慢慢分开" },
-        { id: "hope", name: "希望绿", desc: "嫩芽在破土", color: "#27AE60", glow: "#e8f8f0", type: "fish", guide: "那棵嫩芽，想在你纸上生长" },
-        { id: "nostalgia", name: "怀旧棕", desc: "时光在倒流", color: "#8D6E63", glow: "#f0e8e0", type: "turtle", guide: "让倒流的时光，停在这一行" },
-        { id: "anticipation", name: "期待粉", desc: "心在扑通跳", color: "#FF80AB", glow: "#ffe8f0", type: "fish", guide: "把扑通的心跳，系在笔尖" }
-      ],
-      meditationMap: {
-        "anxiety": { name: "山间清泉", text: "火需要水的拥抱，去池边坐坐吧" },
-        "melancholy": { name: "桃花源", text: "云遮住了光，但云也会散，去晒晒太阳" },
-        "exhaustion": { name: "鹿与森林", text: "力气会回来的，先让它歇一歇" },
-        "grievance": { name: "山涧暖室", text: "酸涩需要被托住，有人想听你说" },
-        "calm": { name: "星空呼吸", text: "这份轻很珍贵，去感谢它" },
-        "warmth": { name: "未来自己", text: "你被光照过，也可以成为光" },
-        "heartbreak": { name: "桃花源", text: "裂缝是光照进来的地方，让它愈合" },
-        "emptiness": { name: "星空呼吸", text: "什么都没有也没关系，池水还在" },
-        "chaos": { name: "鹿与森林", text: "颜色太多就先看一种，从蓝色开始" },
-        "hope": { name: "潜意识自己", text: "你被光照过，也可以成为光" },
-        "nostalgia": { name: "船夫", text: "倒流的时光，需要被听见" },
-        "anticipation": { name: "未来自己", text: "扑通的心跳，会带你去该去的地方" }
-      }
-    };
+    const moods = [
+      { id:'joy', name:'喜悦', color:'#ff8a8a', glow:'#ffd0d0', poems:['「热烈绽放，是你本来的样子」','「你笑起来，世界就亮了」','「快乐不需要理由，只需要允许」','「像孩子一样去欢呼吧」','「今天的风都在为你鼓掌」','「喜悦是灵魂在跳舞」','「你值得所有美好的事」','「把开心存进记忆里」'], type:'good' },
+      { id:'warm', name:'温暖', color:'#f0b870', glow:'#fce8c8', poems:['「被阳光晒过的时刻，值得记住」','「有人懂你，是最大的温柔」','「温暖会传染，从你开始」','「一杯热茶的距离，就是心安」','「被拥抱过的地方，会长出春天」','「你的温柔，是别人的光」','「暖意从心里漫出来」','「这世界总有人在悄悄爱你」'], type:'good' },
+      { id:'hope', name:'期待', color:'#f5d060', glow:'#fcf0b8', poems:['「光在来的路上，你只需要等」','「明天会比今天更好一点」','「期待本身，就是一份礼物」','「远方有灯，脚下有路」','「最好的，总在不经意时出现」','「心怀期待，日子就有了光」','「未来会给你惊喜」','「每一步都算数，每一程都有风景」'], type:'good' },
+      { id:'calm', name:'平静', color:'#7dd3c0', glow:'#c8f0e5', poems:['「水面无风，心自澄明」','「静下来，才能听见自己」','「不急，时间会给你答案」','「呼吸之间，万物安宁」','「心如止水，也是力量」','「安静，是最深的疗愈」','「让心像湖面一样平静」','「当下此刻，就是全部」'], type:'good' },
+      { id:'growth', name:'希望', color:'#90d490', glow:'#d0f0d0', poems:['「种子在土里，别急着挖开看」','「你在向上走，只是看不见」','「每一次尝试，都算数」','「成长是悄悄发生的」','「破土之前，都是黑暗」','「你比昨天更好了」','「慢慢来，比较快」','「生命的力量在于不顺从」'], type:'good' },
+      { id:'gratitude', name:'感恩', color:'#e8c8a0', glow:'#f5e0c8', poems:['「谢谢你来过，谢谢我还在」','「拥有的，比你想的多」','「感恩是最好的护身符」','「心怀感激，所见皆温柔」','「感谢这一路的陪伴」','「每一个当下，都值得珍惜」','「谢谢你，还在坚持」','「感恩让平凡闪闪发光」'], type:'good' },
+      { id:'anxiety', name:'焦虑', color:'#9aa8b8', glow:'#d0d8e0', poems:['「风暴前的安静，也是力量」','「深呼吸，这只是暂时的」','「焦虑说明你在乎，但请放过自己」','「慌什么，最坏不过从头再来」','「你已经在路上了」','「别让未来的雨，淋湿现在的你」','「焦虑是想象的敌人」','「一步一步来，天不会塌」'], type:'bad' },
+      { id:'sad', name:'忧郁', color:'#8aa0c0', glow:'#c8d8e8', poems:['「雨会下完，云记得所有形状」','「悲伤也值得被好好对待」','「哭完了，天就晴了」','「阴天也没关系，给自己一杯热茶」','「忧郁是心的雨季，总会过去」','「你的眼泪，是灵魂的雨水」','「允许自己难过一会儿」','「雨后泥土，会开出花」'], type:'bad' },
+      { id:'tired', name:'疲惫', color:'#b8a898', glow:'#e0d8d0', poems:['「累不是软弱，是身体在诚实说话」','「休息，是为了走得更远」','「你已经很努力了」','「停下来，不是放弃」','「疲惫是身体在求抱抱」','「歇一歇，世界不会跑掉」','「你的累，我懂」','「好好睡一觉，明天又是新的」'], type:'bad' },
+      { id:'wronged', name:'委屈', color:'#b8a0c8', glow:'#e0d0e8', poems:['「被误解的感觉，不需要合理化」','「你的感受是真实的」','「不是所有人都能懂你，没关系」','「委屈的时候，抱抱自己」','「你不需要为别人的错买单」','「懂你的人，自然会懂」','「别急着解释，时间会证明」','「你的善良，不该被辜负」'], type:'bad' },
+      { id:'broken', name:'心碎', color:'#c8a0b0', glow:'#e8d0d8', poems:['「碎片也是完整的，只是方式不同」','「心碎了，光才能照进来」','「愈合之后，你会更柔软也更坚强」','「破碎不是终点，是重塑的开始」','「每道裂痕，都是光的入口」','「心碎的地方，会长出新的自己」','「痛过，才更懂得珍惜」','「你依然值得被爱」'], type:'bad' },
+      { id:'empty', name:'空洞', color:'#a8b0a8', glow:'#d0d8d0', poems:['「空白不是缺失，是空间」','「空荡荡的，才能装下新的东西」','「停顿，也是生命的一部分」','「放空自己，让风吹进来」','「空，是另一种满」','「没关系，空白也是一种颜色」','「给自己一点时间，什么都不做」','「空之后，会有新的故事」'], type:'bad' }
+    ];
 
-    // 用户状态
-    let currentUser = {
-      depositedLeaves: [],
-      caughtLeaves: [],
-      responsesGiven: 0,
-      heldLeaves: 0
-    };
+    /* ===== Web Audio API（7种独立音效） ===== */
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
+    function initAudio(){ if(!audioCtx) audioCtx = new AudioCtx(); }
 
-    let selectedEmotion = null;
-    let currentFilter = 'all';
-    let isCatching = false;
-    let currentDriftingLeaf = null;
-    let isDepositing = false;
-
-    // 初始化
-    function init() {
-      loadUserData();
-      setupNavigation();
-      showPage('deposit');
+    function tone(f,d,t='sine'){
+      initAudio(); const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+      o.type=t; o.frequency.setValueAtTime(f,audioCtx.currentTime);
+      const lp=audioCtx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=800;
+      g.gain.setValueAtTime(0.08,audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+d);
+      o.connect(lp); lp.connect(g); g.connect(audioCtx.destination);
+      o.start(); o.stop(audioCtx.currentTime+d);
     }
 
-    // 加载用户数据
-    function loadUserData() {
-      const saved = localStorage.getItem('emotionPool_user');
-      if (saved) {
-        currentUser = JSON.parse(saved);
-      }
-      updateStats();
+    function clickSound(){ tone(520,0.12); tone(784,0.08,'triangle'); }
+    function poemSound(){ tone(440,0.3); tone(554,0.2); tone(659,0.4); }
+    function flySound(){ tone(600,0.15); setTimeout(()=>tone(800,0.2),80); }
+    function dropSound(){ tone(350,0.3,'sine'); }
+    function rippleSound(){ tone(200,0.5,'sine'); tone(150,0.3,'sine'); }
+    function openSound(){ tone(440,0.1); tone(550,0.1); tone(660,0.15); }
+    function castSound(){ tone(300,0.15); setTimeout(()=>tone(500,0.2),100); setTimeout(()=>tone(700,0.25),250); }
+    function meowSound(){
+      initAudio();
+      const t=audioCtx.currentTime;
+
+      // 咪 + 喵（短促，中高频率快速下降）
+      const o1=audioCtx.createOscillator(),g1=audioCtx.createGain(),lp1=audioCtx.createBiquadFilter();
+      lp1.type='lowpass';
+      o1.type='triangle';
+      o1.frequency.setValueAtTime(1200,t);
+      o1.frequency.exponentialRampToValueAtTime(720,t+0.03);
+      o1.frequency.exponentialRampToValueAtTime(440,t+0.14);
+      lp1.frequency.setValueAtTime(1600,t);
+      lp1.frequency.linearRampToValueAtTime(700,t+0.14);
+      g1.gain.setValueAtTime(0,t);
+      g1.gain.linearRampToValueAtTime(0.13,t+0.02);
+      g1.gain.linearRampToValueAtTime(0.05,t+0.14);
+      g1.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+      o1.connect(lp1); lp1.connect(g1); g1.connect(audioCtx.destination);
+      o1.start(t); o1.stop(t+0.2);
+
+      // 呜（长而低，有自己的淡入，和喵交叉过渡）
+      const o2=audioCtx.createOscillator(),g2=audioCtx.createGain(),lp2=audioCtx.createBiquadFilter();
+      lp2.type='lowpass';
+      o2.type='triangle';
+      o2.frequency.setValueAtTime(380,t+0.1);
+      o2.frequency.exponentialRampToValueAtTime(260,t+0.3);
+      o2.frequency.exponentialRampToValueAtTime(130,t+0.7);
+      lp2.frequency.setValueAtTime(480,t+0.1);
+      lp2.frequency.linearRampToValueAtTime(260,t+0.5);
+      g2.gain.setValueAtTime(0,t+0.1);
+      g2.gain.linearRampToValueAtTime(0.1,t+0.2);
+      g2.gain.linearRampToValueAtTime(0.04,t+0.45);
+      g2.gain.exponentialRampToValueAtTime(0.001,t+0.75);
+      o2.connect(lp2); lp2.connect(g2); g2.connect(audioCtx.destination);
+      o2.start(t+0.1); o2.stop(t+0.75);
+
+      // 拍频层 - 让呜声更真实有颤音感
+      const o3=audioCtx.createOscillator(),g3=audioCtx.createGain();
+      o3.type='sine';
+      o3.frequency.setValueAtTime(382,t+0.1);
+      o3.frequency.exponentialRampToValueAtTime(262,t+0.3);
+      o3.frequency.exponentialRampToValueAtTime(132,t+0.7);
+      g3.gain.setValueAtTime(0,t+0.1);
+      g3.gain.linearRampToValueAtTime(0.03,t+0.22);
+      g3.gain.exponentialRampToValueAtTime(0.001,t+0.6);
+      o3.connect(g3); g3.connect(audioCtx.destination);
+      o3.start(t+0.1); o3.stop(t+0.6);
     }
 
-    // 保存用户数据
-    function saveUserData() {
-      localStorage.setItem('emotionPool_user', JSON.stringify(currentUser));
+    /* ===== 12片树叶围成圆圈 ===== */
+    const circle = document.getElementById('leafCircle');
+    const radius = 155;
+    moods.forEach((m,i)=>{
+      const a=(i*30-90)*Math.PI/180;
+      const x=radius*Math.cos(a)+170-31, y=radius*Math.sin(a)+170-27;
+      const leaf=document.createElement('div');
+      leaf.className='mood-leaf';
+      leaf.style.cssText=`left:${x}px; top:${y}px; background:radial-gradient(circle at 35% 35%, ${m.color}, ${m.glow});`;
+      leaf.title=m.name; leaf.dataset.index=i;
+      leaf.addEventListener('click',()=>selectMood(m,leaf));
+      circle.appendChild(leaf);
+    });
+
+    let goodCount=0, badCount=0, selectedMood=null;
+    let comfortCount=0;
+    const catComforts=[
+      '「糖墩儿抱抱你，会好起来的」',
+      '「不开心就丢进水里，我陪你」',
+      '「你已经很勇敢了，真的」',
+      '「明天会比今天温柔一点」',
+      '「累了就歇歇，我在这儿」',
+      '「你的难过，我看见啦」',
+      '「雨停了会有彩虹，我保证」',
+      '「就算全世界不懂，糖墩儿懂你」',
+      '「抱抱你，一切都会过去的」',
+      '「哭出来就好了，我陪着你」'
+    ];
+    const catBlessings=[
+      '「糖墩儿为你开心，继续保持哦」',
+      '「快乐会传染，你是最棒的」',
+      '「好运已经在路上了」',
+      '「今天的你，闪闪发光呢」',
+      '「愿每一天都像今天这样好」',
+      '「糖墩儿也感受到你的快乐啦」',
+      '「好心情值得被记住」',
+      '「愿你一直被温柔以待」'
+    ];
+    const sadKeywords=['难过','伤心','累','烦','痛苦','孤独','失望','焦虑','抑郁','不开心','糟糕','失败','怕','哭','恨','死','绝望','迷茫','无助','压力','委屈','郁闷','痛','苦','悲','丧','emo','sad','累死了','好累','烦死了','讨厌','恶心','愤怒','生气','暴躁','窒息','心碎','寂寞','空虚','迷惘'];
+    const happyKeywords=['开心','快乐','幸福','高兴','棒','好','爱','喜欢','感谢','谢谢','美','赞','优秀','顺利','成功','惊喜','期待','希望','满足','舒服','温暖','甜','好运','哈哈','嘿嘿','嘻嘻','愉悦','轻松','自豪','激动','喜悦','兴奋','欣慰','幸运','美好','漂亮','可爱','温柔','治愈'];
+
+    function selectMood(mood,el){
+      clickSound();
+      document.querySelectorAll('.mood-leaf').forEach(l=>l.classList.remove('active'));
+      el.classList.add('active'); selectedMood=mood;
+      const d=document.getElementById('poemDisplay');
+      d.style.left='170px'; d.style.top='170px';
+      const poems=mood.poems;
+      const poem=poems[Math.floor(Math.random()*poems.length)];
+      document.getElementById('poemText').textContent=poem;
+      document.getElementById('moodTag').textContent='— '+mood.name+' —';
+      d.classList.add('show');
+      setTimeout(()=>{ poemSound(); flyTo(mood,el); },600);
     }
 
-    // 设置导航
-    function setupNavigation() {
-      document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', () => {
-          const page = item.dataset.page;
-          showPage(page);
-          document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-          item.classList.add('active');
-        });
-      });
-    }
-
-    // 显示页面
-    function showPage(pageName) {
-      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-      document.getElementById(pageName).classList.add('active');
-
-      if (pageName === 'deposit') initDeposit();
-      if (pageName === 'catch') initCatch();
-      if (pageName === 'history') initHistory();
-    }
-
-    // ===== 投放页面 =====
-    function initDeposit() {
-      const wheel = document.getElementById('colorWheel');
-      if (wheel.children.length > 1) return;
-
-      const radius = 120;
-
-      EMOTION_DATA.emotions.forEach((emo, i) => {
-        const angle = (i / 12) * 360 - 90;
-        const rad = (angle * Math.PI) / 180;
-        const x = Math.cos(rad) * radius;
-        const y = Math.sin(rad) * radius;
-
-        const leaf = document.createElement('div');
-        leaf.className = 'color-leaf';
-        leaf.style.color = emo.color;
-        leaf.style.setProperty('--x', x + 'px');
-        leaf.style.setProperty('--y', y + 'px');
-        leaf.style.setProperty('--rot', (i % 2 === 0 ? -10 : 10) + 'deg');
-        leaf.dataset.id = emo.id;
-        leaf.title = emo.name + ' · ' + emo.desc;
-
-        leaf.addEventListener('mouseenter', () => {
-          if (!isDepositing && !selectedEmotion) {
-            document.getElementById('guideText').textContent = emo.guide;
-          }
-        });
-
-        leaf.addEventListener('mouseleave', () => {
-          if (!isDepositing && !selectedEmotion) {
-            document.getElementById('guideText').textContent = '每一种情绪都值得被看见';
-          }
-        });
-
-        leaf.addEventListener('click', () => {
-          playSelectSound();
-          selectEmotion(emo, leaf);
-        });
-
-        wheel.appendChild(leaf);
-      });
-    }
-
-    function selectEmotion(emo, leafElement) {
-      if (isDepositing) return;
-
-      selectedEmotion = emo;
-      document.getElementById('guideText').textContent = `${emo.desc}，原来是这样`;
-
-      document.querySelectorAll('.color-leaf').forEach(l => {
-        if (l !== leafElement) {
-          l.style.opacity = '0.3';
-          l.style.filter = 'grayscale(0.5)';
-        }
-      });
-
-      leafElement.style.transform = 'translate(' + leafElement.style.getPropertyValue('--x') + ', ' + leafElement.style.getPropertyValue('--y') + ') scale(1.2)';
-      leafElement.style.zIndex = '30';
-
-      document.getElementById('writeSection').style.display = 'block';
-      document.getElementById('writeSection').style.opacity = '0';
-      setTimeout(() => {
-        document.getElementById('writeSection').style.opacity = '1';
-      }, 100);
-
-      document.getElementById('writePrompt').textContent = getWritePrompt(emo.id);
-      document.getElementById('writeArea').dataset.emotion = emo.id;
-      document.getElementById('writeArea').focus();
-    }
-
-    function getWritePrompt(emotionId) {
-      const prompts = {
-        'anxiety': '这团火在烧什么？写下来，让它有个形状...',
-        'melancholy': '云下面藏着什么？轻轻说出来...',
-        'exhaustion': '力气去了哪里？不用找回来，只是看见它...',
-        'grievance': '那个酸涩的瞬间，发生了什么？',
-        'calm': '这份轻，是什么带来的？',
-        'warmth': '被阳光晒过的感觉，像什么？',
-        'heartbreak': '裂开的疼，是什么形状？',
-        'emptiness': '什么都没有的感觉，是什么样？',
-        'chaos': '太多颜色搅在一起，你想先分开哪一种？',
-        'hope': '那棵嫩芽，想带你去哪里？',
-        'nostalgia': '倒流的时光里，有谁在等你？',
-        'anticipation': '扑通跳的心，想去见谁？'
-      };
-      return prompts[emotionId] || '写下此刻的心情...';
-    }
-
-    function depositLeaf() {
-      if (!selectedEmotion || isDepositing) return;
-
-      const content = document.getElementById('writeArea').value.trim();
-      if (!content) {
-        alert('请写下一点什么哪怕只有几个字');
-        return;
-      }
-
-      isDepositing = true;
-
-      const leaf = {
-        id: Date.now(),
-        emotionId: selectedEmotion.id,
-        emotionName: selectedEmotion.name,
-        emotionColor: selectedEmotion.color,
-        content: content,
-        timestamp: new Date().toISOString(),
-        visibility: document.querySelector('input[name="visibility"]:checked').value,
-        responses: [],
-        type: selectedEmotion.type
-      };
-
-      let pool = JSON.parse(localStorage.getItem('emotionPool_leaves') || '[]');
-      pool.push(leaf);
-      localStorage.setItem('emotionPool_leaves', JSON.stringify(pool));
-
-      currentUser.depositedLeaves.push(leaf.id);
-      saveUserData();
-
-      playWaterDropSound();
-      createRipple(selectedEmotion.color);
-
-      setTimeout(() => {
-        document.getElementById('guideText').textContent = '这片落叶被池水温柔托住了';
-        document.getElementById('writeSection').innerHTML =
-          `<div style="text-align: center; padding: 40px;">
-            <div style="font-size: 48px; margin-bottom: 20px;">🍃</div>
-            <p style="color: #8b7d6b; font-style: italic;">你的${selectedEmotion.name}已入池</p>
-            <p style="color: #a89880; font-size: 14px; margin-top: 10px;">${leaf.visibility === 'public' ? '它将在池水中漂流，等待共鸣' : '它已沉入你的池底，成为秘密'}</p>
-            <button onclick="resetDeposit()" style="margin-top: 30px; padding: 10px 30px; background: transparent; border: 1px solid #c9b8a0; border-radius: 20px; color: #5a5046; cursor: pointer; font-family: inherit;">再投一片</button>
-          </div>`;
+    function flyTo(mood,el){
+      const r=el.getBoundingClientRect();
+      const f=el.cloneNode(true);
+      f.style.position='fixed'; f.style.left=r.left+'px'; f.style.top=r.top+'px';
+      f.style.zIndex='100'; f.style.transition='all 0.9s cubic-bezier(0.25,0.46,0.45,0.94)';
+      f.classList.remove('active'); document.body.appendChild(f);
+      let tid,cid;
+      if(mood.type==='good'){ tid='bottle'; cid='goodCount'; goodCount++; }
+      else { tid='woodRack'; cid='badCount'; badCount++; }
+      const t=document.getElementById(tid).getBoundingClientRect();
+      setTimeout(()=>{
+        f.style.left=(t.left+t.width/2-19)+'px';
+        f.style.top=(t.top+t.height/2-19)+'px';
+        f.style.transform='scale(0.3)'; f.style.opacity='0.5';
+      },50);
+      setTimeout(()=>{
+        f.remove(); flySound();
+        document.getElementById(cid).textContent=mood.type==='good'?goodCount:badCount;
+        if(mood.type==='good') addBottle(mood); else addRack(mood);
         updateStats();
-        isDepositing = false;
-      }, 800);
+      },950);
     }
 
-    function resetDeposit() {
-      selectedEmotion = null;
-      isDepositing = false;
-      document.getElementById('writeSection').style.display = 'none';
-      document.getElementById('writeSection').innerHTML = `
-        <div class="write-prompt" id="writePrompt"></div>
-        <textarea class="write-area" id="writeArea" placeholder="写下此刻的心情..."></textarea>
-        <div class="visibility-options">
-          <label class="visibility-option">
-            <input type="radio" name="visibility" value="private" checked>
-            <span> 沉入池底</span>
-          </label>
-          <label class="visibility-option">
-            <input type="radio" name="visibility" value="public">
-            <span> 随波漂流</span>
-          </label>
-        </div>
-        <button class="submit-btn" onclick="depositLeaf()">让它入水</button>
-      `;
-      document.getElementById('guideText').textContent = '每一种情绪都值得被看见';
+    function addBottle(m){
+      const s=document.createElement('div');
+      s.className='bottle-stone';
+      s.style.cssText=`left:${10+Math.random()*20}px; bottom:${8+Math.random()*25}px; background:radial-gradient(circle,${m.color},${m.glow}); animation-delay:${Math.random()*2}s;`;
+      document.getElementById('bottle').appendChild(s);
+    }
 
-      document.querySelectorAll('.color-leaf').forEach(l => {
-        l.style.opacity = '';
-        l.style.filter = '';
-        l.style.transform = '';
-        l.style.zIndex = '';
+    function addRack(m){
+      const s=document.createElement('div');
+      s.className='rack-stone';
+      s.style.cssText=`left:${14+Math.random()*42}px; top:${36+Math.random()*20}px; background:radial-gradient(circle,${m.color},${m.glow});`;
+      document.getElementById('woodRack').appendChild(s);
+    }
+
+    function updateStats(){
+      const total=goodCount+badCount;
+      if(total===0) return;
+      const goodPct=(goodCount/total*100).toFixed(1);
+      const badPct=(badCount/total*100).toFixed(1);
+      document.getElementById('statsGood').style.width=goodPct+'%';
+      document.getElementById('statsBad').style.width=badPct+'%';
+      let text='';
+      if(goodCount>badCount) text='高兴多一些 · '+goodCount+' : '+badCount;
+      else if(badCount>goodCount) text='待释放多一些 · '+goodCount+' : '+badCount;
+      else text='平衡中 · '+goodCount+' : '+badCount;
+      document.getElementById('statsText').textContent=text;
+    }
+
+    /* ===== 上升气泡（带折射高光） ===== */
+    function bubble(){
+      const b=document.createElement('div'); b.className='rising-bubble';
+      const sz=3+Math.random()*10;
+      b.style.cssText=`width:${sz}px; height:${sz}px; left:${5+Math.random()*90}%; bottom:${Math.random()*15}%; animation-duration:${12+Math.random()*15}s;`;
+      document.body.appendChild(b); setTimeout(()=>b.remove(),28000);
+    }
+    setInterval(bubble,250);
+
+    /* ===== 4个游动光斑（焦散） ===== */
+    const caustics=[
+      {x:20,y:30,s:90,dx:0.15,dy:0.08},
+      {x:60,y:50,s:70,dx:-0.1,dy:0.12},
+      {x:80,y:25,s:110,dx:0.12,dy:-0.06},
+      {x:35,y:65,s:80,dx:-0.08,dy:0.1}
+    ];
+    function initCaustics(){
+      caustics.forEach((c,i)=>{
+        const el=document.createElement('div');
+        el.className='caustic';
+        el.id='caustic-'+i;
+        el.style.cssText=`left:${c.x}%; bottom:${c.y}%; width:${c.s}px; height:${c.s*0.7}px; animation-delay:${i*2}s;`;
+        document.getElementById('waterLayer').appendChild(el);
       });
+      animateCaustics();
     }
-
-    // ===== 认领页面 =====
-    function initCatch() {
-      initFilterBar();
-      resetCatchUI();
-    }
-
-    function initFilterBar() {
-      const bar = document.getElementById('filterBar');
-      if (bar.children.length > 1) return;
-
-      const allChip = document.createElement('div');
-      allChip.className = 'filter-chip active';
-      allChip.dataset.filter = 'all';
-      allChip.innerHTML = '<span class="dot"></span>全部';
-      allChip.onclick = () => setFilter('all', allChip);
-      bar.appendChild(allChip);
-
-      EMOTION_DATA.emotions.forEach(emo => {
-        const chip = document.createElement('div');
-        chip.className = 'filter-chip';
-        chip.dataset.filter = emo.id;
-        chip.innerHTML = `<span class="dot" style="background:${emo.color}"></span>${emo.name}`;
-        chip.onclick = () => setFilter(emo.id, chip);
-        bar.appendChild(chip);
+    function animateCaustics(){
+      caustics.forEach((c,i)=>{
+        c.x+=c.dx; c.y+=c.dy;
+        if(c.x>90||c.x<5) c.dx*=-1;
+        if(c.y>80||c.y<10) c.dy*=-1;
+        const el=document.getElementById('caustic-'+i);
+        if(el) el.style.cssText=`left:${c.x}%; bottom:${c.y}%; width:${c.s}px; height:${c.s*0.7}px;`;
       });
+      requestAnimationFrame(animateCaustics);
     }
+    initCaustics();
 
-    function setFilter(filterId, element) {
-      currentFilter = filterId;
-      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      element.classList.add('active');
-      resetCatchUI();
-    }
-
-    function resetCatchUI() {
-      document.getElementById('driftingLeaf').innerHTML = '<div class="empty-pool"><div style="font-size: 48px; margin-bottom: 20px;">🌊</div><p>点击"捞起一片"开始</p></div>';
-      document.getElementById('responseOptions').style.display = 'none';
-      document.getElementById('catchBtn').disabled = false;
-      document.getElementById('catchBtn').textContent = '捞起一片';
-    }
-
-    function catchLeaf() {
-      if (isCatching) return;
-      isCatching = true;
-      document.getElementById('catchBtn').disabled = true;
-      document.getElementById('catchBtn').textContent = '正在打捞...';
-
-      setTimeout(() => {
-        loadDriftingLeaf();
-        isCatching = false;
-      }, 800);
-    }
-
-    function loadDriftingLeaf() {
-      const container = document.getElementById('driftingLeaf');
-      const pool = JSON.parse(localStorage.getItem('emotionPool_leaves') || '[]');
-
-      let availableLeaves = pool.filter(l =>
-        l.visibility === 'public' &&
-        !currentUser.depositedLeaves.includes(l.id) &&
-        (!l.responses || l.responses.length < 10) &&
-        !currentUser.caughtLeaves.includes(l.id)
-      );
-
-      if (currentFilter !== 'all') {
-        availableLeaves = availableLeaves.filter(l => l.emotionId === currentFilter);
+    /* ===== 水波纹系统（椭圆扩散涟漪） ===== */
+    function createRipple(x,y){
+      const container=document.createElement('div');
+      container.className='ripple-ellipse';
+      container.style.left=x+'px'; container.style.top=y+'px';
+      for(let i=0;i<3;i++){
+        const ring=document.createElement('div');
+        ring.className='ring';
+        ring.style.animationDelay=(i*0.35)+'s';
+        container.appendChild(ring);
       }
-
-      if (availableLeaves.length === 0) {
-        container.innerHTML = `<div class="empty-pool"><div style="font-size: 48px; margin-bottom: 20px;">～</div><p>没有找到${currentFilter === 'all' ? '' : EMOTION_DATA.emotions.find(e => e.id === currentFilter)?.name}漂叶</p><p style="font-size: 14px; color: #a89880; margin-top: 10px;">过一会儿再来，或换个颜色试试</p></div>`;
-        document.getElementById('responseOptions').style.display = 'none';
-        document.getElementById('catchBtn').disabled = false;
-        document.getElementById('catchBtn').textContent = '再试一次';
-        return;
-      }
-
-      currentDriftingLeaf = availableLeaves[Math.floor(Math.random() * availableLeaves.length)];
-      currentUser.caughtLeaves.push(currentDriftingLeaf.id);
-      saveUserData();
-
-      container.innerHTML = `
-        <div class="drifting-leaf" style="background-color: ${currentDriftingLeaf.emotionColor};">
-          <div class="leaf-origin">这片${currentDriftingLeaf.emotionName}的叶子来自池水深处</div>
-          <div class="leaf-content">${escapeHtml(currentDriftingLeaf.content)}</div>
-          <div class="leaf-time">${formatTime(currentDriftingLeaf.timestamp)}</div>
-        </div>`;
-
-      document.getElementById('responseOptions').style.display = 'flex';
+      document.body.appendChild(container);
+      rippleSound();
+      setTimeout(()=>container.remove(),2800);
     }
 
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
+    /* ===== 3只闪光锦鲤（区域内轻柔浮动） ===== */
+    const koiData=[
+      {x:18, dir:1, speed:0.1, y:18, sz:58, hue:20},
+      {x:52, dir:-1, speed:0.08, y:45, sz:48, hue:15},
+      {x:78, dir:1, speed:0.11, y:72, sz:54, hue:20}
+    ];
+    let koiTime=0;
 
-    function formatTime(timestamp) {
-      const date = new Date(timestamp);
-      const now = new Date();
-      const diff = now - date;
-
-      if (diff < 3600000) return '刚刚';
-      if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
-      return Math.floor(diff / 86400000) + '天前';
-    }
-
-    function respondToLeaf(type) {
-      if (!currentDriftingLeaf) return;
-
-      const responses = {
-        'resonance': { icon: '♡', text: '「有人与你感受着���样���颜色」', type: '共鸣' },
-        'comfort': { icon: '○', text: '「有人轻轻托住了你的落叶」', type: '安慰' },
-        'witness': { icon: '◇', text: '「有人看见了你的那片落叶」', type: '见证' }
-      };
-
-      const response = responses[type];
-
-      let pool = JSON.parse(localStorage.getItem('emotionPool_leaves') || '[]');
-      const leaf = pool.find(l => l.id === currentDriftingLeaf.id);
-      if (leaf) {
-        leaf.responses = leaf.responses || [];
-        leaf.responses.push({ type: type, timestamp: new Date().toISOString() });
-        localStorage.setItem('emotionPool_leaves', JSON.stringify(pool));
-      }
-
-      currentUser.responsesGiven++;
-      currentUser.heldLeaves++;
-      saveUserData();
-      updateStats();
-
-      document.getElementById('driftingLeaf').innerHTML = `
-        <div style="text-align: center; padding: 40px;">
-          <div style="font-size: 48px; margin-bottom: 20px;">${response.icon}</div>
-          <p style="color: #5a5046; font-style: italic;">${response.text}</p>
-          <p style="color: #a89880; font-size: 14px; margin-top: 20px;">这片落叶将继续漂流</p>
-        </div>`;
-      document.getElementById('responseOptions').style.display = 'none';
-
-      setTimeout(() => {
-        resetCatchUI();
-      }, 3000);
-    }
-
-    function showNoteInput() {
-      document.getElementById('responseOptions').style.display = 'none';
-      document.getElementById('noteInputSection').style.display = 'block';
-    }
-
-    function hideNoteInput() {
-      document.getElementById('noteInputSection').style.display = 'none';
-      document.getElementById('responseOptions').style.display = 'flex';
-    }
-
-    function sendNote() {
-      const note = document.getElementById('noteArea').value.trim();
-      if (!note) {
-        alert('请写点什么...');
-        return;
-      }
-
-      if (note.length > 50) {
-        alert('字条限50字以内，轻轻写下想说的话~');
-        return;
-      }
-
-      let pool = JSON.parse(localStorage.getItem('emotionPool_leaves') || '[]');
-      const leaf = pool.find(l => l.id === currentDriftingLeaf.id);
-      if (leaf) {
-        leaf.responses = leaf.responses || [];
-        leaf.responses.push({ type: 'note', content: note, timestamp: new Date().toISOString() });
-        localStorage.setItem('emotionPool_leaves', JSON.stringify(pool));
-      }
-
-      currentUser.responsesGiven++;
-      currentUser.heldLeaves++;
-      saveUserData();
-      updateStats();
-
-      document.getElementById('noteInputSection').style.display = 'none';
-      document.getElementById('driftingLeaf').innerHTML = `
-        <div style="text-align: center; padding: 40px;">
-          <div style="font-size: 48px; margin-bottom: 20px;">💌</div>
-          <p style="color: #5a5046; font-style: italic;">字条已轻轻放下</p>
-          <p style="color: #a89880; font-size: 14px; margin-top: 10px;">对方会在"沉淀层"看到它</p>
-        </div>`;
-
-      setTimeout(() => {
-        resetCatchUI();
-      }, 3000);
-    }
-
-    // ===== 历史页面 =====
-    function initHistory() {
-      renderTimeline();
-      renderEncounters();
-      renderWeekChart();
-      checkFrequentEmotions();
-      updateStats();
-    }
-
-    function renderTimeline() {
-      const container = document.getElementById('timeline');
-      const pool = JSON.parse(localStorage.getItem('emotionPool_leaves') || '[]');
-
-      const myLeaves = currentUser.depositedLeaves
-        .map(id => pool.find(l => l.id === id))
-        .filter(l => l)
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-      if (myLeaves.length === 0) {
-        container.innerHTML = '<div class="empty-pool"><p>还没有落叶</p><p style="font-size: 14px; color: #a89880; margin-top: 10px;">去投放第一片吧</p></div>';
-        return;
-      }
-
-      container.innerHTML = myLeaves.map(leaf => {
-        const daysAgo = Math.floor((new Date() - new Date(leaf.timestamp)) / 86400000);
-        const opacity = daysAgo > 30 ? 0.3 : daysAgo > 7 ? 0.6 : 1;
-        const depth = daysAgo > 30 ? '池底' : daysAgo > 7 ? '深处' : '水面';
-
-        return `
-          <div class="timeline-item" onclick="showMeditationOption('${leaf.emotionId}')" style="cursor: pointer;">
-            <div class="timeline-dot" style="background-color: ${leaf.emotionColor};"></div>
-            <div class="timeline-content">
-              <div class="timeline-emotion">${leaf.emotionName}, ${depth}</div>
-              <div class="timeline-text">${escapeHtml(leaf.content)}</div>
-              <div class="timeline-time">${formatTime(leaf.timestamp)}</div>
-              ${leaf.responses && leaf.responses.length > 0 ? '<div style="margin-top: 8px; color: #a89880; font-size: 12px;">被托住 ' + leaf.responses.length + ' 次</div>' : ''}
-            </div>
-          </div>`;
-      }).join('');
-    }
-
-    function renderEncounters() {
-      const container = document.getElementById('encounters');
-      const pool = JSON.parse(localStorage.getItem('emotionPool_leaves') || '[]');
-
-      const encounters = pool
-        .filter(l => l.responses && l.responses.length > 0)
-        .filter(l => currentUser.depositedLeaves.includes(l.id))
-        .flatMap(l => l.responses.map(r => ({ leaf: l, response: r })))
-        .sort((a, b) => new Date(b.response.timestamp) - new Date(a.response.timestamp));
-
-      if (encounters.length === 0) {
-        container.innerHTML = '<div class="empty-pool"><p>还没有相遇</p><p style="font-size: 14px; color: #a89880; margin-top: 10px;">去捞一片别人的落叶吧</p></div>';
-        return;
-      }
-
-      const responseTypes = {
-        'resonance': { icon: '🌙', text: '共鸣', desc: '与你感受着同样的颜色' },
-        'comfort': { icon: '🤲', text: '安慰', desc: '轻轻托住了你的落叶' },
-        'witness': { icon: '👁️', text: '见证', desc: '看见了你的那片落叶' },
-        'note': { icon: '💌', text: '字条', desc: '' }
-      };
-
-      container.innerHTML = encounters.map(enc => {
-        const type = responseTypes[enc.response.type] || responseTypes['witness'];
-        const noteContent = enc.response.content ? `<div style="margin-top: 8px; font-size: 14px; color: #5a5046; font-style: italic;">"${escapeHtml(enc.response.content)}"</div>` : '';
-
-        return `
-          <div class="timeline-item">
-            <div class="timeline-dot" style="background-color: ${enc.leaf.emotionColor};"></div>
-            <div class="timeline-content">
-              <div class="timeline-emotion">${enc.leaf.emotionName} · ${type.icon} ${type.text}</div>
-              <div style="font-size: 12px; color: #a89880;">${type.desc}</div>
-              ${noteContent}
-              <div class="timeline-time">${formatTime(enc.response.timestamp)}</div>
-            </div>
-          </div>`;
-      }).join('');
-    }
-
-    function renderWeekChart() {
-      const canvas = document.getElementById('weekChart');
-      const ctx = canvas.getContext('2d');
-
-      canvas.width = canvas.offsetWidth;
-      canvas.height = 120;
-
-      const width = canvas.width;
-      const height = canvas.height;
-
-      const days = [];
-      for (let i = 6; i >= 0; i--) {
-        const date = new Date();
-        date.setDate(date.getDate() - i);
-        days.push({ date: date, dateStr: date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }), leaves: [] });
-      }
-
-      const pool = JSON.parse(localStorage.getItem('emotionPool_leaves') || '[]');
-
-      currentUser.depositedLeaves.forEach(id => {
-        const leaf = pool.find(l => l.id === id);
-        if (leaf) {
-          const leafDate = new Date(leaf.timestamp);
-          const day = days.find(d => d.date.getDate() === leafDate.getDate() && d.date.getMonth() === leafDate.getMonth());
-          if (day) day.leaves.push(leaf);
-        }
+    function initKoi(){
+      koiData.forEach((k,i)=>{
+        const el=document.createElement('div');
+        el.className='koi-fish';
+        el.id='koi-'+i;
+        const bodyColor=k.hue===20?'#e87850':'#f0a040';
+        const scaleColor=k.hue===20?'#ff9a70':'#ffb060';
+        const tailColor=k.hue===20?'#d06040':'#e08030';
+        el.style.left=k.x+'%';
+        el.style.top=k.y+'%';
+        const dur=0.8+Math.random()*0.5;
+        el.innerHTML=`<svg width="${k.sz}" height="${k.sz*0.6}" viewBox="0 0 150 85" style="overflow:visible; transition:none;" class="koi-svg">
+          <defs>
+            <radialGradient id="koiBody${i}" cx="40%" cy="30%"><stop offset="0%" stop-color="${scaleColor}"/><stop offset="50%" stop-color="${bodyColor}"/><stop offset="100%" stop-color="${tailColor}"/></radialGradient>
+            <radialGradient id="koiTail${i}" cx="50%" cy="50%"><stop offset="0%" stop-color="${tailColor}"/><stop offset="100%" stop-color="#903818"/></radialGradient>
+            <linearGradient id="finGrad${i}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${scaleColor}" stop-opacity="0.65"/><stop offset="100%" stop-color="${bodyColor}" stop-opacity="0.25"/></linearGradient>
+            <pattern id="scales${i}" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M3 1 Q5 3 3 5 Q1 3 3 1Z" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="0.6"/></pattern>
+          </defs>
+          <g>
+            <animateTransform attributeName="transform" type="translate" values="0 0; 0 -2.5; 0 0" dur="${dur}s" repeatCount="indefinite"/>
+            <path d="M26 42 Q34 17 66 15 Q104 13 126 28 Q136 37 132 51 Q127 64 104 68 Q72 72 46 63 Q28 56 26 42Z" fill="rgba(0,0,0,0.08)" transform="translate(2,3)"/>
+            <path d="M24 40 Q32 16 64 14 Q102 12 124 26 Q134 35 130 49 Q125 62 102 66 Q70 70 44 61 Q26 54 24 40Z" fill="url(#koiBody${i})"/>
+            <path d="M24 40 Q32 16 64 14 Q102 12 124 26 Q134 35 130 49 Q125 62 102 66 Q70 70 44 61 Q26 54 24 40Z" fill="url(#scales${i})" opacity="0.6"/>
+            <path d="M36 38 Q55 32 80 33 Q105 34 118 40" stroke="rgba(0,0,0,0.12)" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+            <ellipse cx="112" cy="28" rx="16" ry="13" fill="${scaleColor}" opacity="0.38"/>
+            <ellipse cx="122" cy="23" rx="4.2" ry="3.6" fill="#2a2018"/>
+            <ellipse cx="123.5" cy="21.8" rx="1.8" ry="1.5" fill="#fff" opacity="0.95"/>
+            <circle cx="121.5" cy="24.5" r="0.7" fill="#fff" opacity="0.6"/>
+            <!-- 背鳍 -->
+            <g>
+              <animateTransform attributeName="transform" type="rotate" values="-2 66 15; 2 66 15; -2 66 15" dur="0.9s" repeatCount="indefinite"/>
+              <path d="M42 18 Q58 0 80 6 Q96 12 90 21 Q74 17 42 18Z" fill="url(#finGrad${i})"/>
+            </g>
+            <!-- 胸鳍 -->
+            <g>
+              <animateTransform attributeName="transform" type="rotate" values="-4 108 44; 4 108 44; -4 108 44" dur="0.7s" repeatCount="indefinite"/>
+              <path d="M96 38 Q114 30 120 42 Q116 52 102 50 Q94 46 96 38Z" fill="url(#finGrad${i})"/>
+            </g>
+            <!-- 腹鳍 -->
+            <g>
+              <animateTransform attributeName="transform" type="rotate" values="3 82 65; -3 82 65; 3 82 65" dur="0.8s" repeatCount="indefinite"/>
+              <path d="M72 60 Q82 74 94 69 Q88 62 72 60Z" fill="url(#finGrad${i})"/>
+            </g>
+            <ellipse cx="32" cy="40" rx="9" ry="15" fill="${bodyColor}" opacity="0.7"/>
+            <!-- 身体光泽层 -->
+            <ellipse cx="82" cy="28" rx="28" ry="9" fill="rgba(255,255,255,0.12)">
+              <animate attributeName="opacity" values="0.12;0.28;0.12" dur="1.4s" repeatCount="indefinite"/>
+            </ellipse>
+            <ellipse cx="58" cy="52" rx="20" ry="6" fill="rgba(255,255,255,0.08)">
+              <animate attributeName="opacity" values="0.08;0.22;0.08" dur="1.8s" repeatCount="indefinite"/>
+            </ellipse>
+            <!-- 鳞片闪光点 -->
+            <g fill="#fff" opacity="0">
+              <circle cx="52" cy="28" r="1.2"><animate attributeName="opacity" values="0;0.7;0" dur="1.6s" repeatCount="indefinite" begin="0s"/></circle>
+              <circle cx="72" cy="22" r="1"><animate attributeName="opacity" values="0;0.6;0" dur="1.4s" repeatCount="indefinite" begin="0.5s"/></circle>
+              <circle cx="90" cy="30" r="1.3"><animate attributeName="opacity" values="0;0.8;0" dur="1.7s" repeatCount="indefinite" begin="0.2s"/></circle>
+              <circle cx="64" cy="38" r="0.9"><animate attributeName="opacity" values="0;0.5;0" dur="1.5s" repeatCount="indefinite" begin="0.8s"/></circle>
+              <circle cx="44" cy="34" r="1"><animate attributeName="opacity" values="0;0.6;0" dur="1.3s" repeatCount="indefinite" begin="1.1s"/></circle>
+            </g>
+            <!-- 侧边光带 -->
+            <path d="M128 32 Q140 42 138 56" stroke="${tailColor}" stroke-width="1.1" fill="none" opacity="0.65" stroke-linecap="round"/>
+            <path d="M126 35 Q136 44 134 58" stroke="${tailColor}" stroke-width="0.8" fill="none" opacity="0.45" stroke-linecap="round"/>
+            <g>
+              <animateTransform attributeName="transform" type="rotate" values="-8 26 40; 8 26 40; -8 26 40" dur="0.5s" repeatCount="indefinite"/>
+              <path d="M26 33 Q2 14 10 42 Q16 54 26 40Z" fill="url(#koiTail${i})" opacity="0.92"/>
+              <path d="M26 46 Q10 64 18 76 Q26 62 26 46Z" fill="url(#koiTail${i})" opacity="0.88"/>
+              <path d="M24 37 Q12 25 12 37" stroke="rgba(255,255,255,0.22)" stroke-width="0.8" fill="none"/>
+              <path d="M24 43 Q12 55 14 65" stroke="rgba(255,255,255,0.22)" stroke-width="0.8" fill="none"/>
+            </g>
+          </g>
+        </svg>`;
+        document.getElementById('koiContainer').appendChild(el);
       });
+      animateKoi();
+    }
 
-      ctx.clearRect(0, 0, width, height);
+    function animateKoi(){
+      koiTime += 0.015;
+      koiData.forEach((k,i)=>{
+        k.x += k.speed * k.dir;
+        const el = document.getElementById('koi-'+i);
+        const svg = el.querySelector('svg');
 
-      ctx.strokeStyle = 'rgba(201, 184, 160, 0.3)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(20, height - 30);
-      ctx.lineTo(width - 20, height - 30);
-      ctx.stroke();
+        if(k.x >= 88){ k.dir = -1; }
+        if(k.x <= 5){ k.dir = 1; }
+        svg.style.transform = `scaleX(${k.dir})`;
 
-      const barWidth = (width - 60) / 7;
-      const maxCount = Math.max(...days.map(d => d.leaves.length), 1);
-
-      days.forEach((day, i) => {
-        const x = 30 + i * barWidth;
-        const count = day.leaves.length;
-        const barHeight = count > 0 ? (count / maxCount) * (height - 50) : 0;
-
-        let color = '#e0e0e0';
-        if (day.leaves.length > 0) {
-          const colorCounts = {};
-          day.leaves.forEach(l => { colorCounts[l.emotionColor] = (colorCounts[l.emotionColor] || 0) + 1; });
-          color = Object.entries(colorCounts).sort((a, b) => b[1] - a[1])[0][0];
-        }
-
-        if (count > 0) {
-          ctx.fillStyle = color;
-          ctx.globalAlpha = 0.6;
-          ctx.fillRect(x - barWidth / 3, height - 30 - barHeight, barWidth / 1.5, barHeight);
-          ctx.globalAlpha = 1;
-
-          ctx.fillStyle = '#5a5046';
-          ctx.font = '12px "Noto Serif SC"';
-          ctx.textAlign = 'center';
-          ctx.fillText(count.toString(), x, height - 35 - barHeight);
-        }
-
-        ctx.fillStyle = '#8b7d6b';
-        ctx.font = '10px "Noto Serif SC"';
-        ctx.fillText(day.dateStr.replace(/[年月]/g, '/').replace('日', ''), x, height - 10);
+        // 自然游动：上下轻微浮动 + 身体轻微摆动
+        const floatY = Math.sin(koiTime * 1.5 + i * 2.3) * 5;
+        const wobble = Math.sin(koiTime * 2.0 + i * 1.7) * 1.2;
+        el.style.transform = `translateY(${floatY}px) rotate(${wobble}deg)`;
+        el.style.left = k.x + '%';
       });
+      requestAnimationFrame(animateKoi);
+    }
+    initKoi();
 
-      const totalWeek = days.reduce((sum, d) => sum + d.leaves.length, 0);
-      if (totalWeek > 0) {
-        const dominantColor = days.flatMap(d => d.leaves).reduce((acc, l) => {
-          acc[l.emotionId] = (acc[l.emotionId] || 0) + 1;
-          return acc;
-        }, {});
-        const dominantEmotion = Object.entries(dominantColor).sort((a, b) => b[1] - a[1])[0];
-        const emoName = EMOTION_DATA.emotions.find(e => e.id === dominantEmotion[0])?.name || '混合';
+    /* ===== 投石写心情 ===== */
+    const castBtn=document.getElementById('castBtn');
+    const overlay=document.getElementById('noteOverlay');
+    const stoneBtn=document.getElementById('stoneBtn');
+    const ta=document.getElementById('noteTextarea');
+    const cc=document.getElementById('charCount');
 
-        document.getElementById('weekSummary').textContent = '本周你的池水是' + emoName + '色调，共' + totalWeek + '片落叶';
-      } else {
-        document.getElementById('weekSummary').textContent = '本周还没有落叶入池';
+    castBtn.addEventListener('click',()=>{ openSound(); overlay.classList.add('open'); ta.focus(); });
+    overlay.addEventListener('click',e=>{ if(e.target===overlay) overlay.classList.remove('open'); });
+    ta.addEventListener('input',()=>{ cc.textContent=ta.value.length+' 字'; });
+
+    stoneBtn.addEventListener('click',()=>{
+      const text=ta.value.trim(); if(!text) return;
+      overlay.classList.remove('open'); castSound();
+      const s=document.createElement('div'); s.className='flying-stone';
+      const br=castBtn.getBoundingClientRect();
+      s.style.left=(br.left+br.width/2-19)+'px';
+      s.style.top=(br.top-19)+'px';
+      document.body.appendChild(s);
+      const w=document.getElementById('waterLayer').getBoundingClientRect();
+      const tx=w.left+w.width*(0.3+Math.random()*0.4)-19;
+      const ty=w.top+w.height*(0.3+Math.random()*0.4)-19;
+      setTimeout(()=>{ s.style.left=tx+'px'; s.style.top=ty+'px'; s.style.transform='scale(0.5) rotate(360deg)'; },50);
+      setTimeout(()=>{ s.remove(); dropSound(); createRipple(tx+19,ty+19); ta.value=''; cc.textContent='0 字'; },1000);
+
+      const bubble=document.getElementById('catBubble');
+      const catWrap=document.getElementById('catWrap');
+      const isUnhappy=sadKeywords.some(k=>text.includes(k));
+      if(isUnhappy){
+        comfortCount++;
+        document.getElementById('catCounter').textContent='被糖墩儿安慰了 '+comfortCount+' 次';
+        bubble.textContent=catComforts[Math.floor(Math.random()*catComforts.length)];
+        bubble.classList.add('show');
+        const poses=['side-lie','lick','doze','curl','lie'];
+        catWrap.className='cat-wrap '+poses[Math.floor(Math.random()*poses.length)];
+      }else{
+        bubble.textContent=catBlessings[Math.floor(Math.random()*catBlessings.length)];
+        bubble.classList.add('show');
+        const poses=['stretch','tilt','lookup','roll'];
+        catWrap.className='cat-wrap '+poses[Math.floor(Math.random()*poses.length)];
       }
-    }
+      setTimeout(()=>{
+        bubble.classList.remove('show');
+        catWrap.className='cat-wrap';
+      },3500);
+    });
 
-    function checkFrequentEmotions() {
-      const suggestion = document.getElementById('meditationSuggestion');
+    document.getElementById('catWrap').addEventListener('click',()=>{
+      meowSound();
+      const bubble=document.getElementById('catBubble');
+      const catWrap=document.getElementById('catWrap');
+      const interactions=[
+        {pose:'roll',text:'「糖墩儿翻了个身~」'},
+        {pose:'lick',text:'「喵~ 糖墩儿在舔毛」'},
+        {pose:'lookup',text:'「喵呜~ 你在叫我吗」'},
+        {pose:'stretch',text:'「喵~ 伸个懒腰」'},
+        {pose:'tilt',text:'「喵? 糖墩儿歪头看你」'}
+      ];
+      const act=interactions[Math.floor(Math.random()*interactions.length)];
+      bubble.textContent=act.text;
+      bubble.classList.add('show');
+      catWrap.className='cat-wrap '+act.pose;
+      setTimeout(()=>{
+        bubble.classList.remove('show');
+        catWrap.className='cat-wrap';
+      },2500);
+    });
 
-      const recentLeaves = currentUser.depositedLeaves
-        .map(id => {
-          const pool = JSON.parse(localStorage.getItem('emotionPool_leaves') || '[]');
-          return pool.find(l => l.id === id);
-        })
-        .filter(l => l && (new Date() - new Date(l.timestamp)) < 259200000);
-
-      if (recentLeaves.length >= 3) {
-        const colorCounts = {};
-        recentLeaves.forEach(l => { colorCounts[l.emotionId] = (colorCounts[l.emotionId] || 0) + 1; });
-
-        const frequentEmotion = Object.entries(colorCounts).find(([id, count]) => count >= 3);
-
-        if (frequentEmotion) {
-          const emoId = frequentEmotion[0];
-          const emo = EMOTION_DATA.emotions.find(e => e.id === emoId);
-          const meditation = EMOTION_DATA.meditationMap[emoId];
-
-          suggestion.innerHTML = `
-            <div style="background: rgba(255,255,255,0.5); padding: 20px; border-radius: 12px;">
-              <p style="color: #6b5d4f; margin-bottom: 10px;">🌊 这片${emo.name}最近常来</p>
-              <p style="color: #8b7d6b; font-style: italic; font-size: 14px;">${meditation.text}</p>
-              <button onclick="goToMeditation('${emoId}')" style="margin-top: 15px; padding: 8px 20px; background: transparent; border: 1px solid #c9b8a0; border-radius: 15px; color: #5a5046; cursor: pointer; font-family: inherit; font-size: 14px;">去池边坐坐 →</button>
-            </div>`;
-          suggestion.style.display = 'block';
-          return;
-        }
-      }
-
-      suggestion.style.display = 'none';
-    }
-
-    function goToMeditation(emotionId) {
-      const meditation = EMOTION_DATA.meditationMap[emotionId];
-      alert('即将进入冥想：' + meditation.name + '\n\n' + meditation.text + '\n\n（实际项目中这里跳转到冥想页面）');
-    }
-
-    function showMeditationOption(emotionId) {
-      const meditation = EMOTION_DATA.meditationMap[emotionId];
-      const emo = EMOTION_DATA.emotions.find(e => e.id === emotionId);
-
-      if (confirm('这片' + emo.name + '最近常来，需要一次[' + meditation.name + ']冥想吗？\n\n' + meditation.text + '\n\n点击确定进入冥想，点击取消留在沉淀层')) {
-        goToMeditation(emotionId);
-      }
-    }
-
-    // ===== 通用功能 =====
-    function updateStats() {
-      const deposited = currentUser.depositedLeaves.length;
-      const caught = currentUser.caughtLeaves ? currentUser.caughtLeaves.length : 0;
-      const held = currentUser.heldLeaves || 0;
-
-      document.getElementById('depositedCount').textContent = deposited;
-      document.getElementById('depositedCount2').textContent = deposited;
-      document.getElementById('caughtCount').textContent = caught;
-      document.getElementById('heldCount').textContent = held;
-      document.getElementById('heldCount2').textContent = held;
-    }
-
-    function playWaterDropSound() {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        // 柔和的水滴音效 - 更舒缓的频率和音量
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        const filter = audioCtx.createBiquadFilter();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.3);
-
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(800, audioCtx.currentTime);
-
-        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
-
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.4);
-      } catch (e) {
-        console.log('Audio not supported');
-      }
-    }
-
-    function playSelectSound() {
-      // 选中树叶时的轻柔音效
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-        osc.frequency.setValueAtTime(1100, audioCtx.currentTime + 0.05);
-
-        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.15);
-      } catch (e) {}
-    }
-
-    function createRipple(color) {
-      const pond = document.getElementById('colorWheel');
-      for (let i = 0; i < 3; i++) {
-        setTimeout(() => {
-          const ripple = document.createElement('div');
-          ripple.style.cssText = `
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 100px;
-            height: 100px;
-            margin-left: -50px;
-            margin-top: -50px;
-            border: 2px solid ${color};
-            border-radius: 50%;
-            opacity: 0.5;
-            pointer-events: none;
-            animation: ripple-expand 1.5s ease-out forwards;`;
-          pond.appendChild(ripple);
-          setTimeout(() => ripple.remove(), 1500);
-        }, i * 200);
-      }
-    }
-
-    // 初始化
-    window.addEventListener('DOMContentLoaded', init);
+    setInterval(()=>{
+      const w=document.getElementById('waterLayer').getBoundingClientRect();
+      createRipple(w.left+Math.random()*w.width,w.top+Math.random()*w.height);
+    },5000);
   </script>
 </body>
 </html>
