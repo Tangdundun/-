@@ -15,7 +15,7 @@ body {
     #fdfcfa 0%, #f0f4f8 12%, #e3ecf4 22%, #d6e4f0 32%,
     #c9dcec 42%, #bcd4e8 52%, #afcce4 62%, #a2c4e0 74%,
     #95bcdc 84%, #88b4d8 94%, #7badd4 100%);
-  overflow: hidden; position: relative; color: #6a5a70;
+  overflow-x: hidden; position: relative; color: #6a5a70;
 }
 
 /* ===== 巨大浅绿叶子背景 ===== */
@@ -131,6 +131,24 @@ body {
   z-index: 1; overflow: hidden;
   animation: water-breathe 6s ease-in-out infinite;
 }
+/* 情绪光晕层 */
+.water-mood-glow {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  opacity: 0; transition: opacity 1.2s ease;
+}
+.water-mood-glow.active { opacity: 1; }
+.water-mood-glow.good-warm {
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,210,160,0.22), transparent 70%);
+}
+.water-mood-glow.good-calm {
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(160,235,200,0.18), transparent 70%);
+}
+.water-mood-glow.bad-mild {
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(160,185,210,0.2), transparent 70%);
+}
+.water-mood-glow.bad-heavy {
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(140,160,190,0.25), transparent 70%);
+}
 @keyframes water-breathe {
   0%,100%{filter:brightness(1)}
   50%{filter:brightness(1.06)}
@@ -190,6 +208,62 @@ body {
 @keyframes plant-sway {
   0%,100%{transform:rotate(-5deg)}
   50%{transform:rotate(7deg)}
+}
+
+/* 芦苇 */
+.reed {
+  position: absolute; bottom: -5px;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(170,190,150,0), rgba(150,170,130,0.45) 50%, rgba(130,150,110,0.6));
+  border-radius: 50% 50% 0 0;
+  transform-origin: bottom center;
+  animation: reed-sway 6s ease-in-out infinite;
+}
+.reed::before {
+  content: ''; position: absolute; top: -10px; left: -4px;
+  width: 10px; height: 22px;
+  background: linear-gradient(180deg, rgba(190,180,150,0.55), rgba(170,160,130,0.35));
+  border-radius: 50% 50% 30% 30%;
+}
+.reed::after {
+  content: ''; position: absolute; top: 4px; left: -3px;
+  width: 8px; height: 14px;
+  background: linear-gradient(180deg, rgba(180,170,140,0.4), rgba(160,150,120,0.25));
+  border-radius: 50% 50% 30% 30%;
+}
+@keyframes reed-sway {
+  0%,100%{transform:rotate(-3deg)}
+  50%{transform:rotate(5deg)}
+}
+
+/* 草丛 */
+.grass-tuft {
+  position: absolute; bottom: -4px;
+  width: 3px; height: 35px;
+  background: linear-gradient(180deg, rgba(140,180,150,0), rgba(120,170,140,0.4) 60%, rgba(100,160,130,0.55));
+  border-radius: 50% 50% 0 0;
+  transform-origin: bottom center;
+  animation: grass-sway 4s ease-in-out infinite;
+}
+.grass-tuft::before {
+  content: ''; position: absolute; bottom: 0; left: -5px;
+  width: 3px; height: 28px;
+  background: linear-gradient(180deg, rgba(140,180,150,0), rgba(120,170,140,0.35) 60%, rgba(100,160,130,0.5));
+  border-radius: 50% 50% 0 0;
+  transform: rotate(-18deg);
+  transform-origin: bottom center;
+}
+.grass-tuft::after {
+  content: ''; position: absolute; bottom: 0; left: 5px;
+  width: 3px; height: 32px;
+  background: linear-gradient(180deg, rgba(140,180,150,0), rgba(120,170,140,0.3) 60%, rgba(100,160,130,0.45));
+  border-radius: 50% 50% 0 0;
+  transform: rotate(18deg);
+  transform-origin: bottom center;
+}
+@keyframes grass-sway {
+  0%,100%{transform:rotate(-4deg)}
+  50%{transform:rotate(6deg)}
 }
 
 /* 细密波纹纹理 */
@@ -293,7 +367,7 @@ body {
 .leaf-circle {
   position: absolute; left: 50%; top: 36%;
   transform: translate(-50%, -50%);
-  width: 340px; height: 340px; z-index: 10;
+  width: 380px; height: 380px; z-index: 10;
 }
 
 /* 中央诗句 */
@@ -353,10 +427,16 @@ body {
   z-index: 15;
 }
 
-/* ===== 右下角漂流瓶（梦幻水晶） ===== */
+/* ===== 湖面漂流瓶（远去的心绪） ===== */
 .bottle-container {
-  position: absolute; right: 22px; bottom: 150px;
+  position: absolute; right: 12%; bottom: 22%;
   z-index: 15; text-align: center;
+  animation: bottle-drift 8s ease-in-out infinite;
+  cursor: pointer;
+}
+@keyframes bottle-drift {
+  0%,100%{transform:translateY(0) rotate(-2deg)}
+  50%{transform:translateY(-12px) rotate(2deg)}
 }
 .bottle {
   width: 58px; height: 96px; position: relative; margin: 0 auto 8px;
@@ -395,20 +475,55 @@ body {
   background: radial-gradient(circle, rgba(255,250,230,0.6), transparent 70%);
   border-radius: 50%;
   animation: bottle-glow-pulse 3s ease-in-out infinite;
+  opacity: 0.45;
+  transition: opacity 0.6s ease;
+}
+.bottle-container:hover .bottle-glow {
+  opacity: 0.85;
+}
+.bottle.has-stones .bottle-glow {
+  opacity: 0.9;
+}
+.bottle-stones {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 36px; height: 40px; overflow: hidden;
+  z-index: 2; pointer-events: none;
+}
+.bottle-stone {
+  position: absolute; width: 8px; height: 8px;
+  border-radius: 50%; opacity: 0.8;
+  animation: bottle-float 3.5s ease-in-out infinite;
+}
+@keyframes bottle-float {
+  0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)}
+}
+.bottle-whisper {
+  position: absolute; bottom: 100%; left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: rgba(255,255,255,0.88); backdrop-filter: blur(8px);
+  padding: 6px 12px; border-radius: 10px;
+  font-size: 0.7rem; color: #6a5a70; white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+  animation: whisper-in 0.4s ease forwards;
+  pointer-events: none; margin-bottom: 8px;
+  z-index: 20;
+}
+@keyframes whisper-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.bottle.flash {
+  animation: bottle-flash 0.8s ease-out;
 }
 @keyframes bottle-glow-pulse {
   0%,100%{opacity:0.5; transform:translateX(-50%) scale(1)}
   50%{opacity:0.9; transform:translateX(-50%) scale(1.3)}
 }
-.bottle-stone {
-  position: absolute; width: 10px; height: 10px;
-  border-radius: 50%; opacity: 0.75;
-  animation: bottle-float 3.5s ease-in-out infinite;
+@keyframes bottle-flash {
+  0% { filter: brightness(1); }
+  30% { filter: brightness(1.6) drop-shadow(0 0 12px rgba(255,220,150,0.8)); }
+  100% { filter: brightness(1); }
 }
-@keyframes bottle-float {
-  0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)}
-}
-
 /* ===== 竹篓（带树叶） ===== */
 .rack-container {
   position: absolute; right: 110px; bottom: 150px;
@@ -420,23 +535,23 @@ body {
 .basket-handle {
   position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
   width: 40px; height: 26px;
-  border: 2px solid rgba(160,130,100,0.45);
+  border: 2px solid rgba(205,175,135,0.55);
   border-bottom: none;
   border-radius: 50% 50% 0 0;
 }
 .basket-rim {
   position: absolute; top: 2px; left: 50%; transform: translateX(-50%);
   width: 66px; height: 10px;
-  background: linear-gradient(180deg, rgba(185,155,120,0.55), rgba(160,130,100,0.45));
+  background: linear-gradient(180deg, rgba(220,195,160,0.65), rgba(195,165,130,0.55));
   border-radius: 50%;
-  border: 1px solid rgba(140,115,85,0.35);
+  border: 1px solid rgba(180,155,120,0.4);
   box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   z-index: 2;
 }
 .basket-inner {
   position: absolute; top: 9px; left: 50%; transform: translateX(-50%);
   width: 52px; height: 14px;
-  background: radial-gradient(ellipse, rgba(75,55,35,0.1), transparent 70%);
+  background: radial-gradient(ellipse, rgba(100,80,55,0.12), transparent 70%);
   border-radius: 50%;
   z-index: 2;
 }
@@ -444,9 +559,9 @@ body {
   position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
   width: 58px; height: 62px;
   background:
-    repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(150,125,95,0.13) 5px, rgba(150,125,95,0.13) 6px),
-    repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(150,125,95,0.16) 5px, rgba(150,125,95,0.16) 6.5px),
-    linear-gradient(180deg, rgba(175,150,120,0.15), rgba(150,125,95,0.3));
+    repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(180,155,120,0.18) 5px, rgba(180,155,120,0.18) 6px),
+    repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(175,150,115,0.2) 5px, rgba(175,150,115,0.2) 6.5px),
+    linear-gradient(180deg, rgba(200,175,140,0.2), rgba(170,145,110,0.35));
   border-radius: 4px 4px 45% 45%;
   clip-path: polygon(6% 0%, 94% 0%, 87% 100%, 13% 100%);
   z-index: 1;
@@ -454,7 +569,7 @@ body {
 .basket-bottom {
   position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
   width: 44px; height: 8px;
-  background: linear-gradient(180deg, rgba(155,130,100,0.35), rgba(135,110,80,0.3));
+  background: linear-gradient(180deg, rgba(185,160,125,0.4), rgba(160,135,100,0.35));
   border-radius: 50%;
   z-index: 0;
 }
@@ -469,10 +584,10 @@ body {
   position: absolute;
   width: 14px; height: 22px;
   border-radius: 0 80% 0 80%;
-  background: linear-gradient(135deg, rgba(155,220,130,0.85), rgba(115,195,95,0.7));
+  background: linear-gradient(135deg, rgba(170,240,140,0.92), rgba(130,215,105,0.78));
   transform-origin: bottom center;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  border: 0.5px solid rgba(255,255,255,0.2);
+  border: 0.5px solid rgba(255,255,255,0.25);
   z-index: 3;
 }
 .basket-leaf::before {
@@ -494,6 +609,18 @@ body {
   letter-spacing: 0.06em; text-shadow: 0 1px 5px rgba(255,255,255,0.6);
 }
 .counter .num { font-size: 0.95rem; font-weight: 500; color: #6a5a80; }
+
+/* 竹篮提示 */
+.rack-hint {
+  position: absolute; bottom: -32px; left: 50%; transform: translateX(-50%);
+  width: 160px;
+  font-size: 0.72rem; color: #6a5a70; letter-spacing: 0.04em;
+  text-shadow: 0 1px 3px rgba(255,255,255,0.85), 0 0 8px rgba(255,255,255,0.6);
+  opacity: 0.95;
+  line-height: 1.5;
+  text-align: center;
+  white-space: nowrap;
+}
 
 /* ===== 底部按钮 ===== */
 .cast-bar {
@@ -536,28 +663,32 @@ body {
 }
 .cast-btn:active { transform: translateY(-1px) scale(0.97); }
 
-/* ===== 心情统计条 ===== */
-.mood-stats {
-  position: absolute; bottom: 62px; left: 50%; transform: translateX(-50%);
-  z-index: 20; text-align: center;
+/* ===== 湖底封存石头（入水后消融） ===== */
+.submerged-stone {
+  position: absolute; width: 28px; height: 22px; border-radius: 45% 55% 50% 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(180,195,210,0.55), rgba(140,160,180,0.35));
+  box-shadow: 0 2px 10px rgba(80,100,120,0.12), inset 0 0 8px rgba(255,255,255,0.2);
+  z-index: 6; pointer-events: none;
+  transition: opacity 2.5s ease, transform 2.5s ease;
+  opacity: 0.35; transform: translateY(0) scale(1);
 }
-.mood-stats-bar {
-  width: 160px; height: 6px; border-radius: 3px;
-  background: rgba(255,255,255,0.35);
-  overflow: hidden; display: flex;
-  margin-bottom: 5px;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+.submerged-stone.dissolving {
+  opacity: 0; transform: translateY(20px) scale(0.7);
 }
-.mood-stats-good {
-  height: 100%; background: linear-gradient(90deg, #a0daa0, #8dd3c0);
-  transition: width 0.6s ease; border-radius: 3px 0 0 3px;
+.submerged-stone::after {
+  content: ''; position: absolute; top: 15%; left: 20%; width: 35%; height: 25%;
+  background: rgba(255,255,255,0.25); border-radius: 50%;
+  filter: blur(1px);
 }
-.mood-stats-bad {
-  height: 100%; background: linear-gradient(90deg, #c8b0d8, #aab8c8);
-  transition: width 0.6s ease; border-radius: 0 3px 3px 0;
+
+/* ===== 叶子点击发光消散 ===== */
+.mood-leaf.glowing {
+  animation: leaf-glow-pulse 0.6s ease-out;
 }
-.mood-stats-text {
-  font-size: 0.62rem; color: #8a8a95; letter-spacing: 0.06em;
+@keyframes leaf-glow-pulse {
+  0% { filter: brightness(1) drop-shadow(0 0 0 transparent); transform: scale(1); }
+  40% { filter: brightness(1.5) drop-shadow(0 0 20px rgba(255,255,255,0.6)); transform: scale(1.12); }
+  100% { filter: brightness(1) drop-shadow(0 0 0 transparent); transform: scale(1); }
 }
 
 /* ===== 浮萍 ===== */
@@ -578,16 +709,52 @@ body {
   50%{transform:translateY(-3px) rotate(4deg)}
 }
 
-/* ===== 糖墩墩（三花猫） ===== */
+/* 睡莲花 */
+.lotus-flower {
+  position: absolute; width: 14px; height: 14px;
+  z-index: 4; pointer-events: none;
+  animation: lotus-float 4s ease-in-out infinite;
+}
+.lotus-flower::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle, rgba(255,190,210,0.85), rgba(255,170,190,0.5) 45%, transparent 70%);
+  border-radius: 50%;
+}
+.lotus-flower::after {
+  content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 5px; height: 5px;
+  background: radial-gradient(circle, rgba(255,240,200,0.95), rgba(255,230,180,0.7));
+  border-radius: 50%;
+}
+@keyframes lotus-float {
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-4px) scale(1.08)}
+}
+
+/* 浮萍 */
+.duckweed {
+  position: absolute; width: 10px; height: 7px;
+  background: radial-gradient(ellipse at 40% 35%, rgba(130,185,155,0.55), rgba(110,170,140,0.35));
+  border-radius: 50%;
+  z-index: 3; pointer-events: none;
+  animation: duckweed-drift 8s ease-in-out infinite;
+}
+.duckweed::before {
+  content: ''; position: absolute; top: -2px; left: 6px;
+  width: 6px; height: 4px;
+  background: radial-gradient(ellipse, rgba(120,175,145,0.45), transparent 70%);
+  border-radius: 50%;
+}
+@keyframes duckweed-drift {
+  0%,100%{transform:translate(0,0)}
+  33%{transform:translate(2px,-1px)}
+  66%{transform:translate(-1px,1px)}
+}
+
+/* ===== 糖墩儿（三花猫） ===== */
 .cat-container {
   position: fixed; bottom: 14px; left: 14px;
   z-index: 25; display: flex; flex-direction: column; align-items: center;
-}
-.cat-counter {
-  font-size: 0.6rem; color: #7a6a80;
-  margin-top: 3px; letter-spacing: 0.04em;
-  text-shadow: 0 1px 4px rgba(255,255,255,0.6);
-  white-space: nowrap;
 }
 .cat-bubble {
   position: absolute; bottom: 66px; left: 50%; transform: translateX(-50%) translateY(6px);
@@ -896,7 +1063,7 @@ body {
 }
 .note-overlay.open { opacity: 1; pointer-events: all; }
 .note-card {
-  width: 350px; padding: 38px 32px 28px;
+  width: 350px; max-width: 90vw; padding: 38px 32px 28px;
   background: linear-gradient(145deg, #fffefc, #fff8f0); border-radius: 18px;
   box-shadow: 0 30px 80px rgba(120,100,140,0.22);
   position: relative; transform: translateY(25px);
@@ -944,6 +1111,62 @@ body {
   z-index: 60; pointer-events: none;
   transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+/* 好心情飞行石头 */
+.flying-stone.mood-joy {
+  background: radial-gradient(circle at 35% 35%, #ff9a9a, #e07070);
+  box-shadow: 0 4px 18px rgba(255,140,140,0.22), inset 0 0 12px rgba(255,255,255,0.4);
+}
+.flying-stone.mood-warm {
+  background: radial-gradient(circle at 35% 35%, #f5c880, #d8a050);
+  box-shadow: 0 4px 18px rgba(240,180,100,0.2), inset 0 0 12px rgba(255,255,255,0.4);
+}
+.flying-stone.mood-hope {
+  background: radial-gradient(circle at 35% 35%, #f8e070, #d8b840);
+  box-shadow: 0 4px 18px rgba(240,200,80,0.2), inset 0 0 12px rgba(255,255,255,0.4);
+}
+.flying-stone.mood-calm {
+  background: radial-gradient(circle at 35% 35%, #8ee0c8, #5ab898);
+  box-shadow: 0 4px 18px rgba(100,200,170,0.2), inset 0 0 12px rgba(255,255,255,0.4);
+}
+.flying-stone.mood-growth {
+  background: radial-gradient(circle at 35% 35%, #a0e0a0, #70c070);
+  box-shadow: 0 4px 18px rgba(120,200,120,0.2), inset 0 0 12px rgba(255,255,255,0.4);
+}
+.flying-stone.mood-gratitude {
+  background: radial-gradient(circle at 35% 35%, #f0d8b0, #d0b080);
+  box-shadow: 0 4px 18px rgba(220,190,140,0.2), inset 0 0 12px rgba(255,255,255,0.4);
+}
+/* 坏心情飞行石头 */
+.flying-stone.mood-anxiety {
+  background: radial-gradient(circle at 35% 35%, #aab8c8, #8898a8);
+  box-shadow: 0 4px 18px rgba(140,160,180,0.2), inset 0 0 12px rgba(255,255,255,0.3);
+  border-radius: 48% 52% 50% 50%;
+}
+.flying-stone.mood-sad {
+  background: radial-gradient(circle at 35% 35%, #9ab0d0, #7890b0);
+  box-shadow: 0 4px 18px rgba(130,160,200,0.2), inset 0 0 12px rgba(255,255,255,0.3);
+  border-radius: 50% 48% 52% 50%;
+}
+.flying-stone.mood-tired {
+  background: radial-gradient(circle at 35% 35%, #c8b8a8, #a89888);
+  box-shadow: 0 4px 18px rgba(180,170,160,0.2), inset 0 0 12px rgba(255,255,255,0.3);
+  border-radius: 52% 50% 48% 52%;
+}
+.flying-stone.mood-wronged {
+  background: radial-gradient(circle at 35% 35%, #c8b0d8, #a890b8);
+  box-shadow: 0 4px 18px rgba(180,160,200,0.2), inset 0 0 12px rgba(255,255,255,0.3);
+  border-radius: 50% 52% 48% 50%;
+}
+.flying-stone.mood-broken {
+  background: radial-gradient(circle at 35% 35%, #d8b0c0, #b890a0);
+  box-shadow: 0 4px 18px rgba(200,160,180,0.2), inset 0 0 12px rgba(255,255,255,0.3);
+  border-radius: 48% 50% 50% 52%;
+}
+.flying-stone.mood-empty {
+  background: radial-gradient(circle at 35% 35%, #b8c0b8, #98a098);
+  box-shadow: 0 4px 18px rgba(160,170,160,0.2), inset 0 0 12px rgba(255,255,255,0.3);
+  border-radius: 52% 48% 52% 48%;
+}
 
 /* ===== 标题 ===== */
 .header {
@@ -963,6 +1186,43 @@ body {
   font-size: 0.62rem; color: #b0a0b8; letter-spacing: 0.25em;
   opacity: 0.35; z-index: 20; writing-mode: vertical-rl;
 }
+/* ===== 白噪音播放器 ===== */
+.sound-player { position: fixed; top: 28px; left: 32px; z-index: 30; display: flex; flex-direction: column; align-items: flex-start; }
+.sound-toggle { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, rgba(255,255,255,0.45), rgba(255,255,255,0.15)); border: 2px solid rgba(255,255,255,0.7); backdrop-filter: blur(12px); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(80,120,140,0.15), inset 0 1px 2px rgba(255,255,255,0.6); transition: all 0.35s ease; }
+.sound-toggle:hover { transform: scale(1.1); background: linear-gradient(135deg, rgba(255,255,255,0.55), rgba(255,255,255,0.25)); box-shadow: 0 6px 22px rgba(80,120,140,0.22); }
+.sound-toggle.active { background: linear-gradient(135deg, rgba(180,210,230,0.5), rgba(160,195,220,0.3)); border-color: rgba(160,200,230,0.85); }
+.sound-icon { width: 16px; height: 16px; position: relative; }
+.sound-icon::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 6px; height: 8px; background: #7a9ab0; border-radius: 1px 0 0 1px; }
+.sound-icon::after { content: ''; position: absolute; left: 5px; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-right: 8px solid #7a9ab0; }
+.sound-toggle.playing .sound-icon { animation: sound-pulse 1.5s ease-in-out infinite; }
+@keyframes sound-pulse { 0%,100%{opacity:1; transform:scale(1)} 50%{opacity:0.6; transform:scale(0.85)} }
+.sound-panel { position: absolute; top: 50px; left: 0; width: 180px; max-width: calc(100vw - 40px); padding: 14px 12px 12px; background: linear-gradient(145deg, rgba(255,255,255,0.85), rgba(245,250,252,0.75)); border: 1.5px solid rgba(255,255,255,0.8); border-radius: 16px; backdrop-filter: blur(16px) saturate(1.2); box-shadow: 0 12px 40px rgba(80,120,140,0.15); opacity: 0; transform: translateY(-8px) scale(0.95); pointer-events: none; transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+.sound-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+.sound-title { font-size: 0.72rem; color: #7a8a95; letter-spacing: 0.15em; text-align: center; margin-bottom: 10px; text-shadow: 0 1px 4px rgba(255,255,255,0.6); }
+.sound-list { max-height: 180px; overflow-y: auto; margin-bottom: 10px; }
+.sound-list::-webkit-scrollbar { width: 3px; }
+.sound-list::-webkit-scrollbar-thumb { background: rgba(160,190,210,0.3); border-radius: 2px; }
+.sound-item { padding: 6px 10px; border-radius: 10px; font-size: 0.7rem; color: #6a7a88; cursor: pointer; transition: all 0.25s ease; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+.sound-item:hover { background: rgba(200,225,240,0.3); }
+.sound-item.active { background: linear-gradient(90deg, rgba(180,210,230,0.35), rgba(200,230,245,0.2)); color: #4a7a90; font-weight: 500; }
+.sound-item-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(160,190,210,0.4); flex-shrink: 0; }
+.sound-item.active .sound-item-dot { background: #7ab8d0; animation: dot-pulse 1.5s ease-in-out infinite; }
+@keyframes dot-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.sound-controls { display: flex; justify-content: center; align-items: center; gap: 14px; margin-bottom: 8px; }
+.sound-btn { width: 28px; height: 28px; border-radius: 50%; border: none; background: linear-gradient(135deg, rgba(255,255,255,0.6), rgba(230,245,252,0.4)); backdrop-filter: blur(4px); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: #6a8a9e; box-shadow: 0 2px 8px rgba(80,120,140,0.1), inset 0 1px 1px rgba(255,255,255,0.5); transition: all 0.25s ease; }
+.sound-btn:hover { transform: scale(1.15); background: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(240,250,255,0.5)); }
+.sound-play { width: 34px; height: 34px; font-size: 0.9rem; }
+.sound-name { font-size: 0.62rem; color: #9aabbb; text-align: center; letter-spacing: 0.06em; }
+.sound-volume { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; padding: 0 4px; }
+.volume-icon { font-size: 0.7rem; color: #8a9aaa; line-height: 1; }
+.volume-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 3px; border-radius: 2px; background: rgba(160,190,210,0.25); outline: none; cursor: pointer; }
+.volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; border-radius: 50%; background: #8ab8d0; box-shadow: 0 1px 4px rgba(0,0,0,0.15); cursor: pointer; transition: transform 0.2s ease; }
+.volume-slider::-webkit-slider-thumb:hover { transform: scale(1.3); }
+.volume-slider::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: #8ab8d0; border: none; box-shadow: 0 1px 4px rgba(0,0,0,0.15); cursor: pointer; }
+.sound-upload-wrap { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(200,210,220,0.25); }
+.sound-upload-btn { width: 100%; padding: 6px 0; border: 1px dashed rgba(160,190,210,0.5); border-radius: 10px; background: rgba(255,255,255,0.3); font-family: "Noto Serif SC", serif; font-size: 0.65rem; color: #8a9aaa; cursor: pointer; transition: all 0.25s ease; letter-spacing: 0.08em; }
+.sound-upload-btn:hover { background: rgba(200,225,240,0.35); border-color: rgba(140,180,210,0.6); color: #6a8a9e; }
+.sound-empty-tip { font-size: 0.62rem; color: #aab8c4; text-align: center; padding: 16px 4px; letter-spacing: 0.04em; }
 </style>
 </head>
 <body>
@@ -1012,6 +1272,7 @@ body {
   <div class="bg-noise"></div>
 
   <div class="water-area" id="waterLayer">
+    <div class="water-mood-glow" id="waterMoodGlow"></div>
     <div class="water-ripple-texture"></div>
     <div class="water-surface-ripple" style="width:60px; height:30px; left:20%; top:35%;"></div>
     <div class="water-surface-ripple" style="width:80px; height:40px; left:55%; top:55%; animation-delay:1.5s;"></div>
@@ -1022,6 +1283,17 @@ body {
     <div class="lily-pad" style="width:26px; height:20px; left:68%; top:30%; animation-delay:1s;"></div>
     <div class="lily-pad" style="width:18px; height:15px; left:38%; top:70%; animation-delay:3s;"></div>
     <div class="lily-pad" style="width:24px; height:19px; left:82%; top:45%; animation-delay:1.5s;"></div>
+    <!-- 睡莲花 -->
+    <div class="lotus-flower" style="left:23%; top:38%; animation-delay:0.5s;"></div>
+    <div class="lotus-flower" style="left:49%; top:52%; animation-delay:2s; transform:scale(0.85);"></div>
+    <div class="lotus-flower" style="left:69%; top:28%; animation-delay:1.2s; transform:scale(0.9);"></div>
+    <!-- 浮萍 -->
+    <div class="duckweed" style="left:30%; top:60%;"></div>
+    <div class="duckweed" style="left:35%; top:55%; animation-delay:1s;"></div>
+    <div class="duckweed" style="left:42%; top:68%; animation-delay:2s;"></div>
+    <div class="duckweed" style="left:58%; top:42%; animation-delay:0.5s;"></div>
+    <div class="duckweed" style="left:62%; top:50%; animation-delay:1.5s;"></div>
+    <div class="duckweed" style="left:72%; top:62%; animation-delay:2.5s;"></div>
     <div class="light-beam" style="left:15%; width:70px; animation-delay:0s;"></div>
     <div class="light-beam" style="left:45%; width:50px; animation-delay:3.5s;"></div>
     <div class="light-beam" style="left:72%; width:60px; animation-delay:7s;"></div>
@@ -1045,9 +1317,21 @@ body {
     <div class="plant" style="left:93%; height:70px; animation-delay:2.8s;"></div>
     <div class="plant" style="left:95%; height:65px; animation-delay:0.4s;"></div>
     <div class="plant" style="left:97%; height:55px; animation-delay:1.9s;"></div>
+    <!-- 芦苇 -->
+    <div class="reed" style="left:6%; height:140px; animation-delay:0.2s;"></div>
+    <div class="reed" style="left:10%; height:160px; animation-delay:1.5s;"></div>
+    <div class="reed" style="left:18%; height:130px; animation-delay:2.2s;"></div>
+    <div class="reed" style="left:82%; height:150px; animation-delay:0.8s;"></div>
+    <div class="reed" style="left:88%; height:135px; animation-delay:2.6s;"></div>
+    <div class="reed" style="left:94%; height:145px; animation-delay:1.2s;"></div>
+    <!-- 草丛 -->
+    <div class="grass-tuft" style="left:20%; animation-delay:0.4s;"></div>
+    <div class="grass-tuft" style="left:24%; animation-delay:1.7s;"></div>
+    <div class="grass-tuft" style="left:76%; animation-delay:0.9s;"></div>
+    <div class="grass-tuft" style="left:78%; animation-delay:2.3s;"></div>
   </div>
 
-  <!-- 糖墩墩 -->
+  <!-- 糖墩儿 -->
   <div class="cat-container" id="catContainer">
     <div class="cat-bubble" id="catBubble"></div>
     <div class="cat-wrap" id="catWrap">
@@ -1071,7 +1355,6 @@ body {
       <div class="cat-paw cat-paw-l"></div>
       <div class="cat-paw cat-paw-r"></div>
     </div>
-    <div class="cat-counter" id="catCounter">被糖墩儿安慰了 0 次</div>
     <div class="cat-bed"></div>
   </div>
 
@@ -1088,15 +1371,15 @@ body {
     </div>
   </div>
 
-  <div class="bottle-container">
+  <div class="bottle-container" id="bottleContainer">
     <div class="bottle" id="bottle">
       <div class="bottle-neck"></div>
       <div class="bottle-cork"></div>
       <div class="bottle-body">
         <div class="bottle-glow"></div>
+        <div class="bottle-stones" id="bottleStones"></div>
       </div>
     </div>
-    <div class="counter">好情绪 <span class="num" id="goodCount">0</span></div>
   </div>
 
   <div class="rack-container">
@@ -1106,6 +1389,11 @@ body {
       <div class="basket-inner"></div>
       <div class="basket-body"></div>
       <div class="basket-bottom"></div>
+      <!-- 篓中鹅卵石 -->
+      <div class="rack-stone" style="left:16px;top:56px;transform:scale(0.95) rotate(20deg);background:radial-gradient(circle at 35% 35%,rgba(200,210,220,0.9),rgba(160,175,190,0.7));"></div>
+      <div class="rack-stone" style="left:28px;top:60px;transform:scale(0.85) rotate(-15deg);background:radial-gradient(circle at 35% 35%,rgba(190,200,215,0.9),rgba(150,165,180,0.7));"></div>
+      <div class="rack-stone" style="left:40px;top:57px;transform:scale(0.9) rotate(35deg);background:radial-gradient(circle at 35% 35%,rgba(205,215,225,0.9),rgba(165,180,195,0.7));"></div>
+      <div class="rack-stone" style="left:22px;top:52px;transform:scale(0.75) rotate(-5deg);background:radial-gradient(circle at 35% 35%,rgba(185,195,210,0.9),rgba(145,160,175,0.7));"></div>
       <!-- 叶子搭在篓口 -->
       <div class="basket-leaf" style="left:-2px; top:2px; animation:leaf-sway-1 3.5s ease-in-out infinite;"></div>
       <div class="basket-leaf" style="left:10px; top:0px; transform:scaleX(-1); animation:leaf-sway-2 4.2s ease-in-out infinite;"></div>
@@ -1113,15 +1401,7 @@ body {
       <div class="basket-leaf" style="left:58px; top:3px; transform:scaleX(-1); animation:leaf-sway-4 4.5s ease-in-out infinite;"></div>
       <div class="basket-leaf" style="left:28px; top:-2px; animation:leaf-sway-5 3.2s ease-in-out infinite;"></div>
     </div>
-    <div class="counter">待释放 <span class="num" id="badCount">0</span></div>
-  </div>
-
-  <div class="mood-stats" id="moodStats">
-    <div class="mood-stats-bar">
-      <div class="mood-stats-good" id="statsGood" style="width:50%"></div>
-      <div class="mood-stats-bad" id="statsBad" style="width:50%"></div>
-    </div>
-    <div class="mood-stats-text" id="statsText">投石问心 · 记录心情</div>
+    <div class="rack-hint">写下心情，把情绪投进池子里释放</div>
   </div>
 
   <div class="cast-bar">
@@ -1130,10 +1410,35 @@ body {
 
   <div class="note-overlay" id="noteOverlay">
     <div class="note-card">
-      <textarea class="note-textarea" id="noteTextarea" placeholder="把此刻的心情，写成一句话..."></textarea>
+      <textarea class="note-textarea" id="noteTextarea" placeholder="把此刻的心情，写成一句话..." maxlength="200"></textarea>
       <div class="note-actions">
         <span class="char-count" id="charCount">0 字</span>
         <button class="stone-btn" id="stoneBtn">投石头</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 白噪音播放器 -->
+  <div class="sound-player" id="soundPlayer">
+    <div class="sound-toggle" id="soundToggle">
+      <div class="sound-icon"></div>
+    </div>
+    <div class="sound-panel" id="soundPanel">
+      <div class="sound-title">疗愈之声</div>
+      <div class="sound-list" id="soundList"></div>
+      <div class="sound-controls">
+        <button class="sound-btn sound-prev" id="soundPrev">‹</button>
+        <button class="sound-btn sound-play" id="soundPlay">▶</button>
+        <button class="sound-btn sound-next" id="soundNext">›</button>
+      </div>
+      <div class="sound-volume">
+        <span class="volume-icon" id="volumeIcon">🔊</span>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70">
+      </div>
+      <div class="sound-name" id="soundName">选择一首</div>
+      <div class="sound-upload-wrap">
+        <input type="file" id="audioUpload" accept="audio/*" multiple style="display:none">
+        <button class="sound-upload-btn" id="uploadBtn">+ 上传白噪音</button>
       </div>
     </div>
   </div>
@@ -1176,6 +1481,18 @@ body {
     function rippleSound(){ tone(200,0.5,'sine'); tone(150,0.3,'sine'); }
     function openSound(){ tone(440,0.1); tone(550,0.1); tone(660,0.15); }
     function castSound(){ tone(300,0.15); setTimeout(()=>tone(500,0.2),100); setTimeout(()=>tone(700,0.25),250); }
+    function chimeSound(){
+      initAudio();
+      const now=audioCtx.currentTime;
+      [880,1100,1320].forEach((f,i)=>{
+        const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+        o.type='sine'; o.frequency.setValueAtTime(f,now+i*0.1);
+        g.gain.setValueAtTime(0.04,now+i*0.1);
+        g.gain.exponentialRampToValueAtTime(0.001,now+i*0.1+1.2);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(now+i*0.1); o.stop(now+i*0.1+1.2);
+      });
+    }
     function meowSound(){
       initAudio();
       const t=audioCtx.currentTime;
@@ -1227,10 +1544,13 @@ body {
 
     /* ===== 12片树叶围成圆圈 ===== */
     const circle = document.getElementById('leafCircle');
-    const radius = 155;
+    const cRect = circle.getBoundingClientRect();
+    const cSize = cRect.width || 380;
+    const cCenter = cSize / 2;
+    const radius = 140;
     moods.forEach((m,i)=>{
       const a=(i*30-90)*Math.PI/180;
-      const x=radius*Math.cos(a)+170-31, y=radius*Math.sin(a)+170-27;
+      const x=radius*Math.cos(a)+cCenter-33, y=radius*Math.sin(a)+cCenter-30;
       const leaf=document.createElement('div');
       leaf.className='mood-leaf';
       leaf.style.cssText=`left:${x}px; top:${y}px; background:radial-gradient(circle at 35% 35%, ${m.color}, ${m.glow});`;
@@ -1239,8 +1559,7 @@ body {
       circle.appendChild(leaf);
     });
 
-    let goodCount=0, badCount=0, selectedMood=null;
-    let comfortCount=0;
+    let poemHideTimeout=null;
     const catComforts=[
       '「糖墩儿抱抱你，会好起来的」',
       '「不开心就丢进水里，我陪你」',
@@ -1263,80 +1582,118 @@ body {
       '「好心情值得被记住」',
       '「愿你一直被温柔以待」'
     ];
-    const sadKeywords=['难过','伤心','累','烦','痛苦','孤独','失望','焦虑','抑郁','不开心','糟糕','失败','怕','哭','恨','死','绝望','迷茫','无助','压力','委屈','郁闷','痛','苦','悲','丧','emo','sad','累死了','好累','烦死了','讨厌','恶心','愤怒','生气','暴躁','窒息','心碎','寂寞','空虚','迷惘'];
-    const happyKeywords=['开心','快乐','幸福','高兴','棒','好','爱','喜欢','感谢','谢谢','美','赞','优秀','顺利','成功','惊喜','期待','希望','满足','舒服','温暖','甜','好运','哈哈','嘿嘿','嘻嘻','愉悦','轻松','自豪','激动','喜悦','兴奋','欣慰','幸运','美好','漂亮','可爱','温柔','治愈'];
+    const sadKeywords=['难过','伤心','累','烦','痛苦','孤独','失望','焦虑','抑郁','不开心','糟糕','失败','怕','哭','恨','死','绝望','迷茫','无助','压力','委屈','郁闷','痛','苦','悲','丧','emo','sad','累死了','好累','烦死了','讨厌','恶心','愤怒','生气','暴躁','窒息','心碎','寂寞','空虚','迷惘','不好','不爽','不安','不快','不舒服','不顺','不如意','失落','遗憾','后悔','自责','内疚','嫉妒','羡慕','厌','冷漠','隔阂','疏远','拒绝','抛弃','背叛','欺骗','谎言','伤害','打击','挫折','低谷','困顿','窘迫','狼狈','憔悴','失眠','噩梦','恐惧','担忧','顾虑','纠结','矛盾','挣扎','煎熬','折磨','刺痛','寒冷','冰凉','黑暗','阴沉','乌云','暴风雨','崩塌','瓦解','消散','逝去','离别','分手','失业','负债','疾病','衰老','死亡','葬礼','厄运','倒霉','晦气','怨气','怒气','火气','脾气','赌气','怄气','憋气','受气','窝囊','憋屈','冤枉','误解','误会','错怪','责怪','责备','数落','唠叨','啰嗦','琐碎','计较','对立','危急','危险','摇摇欲坠','走投无路','穷途末路','山穷水尽','万劫不复','暗无天日','水深火热','生不如死','痛不欲生','心如死灰','万念俱灰','百无聊赖','索然无味','行尸走肉','浑浑噩噩','得过且过','混日子','虚度光阴','蹉跎','物是人非','时过境迁','往事如烟','过眼云烟','浮生若梦','人生如梦','镜花水月','泡沫','幻影','虚妄','虚幻','虚假','伪装','面具','偏见','歧视','排斥','边缘','底层','屌丝','废物','垃圾','渣','败类','人渣','畜生','禽兽','魔鬼','恶魔','叛徒','内奸','间谍','卧底','爪牙','走狗','帮凶','从犯','同谋','主谋','元凶','罪魁祸首','幕后黑手','操纵者','傀儡','棋子','炮灰','牺牲品','替罪羊','背锅','接盘','绿帽','出轨','小三','二奶','情人','暧昧','潜规则','诈骗','欺诈','欺骗','忽悠','套路','割韭菜','杀猪盘','非法集资','洗钱','贪污','腐败','受贿','行贿','滥用职权','以权谋私','自私自利','唯利是图','见利忘义','忘恩负义','过河拆桥','落井下石','趁火打劫','趁人之危','防不胜防'];
+    const happyKeywords=['开心','快乐','幸福','高兴','棒','好','爱','喜欢','感谢','谢谢','美','赞','优秀','顺利','成功','惊喜','期待','希望','满足','舒服','温暖','甜','好运','哈哈','嘿嘿','嘻嘻','愉悦','轻松','自豪','激动','喜悦','兴奋','欣慰','幸运','美好','漂亮','可爱','温柔','治愈','很好','不错','还行','可以','愿意','乐意','享受','珍惜','感恩','感激','感动','振奋','鼓舞','激励','启发','领悟','觉醒','觉悟','成长','进步','提升','升华','蜕变','涅槃','重生','新生','焕发','蓬勃','盎然','生机','活力','朝气','阳光','灿烂','辉煌','耀眼','夺目','绚丽','缤纷','多彩','丰富','充实','饱满','丰盈','富足','富饶','繁荣','昌盛','兴盛','兴旺','兴隆','蒸蒸日上','欣欣向荣','生机勃勃','生气勃勃','活蹦乱跳','精神抖擞','神采奕奕','容光焕发','满面春风','春风得意','意气风发','斗志昂扬','信心','信念','信仰','信赖','信任','放心','安心','踏实','稳妥','稳当','可靠','靠谱','值得信赖','值得托付','托付终身','终身大事','大喜','婚庆','婚礼','蜜月','蜜月期','热恋','恋爱','爱恋','爱慕','仰慕','崇拜','敬佩','敬重','尊敬','尊重','礼仪','礼貌','教养','修养','素质','品质','品德','德行','仁义','仁爱','仁慈','慈善','慈悲','怜悯','同情','共情','同理心','换位思考','设身处地','体贴入微','关怀备至','呵护备至','宠爱','溺爱','疼爱','怜爱','珍爱','珍视','珍藏','收藏','保存','保护','守护','守望','盼望','守望相助','互帮互助','团结','协作','合作','配合','默契','心有灵犀','心灵相通','心心相印','志同道合','臭味相投','情投意合','你侬我侬','卿卿我我','如胶似漆','形影不离','寸步不离','相伴','陪伴','相随','追随','跟随','追随者','粉丝','拥趸','铁杆','死党','闺蜜','兄弟','姐妹','兄妹','姐弟','亲人','家人','家庭','家园','家乡','故乡','故土','故园','祖籍','根源','本源','初心','初衷','原点','起点','出发点','落脚点','归宿','归属','认同感','归属感','安全感','幸福感','获得感','成就感','荣誉感','自豪感','优越感','尊贵','高贵','高雅','优雅','文雅','儒雅','风雅','风趣','幽默','诙谐','搞笑','逗比','段子手','网红','明星','偶像','榜样','楷模','模范','标兵','先进','优秀','杰出','卓越','非凡','不凡','不俗','不一般','出类拔萃','鹤立鸡群','超群绝伦','无与伦比','独一无二','绝无仅有','举世无双','天下第一','天下无双','所向披靡','百战百胜','战无不胜','攻无不克','旗开得胜','马到成功','水到渠成','顺理成章','自然而然','顺理成章','理所当然','天经地义','毋庸置疑','毋庸置疑'];
+
+    /* ===== 文字情绪识别（细粒度） ===== */
+    const moodKeywordMap={
+      joy:    ['开心','快乐','高兴','哈哈','嘿嘿','嘻嘻','愉悦','喜悦','兴奋','激动','棒','赞','美','好','幸福','欢乐','乐','欢喜','痛快','爽快','妙','太棒了','不错','还好','挺好'],
+      warm:   ['温暖','治愈','温柔','舒服','美好','甜','满足','安心','踏实','被理解','被关心','体贴','关怀','柔情','暖意','感动','热泪盈眶'],
+      hope:   ['期待','希望','惊喜','顺利','好运','向往','憧憬','相信','明天','未来','会更好','有盼头','值得等待','曙光','盼头'],
+      calm:   ['平静','安静','轻松','淡定','从容','宁静','平和','淡然','不慌','不着急','顺其自然','放下','释怀','坦然','心如止水'],
+      growth: ['成功','优秀','自豪','欣慰','成长','进步','突破','做到了','完成了','达成','收获','蜕变','逆袭','上升','提升'],
+      gratitude:['感谢','谢谢','感恩','感激','多亏','幸好','承蒙','铭记于心','涌泉相报','知恩图报','珍惜','来之不易'],
+      anxiety:['焦虑','烦','烦死了','压力','紧张','慌','急','烦躁','焦躁','不安','坐立不安','七上八下','慌神','手忙脚乱','发愁','犯愁','愁','烦躁'],
+      sad:    ['难过','伤心','孤独','失望','不开心','郁闷','悲','丧','忧郁','寂寞','想哭','流泪','心痛','酸楚','哀伤','凄凉','落寞','惆怅','黯然','垂头丧气','无精打采','BLUE'],
+      tired:  ['累','疲惫','累死了','好累','困','乏','精疲力竭','透支','力不从心','倦怠','昏昏欲睡','打不起精神','撑不住','扛不住','耗尽'],
+      wronged:['委屈','冤枉','误解','不公平','凭什么','针对','孤立','被排挤','背锅','替罪羊','有理说不清','有口难辩','被冤枉','被误会'],
+      broken: ['心碎','痛苦','绝望','死','恨','破碎','窒息','痛不欲生','万念俱灰','崩溃','垮了','塌了','毁','完了','毁灭','死寂','深渊'],
+      empty:  ['空洞','空虚','无聊','麻木','无感','没意思','没劲','行尸走肉','浑浑噩噩','茫然','迷失','找不到意义','虚无','空壳','填补不了']
+    };
+    function detectMoodFromText(text){
+      let bestMatch=null, maxCount=0;
+      for(const [moodId, keywords] of Object.entries(moodKeywordMap)){
+        const count=keywords.reduce((sum,k)=>sum+(text.includes(k)?1:0),0);
+        if(count>maxCount){ maxCount=count; bestMatch=moodId; }
+      }
+      if(bestMatch) return moods.find(m=>m.id===bestMatch);
+      // 回退到简单好/坏判断
+      if(sadKeywords.some(k=>text.includes(k))) return moods.find(m=>m.id==='sad');
+      if(happyKeywords.some(k=>text.includes(k))) return moods.find(m=>m.id==='joy');
+      return null;
+    }
 
     function selectMood(mood,el){
       clickSound();
       document.querySelectorAll('.mood-leaf').forEach(l=>l.classList.remove('active'));
-      el.classList.add('active'); selectedMood=mood;
+      el.classList.add('active');
+      el.classList.remove('glowing'); void el.offsetWidth; el.classList.add('glowing');
+      setTimeout(()=>el.classList.remove('glowing'),600);
       const d=document.getElementById('poemDisplay');
-      d.style.left='170px'; d.style.top='170px';
+      const circleRect=circle.getBoundingClientRect();
+      const centerX=circleRect.width/2, centerY=circleRect.height/2;
+      d.style.left=centerX+'px'; d.style.top=centerY+'px';
       const poems=mood.poems;
       const poem=poems[Math.floor(Math.random()*poems.length)];
       document.getElementById('poemText').textContent=poem;
       document.getElementById('moodTag').textContent='— '+mood.name+' —';
       d.classList.add('show');
-      setTimeout(()=>{ poemSound(); flyTo(mood,el); },600);
-    }
-
-    function flyTo(mood,el){
-      const r=el.getBoundingClientRect();
-      const f=el.cloneNode(true);
-      f.style.position='fixed'; f.style.left=r.left+'px'; f.style.top=r.top+'px';
-      f.style.zIndex='100'; f.style.transition='all 0.9s cubic-bezier(0.25,0.46,0.45,0.94)';
-      f.classList.remove('active'); document.body.appendChild(f);
-      let tid,cid;
-      if(mood.type==='good'){ tid='bottle'; cid='goodCount'; goodCount++; }
-      else { tid='woodRack'; cid='badCount'; badCount++; }
-      const t=document.getElementById(tid).getBoundingClientRect();
-      setTimeout(()=>{
-        f.style.left=(t.left+t.width/2-19)+'px';
-        f.style.top=(t.top+t.height/2-19)+'px';
-        f.style.transform='scale(0.3)'; f.style.opacity='0.5';
-      },50);
-      setTimeout(()=>{
-        f.remove(); flySound();
-        document.getElementById(cid).textContent=mood.type==='good'?goodCount:badCount;
-        if(mood.type==='good') addBottle(mood); else addRack(mood);
-        updateStats();
-      },950);
-    }
-
-    function addBottle(m){
+      if(poemHideTimeout) clearTimeout(poemHideTimeout);
+      poemHideTimeout=setTimeout(()=>{ d.classList.remove('show'); },5000);
+      poemSound();
+      // 叶子上的石子飞向对应归宿
       const s=document.createElement('div');
-      s.className='bottle-stone';
-      s.style.cssText=`left:${10+Math.random()*20}px; bottom:${8+Math.random()*25}px; background:radial-gradient(circle,${m.color},${m.glow}); animation-delay:${Math.random()*2}s;`;
-      document.getElementById('bottle').appendChild(s);
-    }
-
-    function addRack(m){
-      const s=document.createElement('div');
-      s.className='rack-stone';
-      s.style.cssText=`left:${14+Math.random()*42}px; top:${36+Math.random()*20}px; background:radial-gradient(circle,${m.color},${m.glow});`;
-      document.getElementById('woodRack').appendChild(s);
-    }
-
-    function updateStats(){
-      const total=goodCount+badCount;
-      if(total===0) return;
-      const goodPct=(goodCount/total*100).toFixed(1);
-      const badPct=(badCount/total*100).toFixed(1);
-      document.getElementById('statsGood').style.width=goodPct+'%';
-      document.getElementById('statsBad').style.width=badPct+'%';
-      let text='';
-      if(goodCount>badCount) text='高兴多一些 · '+goodCount+' : '+badCount;
-      else if(badCount>goodCount) text='待释放多一些 · '+goodCount+' : '+badCount;
-      else text='平衡中 · '+goodCount+' : '+badCount;
-      document.getElementById('statsText').textContent=text;
+      s.className='flying-stone mood-'+mood.id;
+      s.style.background='radial-gradient(circle at 35% 35%, '+mood.color+','+mood.glow+')';
+      s.style.boxShadow='0 4px 18px '+mood.glow+'66, inset 0 0 12px rgba(255,255,255,0.4)';
+      const leafRect=el.getBoundingClientRect();
+      s.style.left=(leafRect.left+leafRect.width/2-19)+'px';
+      s.style.top=(leafRect.top+leafRect.height/2-19)+'px';
+      document.body.appendChild(s);
+      let tx,ty;
+      if(mood.type==='good'){
+        const bottle=document.getElementById('bottleContainer').getBoundingClientRect();
+        tx=bottle.left+bottle.width/2-19;
+        ty=bottle.top+bottle.height/2-19;
+      }else{
+        const rack=document.getElementById('woodRack').getBoundingClientRect();
+        tx=rack.left+rack.width/2-19;
+        ty=rack.top+rack.height/2-19;
+      }
+      setTimeout(()=>{ s.style.left=tx+'px'; s.style.top=ty+'px'; s.style.transform='scale(0.5) rotate(360deg)'; },50);
+      setTimeout(()=>{
+        s.remove();
+        if(mood.type==='good'){
+          const bottleEl=document.getElementById('bottle');
+          bottleEl.classList.add('has-stones');
+          const stonesContainer=document.getElementById('bottleStones');
+          const bs=document.createElement('div');
+          bs.className='bottle-stone';
+          bs.style.background='radial-gradient(circle at 35% 35%, '+hexAlpha(mood.color,0.95)+','+hexAlpha(mood.glow,0.7)+')';
+          bs.style.boxShadow='0 1px 6px '+hexAlpha(mood.glow,0.5);
+          bs.style.left=(8+Math.random()*22)+'px';
+          bs.style.bottom=(2+Math.random()*18)+'px';
+          bs.style.animationDelay=(Math.random()*2)+'s';
+          stonesContainer.appendChild(bs);
+          while(stonesContainer.children.length>6){
+            stonesContainer.removeChild(stonesContainer.firstChild);
+          }
+        }else{
+          const rackEl=document.getElementById('woodRack');
+          const rs=document.createElement('div');
+          rs.className='rack-stone';
+          rs.style.background='radial-gradient(circle at 35% 35%, '+hexAlpha(mood.color,0.95)+','+hexAlpha(mood.glow,0.7)+')';
+          rs.style.boxShadow='0 1px 6px '+hexAlpha(mood.glow,0.4);
+          rs.style.left=(10+Math.random()*48)+'px';
+          rs.style.top=(48+Math.random()*28)+'px';
+          rs.style.transform='scale('+(0.7+Math.random()*0.4)+') rotate('+(Math.random()*40-20)+'deg)';
+          rackEl.appendChild(rs);
+          while(rackEl.querySelectorAll('.rack-stone').length>10){
+            rackEl.removeChild(rackEl.querySelector('.rack-stone'));
+          }
+        }
+      },1000);
     }
 
     /* ===== 上升气泡（带折射高光） ===== */
+    let activeBubbles=0;
     function bubble(){
+      if(activeBubbles>40) return;
       const b=document.createElement('div'); b.className='rising-bubble';
       const sz=3+Math.random()*10;
       b.style.cssText=`width:${sz}px; height:${sz}px; left:${5+Math.random()*90}%; bottom:${Math.random()*15}%; animation-duration:${12+Math.random()*15}s;`;
-      document.body.appendChild(b); setTimeout(()=>b.remove(),28000);
+      document.body.appendChild(b); activeBubbles++;
+      setTimeout(()=>{ b.remove(); activeBubbles--; },28000);
     }
     setInterval(bubble,250);
 
@@ -1501,26 +1858,76 @@ body {
     overlay.addEventListener('click',e=>{ if(e.target===overlay) overlay.classList.remove('open'); });
     ta.addEventListener('input',()=>{ cc.textContent=ta.value.length+' 字'; });
 
+    let isCasting=false;
+    let glowTimeout=null;
+    function hexAlpha(hex,a){
+      const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+      return 'rgba('+r+','+g+','+b+','+a+')';
+    }
+    function triggerWaterGlow(mood){
+      const glow=document.getElementById('waterMoodGlow');
+      if(!mood){ glow.className='water-mood-glow'; return; }
+      const glowClass=mood.type==='good'
+        ? (['joy','warm','gratitude'].includes(mood.id)?'good-warm':'good-calm')
+        : (['sad','broken'].includes(mood.id)?'bad-heavy':'bad-mild');
+      glow.className='water-mood-glow active '+glowClass;
+      if(glowTimeout) clearTimeout(glowTimeout);
+      glowTimeout=setTimeout(()=>{ glow.classList.remove('active'); },3500);
+    }
+
     stoneBtn.addEventListener('click',()=>{
+      if(isCasting) return;
       const text=ta.value.trim(); if(!text) return;
+      isCasting=true;
       overlay.classList.remove('open'); castSound();
-      const s=document.createElement('div'); s.className='flying-stone';
-      const br=castBtn.getBoundingClientRect();
+      const detectedMood=detectMoodFromText(text);
+      const isUnhappy=detectedMood?detectedMood.type==='bad':sadKeywords.some(k=>text.includes(k));
+
+      const s=document.createElement('div');
+      s.className='flying-stone'+(detectedMood?' mood-'+detectedMood.id:'');
+      if(detectedMood){
+        s.style.background='radial-gradient(circle at 35% 35%, '+detectedMood.color+','+detectedMood.glow+')';
+        s.style.boxShadow='0 4px 18px '+detectedMood.glow+'66, inset 0 0 12px rgba(255,255,255,0.4)';
+      }
+      const rack=document.getElementById('woodRack');
+      const br=rack.getBoundingClientRect();
       s.style.left=(br.left+br.width/2-19)+'px';
-      s.style.top=(br.top-19)+'px';
+      s.style.top=(br.top+br.height/2-19)+'px';
       document.body.appendChild(s);
+      const bubble=document.getElementById('catBubble');
+      const catWrap=document.getElementById('catWrap');
+
       const w=document.getElementById('waterLayer').getBoundingClientRect();
       const tx=w.left+w.width*(0.3+Math.random()*0.4)-19;
       const ty=w.top+w.height*(0.3+Math.random()*0.4)-19;
       setTimeout(()=>{ s.style.left=tx+'px'; s.style.top=ty+'px'; s.style.transform='scale(0.5) rotate(360deg)'; },50);
-      setTimeout(()=>{ s.remove(); dropSound(); createRipple(tx+19,ty+19); ta.value=''; cc.textContent='0 字'; },1000);
+      setTimeout(()=>{
+        s.remove(); dropSound(); createRipple(tx+19,ty+19);
+        triggerWaterGlow(detectedMood);
+        const submerged=document.createElement('div');
+        const m=detectedMood;
+        submerged.className='submerged-stone';
+        if(m){
+          submerged.style.background='radial-gradient(circle at 35% 35%, '+hexAlpha(m.color,0.9)+','+hexAlpha(m.glow,0.6)+')';
+          submerged.style.boxShadow='0 2px 10px '+hexAlpha(m.glow,0.35)+', inset 0 0 8px rgba(255,255,255,0.25)';
+        }else{
+          submerged.classList.add(isUnhappy?'unhappy':'happy');
+        }
+        const water=document.getElementById('waterLayer');
+        const wRect=water.getBoundingClientRect();
+        const sx=(tx-wRect.left)/wRect.width*100;
+        const sy=(ty-wRect.top)/wRect.height*100;
+        submerged.style.left='calc('+sx+'% - 14px)';
+        submerged.style.top='calc('+sy+'% - 11px)';
+        water.appendChild(submerged);
+        setTimeout(()=>{
+          submerged.classList.add('dissolving');
+          setTimeout(()=>submerged.remove(),2500);
+        },10000);
+        ta.value=''; cc.textContent='0 字'; isCasting=false;
+      },1000);
 
-      const bubble=document.getElementById('catBubble');
-      const catWrap=document.getElementById('catWrap');
-      const isUnhappy=sadKeywords.some(k=>text.includes(k));
       if(isUnhappy){
-        comfortCount++;
-        document.getElementById('catCounter').textContent='被糖墩儿安慰了 '+comfortCount+' 次';
         bubble.textContent=catComforts[Math.floor(Math.random()*catComforts.length)];
         bubble.classList.add('show');
         const poses=['side-lie','lick','doze','curl','lie'];
@@ -1558,6 +1965,149 @@ body {
       },2500);
     });
 
+    /* ===== 白噪音播放器（HTML5 Audio） ===== */
+    let tracks=[
+      {name:'流水潺潺', src:'liushui-chanchan.mp3'},
+      {name:'夜虫低语', src:'yechong-diyu.mp3'},
+      {name:'山涧鸟鸣', src:'shanjian-niaoming.mp3'},
+      {name:'雨落玉盘', src:'yuluo-yupan.mp3'},
+      {name:'水滴石台', src:'shuidi-shitai.mp3'},
+      {name:'夏夜林风', src:'xiaye-linfeng.mp3'},
+      {name:'叮咚溪水', src:'dingdong-xishui.mp3'},
+      {name:'听雨入梦', src:'tingyu-rumeng.mp3'},
+      {name:'润物无声', src:'runwu-wusheng.mp3'},
+      {name:'风雨潇潇', src:'fengyu-xiaoxiao.mp3'}
+    ];
+    let currentSoundIndex=-1, isSoundPlaying=false, masterVolume=0.7;
+    const audioPlayer=new Audio();
+    audioPlayer.loop=true;
+
+    function renderSoundList(){
+      const list=document.getElementById('soundList');
+      list.innerHTML='';
+      if(tracks.length===0){
+        list.innerHTML='<div class="sound-empty-tip">点击「上传白噪音」<br>添加你的音频文件</div>';
+        return;
+      }
+      tracks.forEach((track,i)=>{
+        const item=document.createElement('div');
+        item.className='sound-item';
+        item.innerHTML='<div class="sound-item-dot"></div><span>'+track.name+'</span>';
+        item.addEventListener('click',()=>playTrack(i));
+        list.appendChild(item);
+      });
+    }
+
+    function playTrack(index){
+      if(tracks.length===0) return;
+      stopTrack();
+      currentSoundIndex=index;
+      const track=tracks[index];
+      audioPlayer.src=track.src;
+      audioPlayer.volume=masterVolume;
+      audioPlayer.play().then(()=>{
+        isSoundPlaying=true; updateSoundUI();
+      }).catch(()=>{
+        isSoundPlaying=false; updateSoundUI();
+      });
+    }
+
+    function stopTrack(){
+      audioPlayer.pause();
+      isSoundPlaying=false;
+      updateSoundUI();
+    }
+
+    function toggleSoundPlay(){
+      if(currentSoundIndex===-1){ if(tracks.length>0) playTrack(0); return; }
+      if(isSoundPlaying) stopTrack(); else playTrack(currentSoundIndex);
+    }
+
+    function playNextSound(){
+      if(tracks.length===0) return;
+      playTrack((currentSoundIndex+1)%tracks.length);
+    }
+
+    function playPrevSound(){
+      if(tracks.length===0) return;
+      playTrack((currentSoundIndex-1+tracks.length)%tracks.length);
+    }
+
+    function updateSoundUI(){
+      const toggle=document.getElementById('soundToggle'), playBtn=document.getElementById('soundPlay'), nameEl=document.getElementById('soundName');
+      if(isSoundPlaying){ toggle.classList.add('playing','active'); playBtn.textContent='❚❚'; if(currentSoundIndex>=0){ nameEl.textContent=tracks[currentSoundIndex].name; } }
+      else { toggle.classList.remove('playing'); if(currentSoundIndex===-1) toggle.classList.remove('active'); playBtn.textContent='▶'; if(currentSoundIndex>=0){ nameEl.textContent=tracks[currentSoundIndex].name+'（已暂停）'; } else nameEl.textContent='选择一首'; }
+      document.querySelectorAll('.sound-item').forEach((item,i)=> item.classList.toggle('active',i===currentSoundIndex&&isSoundPlaying));
+    }
+
+    const blobUrls=[];
+    document.getElementById('uploadBtn').addEventListener('click',()=>{ document.getElementById('audioUpload').click(); });
+    document.getElementById('audioUpload').addEventListener('change',(e)=>{
+      const files=Array.from(e.target.files);
+      files.forEach(file=>{
+        const url=URL.createObjectURL(file);
+        blobUrls.push(url);
+        const name=file.name.replace(/\.[^/.]+$/,'');
+        tracks.push({name,src:url});
+      });
+      renderSoundList();
+      if(tracks.length===files.length && tracks.length>0 && currentSoundIndex===-1){ playTrack(0); }
+      e.target.value='';
+    });
+    window.addEventListener('beforeunload',()=>{
+      blobUrls.forEach(url=>URL.revokeObjectURL(url));
+    });
+
+    document.getElementById('volumeSlider').addEventListener('input',(e)=>{
+      masterVolume=e.target.value/100;
+      audioPlayer.volume=masterVolume;
+      const icon=document.getElementById('volumeIcon');
+      if(masterVolume===0) icon.textContent='🔇';
+      else if(masterVolume<0.35) icon.textContent='🔈';
+      else if(masterVolume<0.7) icon.textContent='🔉';
+      else icon.textContent='🔊';
+    });
+
+    audioPlayer.addEventListener('ended',()=>{
+      if(!audioPlayer.loop && tracks.length>0){ playNextSound(); }
+    });
+
+    document.getElementById('soundToggle').addEventListener('click',()=>document.getElementById('soundPanel').classList.toggle('open'));
+    document.getElementById('soundPlay').addEventListener('click',toggleSoundPlay);
+    document.getElementById('soundNext').addEventListener('click',playNextSound);
+    document.getElementById('soundPrev').addEventListener('click',playPrevSound);
+    document.addEventListener('click',(e)=>{ if(!document.getElementById('soundPlayer').contains(e.target)) document.getElementById('soundPanel').classList.remove('open'); });
+
+    renderSoundList();
+
+    /* ===== 漂流瓶点击 — 远方回响 ===== */
+    const bottleQuotes=[
+      '情绪如波，终会归于平静',
+      '你已经很努力了',
+      '放下的，都会变成光',
+      '此刻的波澜，也是生命的一部分',
+      '深呼吸，湖水会接住你',
+      '允许自己，慢慢来',
+      '每一种情绪，都值得被看见',
+      '就像这湖水，浑浊之后总会澄清'
+    ];
+    document.getElementById('bottleContainer').addEventListener('click',()=>{
+      chimeSound();
+      const bottle=document.getElementById('bottle');
+      bottle.classList.remove('flash'); void bottle.offsetWidth; bottle.classList.add('flash');
+      const container=document.getElementById('bottleContainer');
+      container.style.animationDuration='2s';
+      setTimeout(()=>container.style.animationDuration='',1500);
+      const existing=container.querySelector('.bottle-whisper');
+      if(existing) existing.remove();
+      const whisper=document.createElement('div');
+      whisper.className='bottle-whisper';
+      whisper.textContent=bottleQuotes[Math.floor(Math.random()*bottleQuotes.length)];
+      container.appendChild(whisper);
+      setTimeout(()=>whisper.remove(),3500);
+    });
+
+    /* ===== 自动涟漪 ===== */
     setInterval(()=>{
       const w=document.getElementById('waterLayer').getBoundingClientRect();
       createRipple(w.left+Math.random()*w.width,w.top+Math.random()*w.height);
